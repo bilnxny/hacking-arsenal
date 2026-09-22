@@ -1,166 +1,442 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#000000" />
 <title>HACKING-ARSENAL — RECON. ANALYZE. SECURE.</title>
-<meta name="description" content="Cybersecurity toolkit for security researchers, penetration testers, CTF players and SOC analysts." />
+<meta name="description" content="Cybersecurity toolkit for security researchers, pentesters, CTF players and SOC analysts." />
 <script src="https://cdn.tailwindcss.com"></script>
-<script>
-  tailwind.config = {
-    theme: {
-      extend: {
-        colors: {
-          ink: { 950:'#050507', 900:'#0a0a0d', 850:'#0e0e12', 800:'#131318', 700:'#1b1b22', 600:'#26262f', 500:'#3a3a46' },
-          accent: '#e11d2e',
-          accentSoft: '#ff3b4e',
-        },
-        fontFamily: { mono: ['ui-monospace','SFMono-Regular','Menlo','Consolas','monospace'] },
-      }
-    }
-  }
-</script>
 <style>
-  html,body{height:100%}
-  body{background:#050507;color:#e5e5e8;-webkit-font-smoothing:antialiased;font-family:ui-sans-serif,system-ui,sans-serif}
-  .grid-bg{background-image:linear-gradient(to right,rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(to bottom,rgba(255,255,255,.035) 1px,transparent 1px);background-size:44px 44px}
-  ::-webkit-scrollbar{width:10px;height:10px}
-  ::-webkit-scrollbar-track{background:#0a0a0d}
-  ::-webkit-scrollbar-thumb{background:#26262f;border-radius:6px}
-  ::-webkit-scrollbar-thumb:hover{background:#3a3a46}
+  :root{
+    --bg:#000000;
+    --bg-2:#050a07;
+    --card:#08120c;
+    --card-2:#0a140d;
+    --border:#14341f;
+    --border-2:#1a3d28;
+    --accent:#00ff41;
+    --accent-soft:#39ff14;
+    --accent-dim:rgba(0,255,65,.4);
+    --text:#c8ffd4;
+    --text-dim:#6b9d7a;
+    --text-dim-2:#4a7055;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;height:100%}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  .mono{font-family:ui-monospace,"SFMono-Regular",Menlo,Consolas,"Liberation Mono",monospace}
+
+  /* === MATRIX CANVAS === */
+  #matrix{
+    position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.14;
+  }
+  /* === SCANLINES === */
+  #scanlines{
+    position:fixed;inset:0;z-index:1;pointer-events:none;
+    background:repeating-linear-gradient(0deg,rgba(0,0,0,0) 0px,rgba(0,0,0,0) 2px,rgba(0,255,65,.02) 3px,rgba(0,0,0,0) 4px);
+    mix-blend-mode:screen;
+  }
+  /* === GLOW VIGNETTE === */
+  #vignette{
+    position:fixed;inset:0;z-index:1;pointer-events:none;
+    background:radial-gradient(ellipse at center,transparent 40%,rgba(0,0,0,.65) 100%);
+  }
+
+  .content-layer{position:relative;z-index:2}
+
+  /* === ANIMATIONS === */
+  @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  @keyframes slideInLeft{from{transform:translateX(-100%);opacity:0}to{transform:translateX(0);opacity:1}}
+  @keyframes slideUp{from{transform:translateY(100%);opacity:0}to{transform:translateY(0);opacity:1}}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+  @keyframes glowPulse{0%,100%{box-shadow:0 0 5px var(--accent-dim),0 0 20px transparent}50%{box-shadow:0 0 12px var(--accent-dim),0 0 40px rgba(0,255,65,.15)}}
+  @keyframes glitch{
+    0%,90%,100%{transform:none;text-shadow:none}
+    92%{transform:translate(-2px,0);text-shadow:2px 0 var(--accent),-2px 0 #ff0040}
+    94%{transform:translate(2px,0);text-shadow:-2px 0 var(--accent),2px 0 #ff0040}
+    96%{transform:translate(-1px,1px)}
+    98%{transform:translate(1px,-1px)}
+  }
   @keyframes blink{0%,49%{opacity:1}50%,100%{opacity:0}}
-  .cursor-blink::after{content:"▍";animation:blink 1s step-end infinite;color:#e11d2e}
-  @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-  .fade-up{animation:fadeUp .5s ease both}
-  .hidden-page{display:none}
-  input,textarea,button,select{font-family:inherit}
-  input:focus,textarea:focus{outline:none;border-color:rgba(225,29,46,.6);box-shadow:0 0 0 1px rgba(225,29,46,.3)}
-  .field{width:100%;border-radius:8px;border:1px solid #26262f;background:#0a0a0d;padding:8px 12px;font-size:13px;color:#e5e5e8;transition:border-color .15s}
-  .field::placeholder{color:#4b4b56}
-  .card{border-radius:12px;border:1px solid #1b1b22;background:#0e0e12;padding:20px}
-  .btn-primary{display:inline-flex;align-items:center;gap:8px;border-radius:8px;background:#e11d2e;padding:8px 16px;font-size:13px;font-weight:500;color:#fff;transition:background .15s;cursor:pointer;border:0}
-  .btn-primary:hover{background:#ff3b4e}
-  .btn-primary:disabled{opacity:.5;cursor:not-allowed}
-  .btn-outline{display:inline-flex;align-items:center;gap:8px;border-radius:8px;border:1px solid #26262f;background:#131318;padding:8px 16px;font-size:13px;font-weight:500;color:#e5e5e8;transition:border-color .15s;cursor:pointer}
-  .btn-outline:hover{border-color:rgba(225,29,46,.6)}
-  .btn-ghost{display:inline-flex;align-items:center;gap:8px;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:500;color:#d4d4d8;cursor:pointer;border:0;background:transparent}
-  .btn-ghost:hover{background:#131318}
-  .nav-item{display:flex;align-items:center;gap:12px;border-radius:8px;padding:8px 12px;font-size:13px;color:#a3a3a8;transition:background .12s,color .12s;cursor:pointer;border:0;background:transparent;width:100%;text-align:left}
-  .nav-item:hover{background:#131318;color:#e5e5e8}
-  .nav-item.active{background:rgba(225,29,46,.1);color:#fff}
-  .nav-item.active svg{color:#ff3b4e}
-  .badge{display:inline-flex;align-items:center;border-radius:6px;border:1px solid #26262f;background:#131318;color:#d4d4d8;padding:2px 8px;font-family:ui-monospace,monospace;font-size:11px;text-transform:uppercase;letter-spacing:.06em}
-  .badge-red{border-color:rgba(225,29,46,.4);background:rgba(225,29,46,.1);color:#ff6b78}
-  .badge-ok{border-color:rgba(16,185,129,.4);background:rgba(16,185,129,.1);color:#34d399}
-  .badge-warn{border-color:rgba(245,158,11,.4);background:rgba(245,158,11,.1);color:#fbbf24}
-  .kv{display:flex;justify-content:space-between;gap:16px;border-bottom:1px solid #1b1b22;padding:8px 0}
+  @keyframes scanline{0%{transform:translateY(-100%)}100%{transform:translateY(100vh)}}
+  @keyframes typing{from{width:0}to{width:100%}}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  @keyframes barGrow{from{width:0}}
+  @keyframes bounceIn{0%{transform:scale(.5);opacity:0}60%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
+  @keyframes shimmer{0%{background-position:-1000px 0}100%{background-position:1000px 0}}
+
+  .anim-fade-up{animation:fadeUp .5s cubic-bezier(.2,.7,.3,1) both}
+  .anim-fade-in{animation:fadeIn .4s ease both}
+  .anim-slide-left{animation:slideInLeft .35s cubic-bezier(.2,.7,.3,1) both}
+  .anim-slide-up{animation:slideUp .4s cubic-bezier(.2,.7,.3,1) both}
+  .anim-bounce-in{animation:bounceIn .5s cubic-bezier(.2,.7,.3,1) both}
+  .pulse-dot{animation:pulse 1.6s ease-in-out infinite}
+  .glow-pulse{animation:glowPulse 2.5s ease-in-out infinite}
+  .glitch{animation:glitch 4s infinite}
+  .cursor-blink::after{content:"▍";animation:blink 1s step-end infinite;color:var(--accent)}
+
+  .stagger > *{animation:fadeUp .5s cubic-bezier(.2,.7,.3,1) both}
+  .stagger > *:nth-child(1){animation-delay:.05s}
+  .stagger > *:nth-child(2){animation-delay:.1s}
+  .stagger > *:nth-child(3){animation-delay:.15s}
+  .stagger > *:nth-child(4){animation-delay:.2s}
+  .stagger > *:nth-child(5){animation-delay:.25s}
+  .stagger > *:nth-child(6){animation-delay:.3s}
+  .stagger > *:nth-child(7){animation-delay:.35s}
+  .stagger > *:nth-child(8){animation-delay:.4s}
+
+  /* === SCROLLBAR === */
+  ::-webkit-scrollbar{width:10px;height:10px}
+  ::-webkit-scrollbar-track{background:var(--bg-2)}
+  ::-webkit-scrollbar-thumb{background:var(--border);border-radius:6px}
+  ::-webkit-scrollbar-thumb:hover{background:var(--border-2)}
+
+  /* === BUTTONS === */
+  .btn-primary{
+    display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    padding:10px 18px;border:0;border-radius:8px;
+    background:var(--accent);color:#000;font-weight:700;font-size:13px;
+    cursor:pointer;transition:all .2s;letter-spacing:.03em;
+    box-shadow:0 0 0 transparent;
+  }
+  .btn-primary:hover{
+    background:var(--accent-soft);
+    box-shadow:0 0 20px var(--accent-dim);
+    transform:translateY(-1px);
+  }
+  .btn-primary:active{transform:translateY(0)}
+  .btn-primary:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
+
+  .btn-outline{
+    display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    padding:10px 18px;border:1px solid var(--border);border-radius:8px;
+    background:var(--card);color:var(--text);font-weight:600;font-size:13px;
+    cursor:pointer;transition:all .2s;letter-spacing:.03em;
+  }
+  .btn-outline:hover{border-color:var(--accent);color:var(--accent);box-shadow:0 0 16px rgba(0,255,65,.15)}
+  .btn-ghost{
+    display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    padding:8px 14px;border:0;border-radius:8px;background:transparent;
+    color:var(--text-dim);font-weight:600;font-size:13px;cursor:pointer;transition:all .2s;
+  }
+  .btn-ghost:hover{background:var(--card);color:var(--text)}
+
+  /* === CARD === */
+  .card{
+    position:relative;
+    border:1px solid var(--border);
+    background:linear-gradient(180deg,var(--card) 0%,var(--card-2) 100%);
+    border-radius:12px;
+    padding:20px;
+    transition:border-color .3s,box-shadow .3s,transform .3s;
+  }
+  .card:hover{border-color:var(--border-2)}
+  .card-hover:hover{
+    border-color:var(--accent-dim);
+    box-shadow:0 0 0 1px var(--accent-dim),0 8px 40px -20px var(--accent-dim);
+    transform:translateY(-2px);
+  }
+
+  /* === NAV === */
+  .nav-item{
+    display:flex;align-items:center;gap:12px;
+    padding:9px 12px;border-radius:8px;border:0;background:transparent;
+    color:var(--text-dim);font-size:13px;font-weight:500;cursor:pointer;
+    width:100%;text-align:left;transition:all .18s;
+  }
+  .nav-item:hover{background:rgba(0,255,65,.06);color:var(--text)}
+  .nav-item.active{
+    background:rgba(0,255,65,.1);
+    color:#fff;
+    box-shadow:inset 2px 0 0 var(--accent);
+  }
+  .nav-item.active .nav-ico{color:var(--accent);text-shadow:0 0 8px var(--accent-dim)}
+  .nav-item .nav-ico{display:inline-block;width:18px;text-align:center;transition:color .18s}
+
+  /* === INPUTS === */
+  .field{
+    width:100%;border:1px solid var(--border);border-radius:8px;
+    background:#000;padding:10px 14px;color:var(--text);
+    font-size:13px;font-family:ui-monospace,monospace;
+    transition:border-color .18s,box-shadow .18s;
+  }
+  .field::placeholder{color:var(--text-dim-2)}
+  .field:focus{outline:0;border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,255,65,.12)}
+  textarea.field{resize:vertical;line-height:1.55}
+
+  /* === BADGES === */
+  .badge{
+    display:inline-flex;align-items:center;gap:4px;
+    padding:2px 8px;border-radius:6px;
+    border:1px solid var(--border);background:var(--card);
+    color:var(--text-dim);font-family:ui-monospace,monospace;
+    font-size:10.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+  }
+  .badge-accent{border-color:var(--accent-dim);background:rgba(0,255,65,.08);color:var(--accent)}
+  .badge-ok{border-color:rgba(0,255,65,.4);background:rgba(0,255,65,.08);color:var(--accent)}
+  .badge-warn{border-color:rgba(255,180,0,.4);background:rgba(255,180,0,.08);color:#ffb400}
+  .badge-err{border-color:rgba(255,60,90,.4);background:rgba(255,60,90,.08);color:#ff3c5a}
+
+  /* === KV === */
+  .kv{display:flex;justify-content:space-between;gap:14px;padding:9px 0;border-bottom:1px solid var(--border);flex-wrap:wrap}
   .kv:last-child{border-bottom:0}
-  .kv-k{font-family:ui-monospace,monospace;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:#737373}
-  .kv-v{font-family:ui-monospace,monospace;font-size:12px;color:#e5e5e8;text-align:right;word-break:break-all;max-width:70%}
-  .tab{padding:6px 12px;border-radius:8px;border:1px solid #26262f;background:#0e0e12;color:#a3a3a8;font-family:ui-monospace,monospace;font-size:12px;cursor:pointer;transition:all .12s}
-  .tab:hover{color:#e5e5e8}
-  .tab.active{border-color:rgba(225,29,46,.6);background:rgba(225,29,46,.1);color:#fff}
+  .kv-k{font-family:ui-monospace,monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-dim-2)}
+  .kv-v{font-family:ui-monospace,monospace;font-size:12px;color:var(--text);text-align:right;word-break:break-all;max-width:70%}
+
+  /* === TABS === */
+  .tab{
+    padding:8px 14px;border:1px solid var(--border);border-radius:8px;
+    background:var(--card);color:var(--text-dim);cursor:pointer;
+    font-family:ui-monospace,monospace;font-size:12px;font-weight:600;
+    transition:all .18s;white-space:nowrap;
+  }
+  .tab:hover{color:var(--text);border-color:var(--border-2)}
+  .tab.active{
+    border-color:var(--accent);background:rgba(0,255,65,.1);color:var(--accent);
+    box-shadow:0 0 14px rgba(0,255,65,.2);
+  }
+
+  /* === TERMINAL === */
+  .term-shell{
+    border:1px solid var(--border);border-radius:12px;overflow:hidden;
+    background:#000;box-shadow:inset 0 0 60px rgba(0,255,65,.04);
+  }
+  .term-bar{
+    display:flex;align-items:center;gap:8px;
+    padding:12px 16px;background:var(--card);
+    border-bottom:1px solid var(--border);
+  }
+  .term-dot{width:10px;height:10px;border-radius:50%}
+  .term-body{
+    padding:16px;font-family:ui-monospace,monospace;
+    font-size:12.5px;line-height:1.65;overflow-y:auto;
+    color:var(--text);background:#000;
+  }
+  .term-body::-webkit-scrollbar-thumb{background:var(--border)}
+
+  /* === SIDEBAR === */
+  #sidebar{
+    background:var(--bg-2);
+    border-right:1px solid var(--border);
+    transition:transform .3s cubic-bezier(.2,.7,.3,1);
+  }
+  #sidebar.mobile{
+    position:fixed;top:0;left:0;bottom:0;z-index:60;
+    width:280px;max-width:85vw;
+    transform:translateX(-100%);
+    box-shadow:8px 0 40px rgba(0,0,0,.6);
+  }
+  #sidebar.mobile.open{transform:translateX(0)}
+
+  /* === PALETTE === */
+  #palette .box{
+    background:var(--card);
+    border:1px solid var(--border);
+    box-shadow:0 0 0 1px var(--accent-dim),0 30px 80px -20px rgba(0,255,65,.25);
+  }
+  .palette-item{
+    display:flex;align-items:center;gap:12px;
+    padding:10px 14px;border-radius:8px;cursor:pointer;
+    color:var(--text-dim);font-size:13px;
+    transition:all .12s;border:0;background:transparent;width:100%;text-align:left;
+  }
+  .palette-item:hover,.palette-item.sel{background:rgba(0,255,65,.08);color:var(--text)}
+  .palette-item:hover .pi-ico,.palette-item.sel .pi-ico{color:var(--accent)}
+
+  /* === LOADER === */
+  .loader{
+    width:16px;height:16px;border:2px solid var(--border);
+    border-top-color:var(--accent);border-radius:50%;
+    animation:spin .8s linear infinite;display:inline-block;
+  }
+
+  /* === GRID BG for landing === */
+  .grid-bg{
+    background-image:
+      linear-gradient(to right,rgba(0,255,65,.05) 1px,transparent 1px),
+      linear-gradient(to bottom,rgba(0,255,65,.05) 1px,transparent 1px);
+    background-size:48px 48px;
+  }
+
+  /* === SHIMMER === */
+  .shimmer{
+    background:linear-gradient(90deg,transparent 0%,rgba(0,255,65,.08) 50%,transparent 100%);
+    background-size:1000px 100%;
+    animation:shimmer 2s infinite linear;
+  }
+
+  /* === RESPONSIVE === */
+  @media (max-width:1023px){
+    #sidebar.desktop{display:none}
+  }
+  @media (min-width:1024px){
+    #sidebar.mobile{display:none}
+  }
+  @media (max-width:640px){
+    .kv{flex-direction:column;gap:4px}
+    .kv-v{text-align:left;max-width:100%}
+  }
+
+  /* === LINE CLAMP === */
+  .clamp-2{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+
+  /* === ROW ITEM === */
+  .cve-row{
+    display:block;width:100%;padding:14px 16px;text-align:left;
+    background:transparent;border:0;border-bottom:1px solid var(--border);
+    cursor:pointer;transition:background .15s;
+    color:inherit;font:inherit;
+  }
+  .cve-row:hover{background:rgba(0,255,65,.04)}
+  .cve-row.active{background:rgba(0,255,65,.07);box-shadow:inset 3px 0 0 var(--accent)}
 </style>
 </head>
 <body>
 
-<!-- ============= LANDING ============= -->
-<div id="landing" class="grid-bg min-h-screen">
-  <header class="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
-    <div class="flex items-center gap-3">
-      <div class="relative grid h-9 w-9 place-items-center rounded-lg border" style="border-color:rgba(225,29,46,.5);background:rgba(225,29,46,.1)">
-        <span class="font-mono text-[13px] font-bold" style="color:#ff3b4e">HA</span>
-        <span class="absolute -right-0.5 -top-0.5 h-1.5 w-1.5 rounded-full bg-emerald-400"></span>
+<!-- === BACKGROUND === -->
+<canvas id="matrix"></canvas>
+<div id="scanlines"></div>
+<div id="vignette"></div>
+
+<!-- ============================ LANDING ============================ -->
+<div id="landing" class="content-layer grid-bg min-h-screen">
+  <header class="mx-auto flex max-w-6xl items-center justify-between px-5 py-5 sm:px-8">
+    <div class="flex items-center gap-3 anim-fade-in">
+      <div class="relative grid h-10 w-10 place-items-center rounded-lg border" style="border-color:var(--accent-dim);background:rgba(0,255,65,.08);box-shadow:0 0 20px rgba(0,255,65,.15)">
+        <span class="mono text-[13px] font-bold" style="color:var(--accent)">HA</span>
+        <span class="absolute -right-0.5 -top-0.5 h-1.5 w-1.5 rounded-full pulse-dot" style="background:var(--accent);box-shadow:0 0 6px var(--accent)"></span>
       </div>
-      <span class="font-mono text-sm font-semibold tracking-wide text-white">HACKING-ARSENAL</span>
+      <span class="mono text-sm font-bold tracking-wide text-white glitch">HACKING-ARSENAL</span>
     </div>
-    <button onclick="enterArsenal()" class="btn-outline">ENTER ARSENAL</button>
+    <button onclick="enterArsenal()" class="btn-outline">ENTER ARSENAL →</button>
   </header>
 
-  <section class="mx-auto grid max-w-6xl items-center gap-12 px-6 py-16 lg:grid-cols-2 lg:py-24">
-    <div class="fade-up">
-      <div class="mb-5 inline-flex items-center gap-2 rounded-full border px-3 py-1 font-mono text-[11px] tracking-wider text-neutral-400" style="border-color:#26262f;background:#0e0e12">
-        <span class="h-1.5 w-1.5 rounded-full" style="background:#e11d2e"></span>
+  <section class="mx-auto grid max-w-6xl items-center gap-12 px-5 py-14 sm:px-8 lg:grid-cols-2 lg:py-24">
+    <div class="anim-fade-up">
+      <div class="mb-5 inline-flex items-center gap-2 rounded-full border px-3 py-1 mono text-[11px] tracking-wider" style="border-color:var(--border);background:var(--card);color:var(--text-dim)">
+        <span class="h-1.5 w-1.5 rounded-full pulse-dot" style="background:var(--accent)"></span>
         RED TEAM · BLUE TEAM · RESEARCH
       </div>
-      <h1 class="text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl">
-        HACKING<span style="color:#e11d2e">-</span>ARSENAL
+      <h1 class="text-4xl font-black tracking-tight text-white sm:text-5xl lg:text-6xl">
+        HACKING<span style="color:var(--accent);text-shadow:0 0 20px var(--accent-dim)">-</span>ARSENAL
       </h1>
-      <p class="mt-4 font-mono text-sm tracking-wide text-neutral-400 sm:text-base">
+      <p class="mt-4 mono text-sm tracking-wide" style="color:var(--accent)">
         THE CYBERSECURITY TOOLKIT FOR SECURITY RESEARCHERS
       </p>
-      <p class="mt-3 max-w-lg text-[15px] leading-relaxed text-neutral-400">
+      <p class="mt-3 max-w-lg text-[15px] leading-relaxed" style="color:var(--text-dim)">
         Reconnaissance. Intelligence. Analysis. Research. A unified workspace for ethical hackers, penetration testers, SOC analysts and CTF players.
       </p>
       <div class="mt-8 flex flex-wrap gap-3">
-        <button onclick="enterArsenal()" class="btn-primary">ENTER ARSENAL →</button>
+        <button onclick="enterArsenal()" class="btn-primary">
+          ENTER ARSENAL
+          <span style="font-size:16px">→</span>
+        </button>
         <button onclick="enterArsenal('crypto')" class="btn-outline">EXPLORE TOOLS</button>
       </div>
-      <div class="mt-10 grid grid-cols-3 gap-4 border-t pt-6" style="border-color:#1b1b22">
-        <div><div class="font-mono text-xl font-semibold text-white">16+</div><div class="font-mono text-[10px] tracking-[0.18em] text-neutral-500">MODULES</div></div>
-        <div><div class="font-mono text-xl font-semibold text-white">40+</div><div class="font-mono text-[10px] tracking-[0.18em] text-neutral-500">UTILITIES</div></div>
-        <div><div class="font-mono text-xl font-semibold text-white">100%</div><div class="font-mono text-[10px] tracking-[0.18em] text-neutral-500">LAB SAFE</div></div>
+      <div class="mt-10 grid grid-cols-3 gap-4 border-t pt-6" style="border-color:var(--border)">
+        <div>
+          <div class="mono text-2xl font-bold" style="color:var(--accent)">19+</div>
+          <div class="mono text-[10px] tracking-[.18em]" style="color:var(--text-dim-2)">MODULES</div>
+        </div>
+        <div>
+          <div class="mono text-2xl font-bold" style="color:var(--accent)">40+</div>
+          <div class="mono text-[10px] tracking-[.18em]" style="color:var(--text-dim-2)">UTILITIES</div>
+        </div>
+        <div>
+          <div class="mono text-2xl font-bold" style="color:var(--accent)">100%</div>
+          <div class="mono text-[10px] tracking-[.18em]" style="color:var(--text-dim-2)">LAB SAFE</div>
+        </div>
       </div>
     </div>
 
-    <div class="fade-up rounded-xl border p-4" style="border-color:#1b1b22;background:#08080a;box-shadow:0 0 60px -20px rgba(225,29,46,.5)">
-      <div class="mb-3 flex items-center gap-2 border-b pb-3" style="border-color:#1b1b22">
-        <span class="h-2.5 w-2.5 rounded-full" style="background:rgba(225,29,46,.7)"></span>
-        <span class="h-2.5 w-2.5 rounded-full bg-neutral-700"></span>
-        <span class="h-2.5 w-2.5 rounded-full bg-neutral-700"></span>
-        <span class="ml-2 font-mono text-[11px] text-neutral-500">ha@arsenal:~$</span>
+    <div class="anim-fade-up term-shell" style="animation-delay:.15s">
+      <div class="term-bar">
+        <span class="term-dot" style="background:#ff3c5a"></span>
+        <span class="term-dot" style="background:#ffb400"></span>
+        <span class="term-dot" style="background:var(--accent);box-shadow:0 0 8px var(--accent)"></span>
+        <span class="ml-2 mono text-[11px]" style="color:var(--text-dim)">ha@arsenal:~$</span>
       </div>
-      <div id="bootlog" class="min-h-[240px] font-mono text-[12.5px] leading-relaxed"></div>
+      <div id="bootlog" class="term-body min-h-[260px]"></div>
     </div>
   </section>
 
-  <section class="mx-auto max-w-6xl px-6 pb-24">
-    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-      <div class="card"><div style="color:#ff3b4e" class="text-lg">▮</div><h3 class="mt-3 text-sm font-semibold text-white">Recon Arsenal</h3><p class="mt-1.5 text-[13px] leading-relaxed text-neutral-400">DNS, WHOIS, TLS, headers, technology fingerprinting.</p></div>
-      <div class="card"><div style="color:#ff3b4e" class="text-lg">⚡</div><h3 class="mt-3 text-sm font-semibold text-white">Live Utilities</h3><p class="mt-1.5 text-[13px] leading-relaxed text-neutral-400">Hashing, encoding, JWT, subnet &amp; header analysis.</p></div>
-      <div class="card"><div style="color:#ff3b4e" class="text-lg">◈</div><h3 class="mt-3 text-sm font-semibold text-white">CVE Intelligence</h3><p class="mt-1.5 text-[13px] leading-relaxed text-neutral-400">Search real NVD vulnerability data with CVSS context.</p></div>
-      <div class="card"><div style="color:#ff3b4e" class="text-lg">⌂</div><h3 class="mt-3 text-sm font-semibold text-white">CTF Arena</h3><p class="mt-1.5 text-[13px] leading-relaxed text-neutral-400">Educational challenges with flags, points and badges.</p></div>
+  <section class="mx-auto max-w-6xl px-5 pb-20 sm:px-8">
+    <div class="stagger grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div class="card card-hover">
+        <div style="color:var(--accent);font-size:22px">◎</div>
+        <h3 class="mt-3 text-sm font-bold text-white">Recon Arsenal</h3>
+        <p class="mt-1.5 text-[13px] leading-relaxed" style="color:var(--text-dim)">DNS, WHOIS, TLS, headers, technology fingerprinting.</p>
+      </div>
+      <div class="card card-hover">
+        <div style="color:var(--accent);font-size:22px">⚡</div>
+        <h3 class="mt-3 text-sm font-bold text-white">Live Utilities</h3>
+        <p class="mt-1.5 text-[13px] leading-relaxed" style="color:var(--text-dim)">Hashing, encoding, JWT, subnet &amp; header analysis.</p>
+      </div>
+      <div class="card card-hover">
+        <div style="color:var(--accent);font-size:22px">◈</div>
+        <h3 class="mt-3 text-sm font-bold text-white">CVE Intelligence</h3>
+        <p class="mt-1.5 text-[13px] leading-relaxed" style="color:var(--text-dim)">Search real NVD vulnerability data with CVSS context.</p>
+      </div>
+      <div class="card card-hover">
+        <div style="color:var(--accent);font-size:22px">⌂</div>
+        <h3 class="mt-3 text-sm font-bold text-white">CTF Arena</h3>
+        <p class="mt-1.5 text-[13px] leading-relaxed" style="color:var(--text-dim)">Educational challenges with flags, points and badges.</p>
+      </div>
     </div>
   </section>
 
-  <footer class="border-t px-6 py-8" style="border-color:#1b1b22">
+  <footer class="border-t px-5 py-8 sm:px-8" style="border-color:var(--border)">
     <div class="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 sm:flex-row">
-      <span class="font-mono text-[11px] text-neutral-600">HACKING-ARSENAL · RECON. ANALYZE. SECURE.</span>
-      <span class="font-mono text-[11px] text-neutral-600">AUTHORIZED SECURITY TESTING &amp; RESEARCH ONLY</span>
+      <span class="mono text-[11px]" style="color:var(--text-dim-2)">HACKING-ARSENAL · RECON. ANALYZE. SECURE.</span>
+      <span class="mono text-[11px]" style="color:var(--text-dim-2)">AUTHORIZED TESTING &amp; RESEARCH ONLY</span>
     </div>
   </footer>
 </div>
 
-<!-- ============= APP SHELL ============= -->
-<div id="app" class="hidden min-h-screen" style="background:#050507">
+<!-- ============================ APP ============================ -->
+<div id="app" class="hidden content-layer min-h-screen">
   <div class="flex min-h-screen">
-    <!-- Sidebar -->
-    <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 hidden w-[268px] flex-col border-r lg:static lg:flex" style="border-color:#1b1b22;background:#08080b">
-      <div class="border-b px-5 py-4" style="border-color:#1b1b22">
+    <!-- SIDEBAR -->
+    <aside id="sidebar" class="desktop hidden w-[270px] shrink-0 flex-col lg:flex">
+      <div class="border-b px-5 py-4" style="border-color:var(--border)">
         <div class="flex items-center gap-3">
-          <div class="relative grid h-9 w-9 place-items-center rounded-lg border" style="border-color:rgba(225,29,46,.5);background:rgba(225,29,46,.1)">
-            <span class="font-mono text-[13px] font-bold" style="color:#ff3b4e">HA</span>
-            <span class="absolute -right-0.5 -top-0.5 h-1.5 w-1.5 rounded-full bg-emerald-400"></span>
+          <div class="relative grid h-10 w-10 place-items-center rounded-lg border" style="border-color:var(--accent-dim);background:rgba(0,255,65,.08)">
+            <span class="mono text-[13px] font-bold" style="color:var(--accent)">HA</span>
+            <span class="absolute -right-0.5 -top-0.5 h-1.5 w-1.5 rounded-full pulse-dot" style="background:var(--accent)"></span>
           </div>
           <div class="leading-tight">
-            <div class="font-mono text-[13px] font-semibold tracking-wide text-white">HACKING-ARSENAL</div>
-            <div class="font-mono text-[10px] tracking-[0.18em] text-neutral-500">RECON. ANALYZE. SECURE.</div>
+            <div class="mono text-[13px] font-bold tracking-wide text-white">HACKING-ARSENAL</div>
+            <div class="mono text-[9px] tracking-[.18em]" style="color:var(--text-dim-2)">RECON. ANALYZE. SECURE.</div>
           </div>
         </div>
       </div>
       <nav id="nav" class="flex flex-1 flex-col gap-1 overflow-y-auto px-3 py-4"></nav>
     </aside>
 
-    <!-- Main -->
+    <!-- MOBILE OVERLAY -->
+    <div id="overlay" class="hidden fixed inset-0 z-50 lg:hidden" style="background:rgba(0,0,0,.75);backdrop-filter:blur(3px)" onclick="closeSidebar()"></div>
+    <aside id="sidebar-mobile" class="mobile hidden flex-col lg:hidden"></aside>
+
+    <!-- MAIN -->
     <div class="flex min-w-0 flex-1 flex-col">
-      <header class="sticky top-0 z-30 flex h-14 items-center gap-3 border-b px-4 backdrop-blur" style="border-color:#1b1b22;background:rgba(8,8,11,.9)">
-        <button onclick="toggleSidebar()" class="text-neutral-300 lg:hidden">☰</button>
-        <button onclick="openPalette()" class="flex flex-1 items-center gap-2 rounded-lg border px-3 py-1.5 text-left text-[13px] text-neutral-500 sm:max-w-md" style="border-color:#26262f;background:#0a0a0d">
-          <span>⌕</span><span>Search tools, CVEs, techniques…</span>
-          <kbd class="ml-auto hidden rounded border px-1.5 py-0.5 font-mono text-[10px] sm:block" style="border-color:#26262f">CTRL K</kbd>
+      <header class="sticky top-0 z-30 flex h-14 items-center gap-3 border-b px-4 backdrop-blur" style="border-color:var(--border);background:rgba(0,0,0,.85)">
+        <button onclick="openSidebar()" class="btn-ghost !px-2 lg:hidden" style="font-size:20px">☰</button>
+        <button onclick="openPalette()" class="flex flex-1 items-center gap-2 rounded-lg border px-3 py-2 text-left text-[13px] transition-colors sm:max-w-md" style="border-color:var(--border);background:var(--card);color:var(--text-dim)">
+          <span>⌕</span>
+          <span class="truncate">Search tools, CVEs, techniques…</span>
+          <kbd class="ml-auto hidden rounded border px-1.5 py-0.5 mono text-[10px] sm:block" style="border-color:var(--border);color:var(--text-dim)">CTRL K</kbd>
         </button>
-        <div class="ml-auto hidden items-center gap-2 font-mono text-[11px] text-neutral-500 sm:flex">
-          <span class="h-1.5 w-1.5 rounded-full bg-emerald-400"></span> SYSTEM READY
+        <div class="ml-auto hidden items-center gap-2 mono text-[11px] sm:flex" style="color:var(--text-dim)">
+          <span class="h-1.5 w-1.5 rounded-full pulse-dot" style="background:var(--accent);box-shadow:0 0 6px var(--accent)"></span>
+          SYSTEM READY
         </div>
         <button onclick="backHome()" class="btn-ghost !px-2 !py-1 text-[11px]">HOME</button>
       </header>
@@ -169,82 +445,77 @@
   </div>
 </div>
 
-<!-- ============= COMMAND PALETTE ============= -->
-<div id="palette" class="hidden fixed inset-0 z-[100] flex items-start justify-center p-4 pt-[12vh]">
-  <div class="absolute inset-0" style="background:rgba(0,0,0,.75);backdrop-filter:blur(4px)" onclick="closePalette()"></div>
-  <div class="relative w-full max-w-xl overflow-hidden rounded-xl border" style="border-color:#26262f;background:#0a0a0d">
-    <div class="flex items-center gap-3 border-b px-4 py-3" style="border-color:#1b1b22">
-      <span class="text-neutral-500">⌕</span>
-      <input id="paletteInput" class="flex-1 bg-transparent text-sm text-neutral-100 outline-none placeholder:text-neutral-600" placeholder="Search modules, tools, intel…" />
-      <kbd class="rounded border px-1.5 py-0.5 font-mono text-[10px] text-neutral-500" style="border-color:#26262f">ESC</kbd>
+<!-- ============================ PALETTE ============================ -->
+<div id="palette" class="hidden fixed inset-0 z-[100] flex items-start justify-center p-4 pt-[10vh]">
+  <div class="absolute inset-0 anim-fade-in" style="background:rgba(0,0,0,.85);backdrop-filter:blur(5px)" onclick="closePalette()"></div>
+  <div class="box relative w-full max-w-xl overflow-hidden rounded-xl anim-bounce-in">
+    <div class="flex items-center gap-3 border-b px-4 py-3" style="border-color:var(--border)">
+      <span style="color:var(--accent)">⌕</span>
+      <input id="paletteInput" autocomplete="off" class="flex-1 bg-transparent text-sm outline-none" style="color:var(--text)" placeholder="Search modules, tools, intel…" oninput="renderPalette(this.value)" />
+      <kbd class="rounded border px-1.5 py-0.5 mono text-[10px]" style="border-color:var(--border);color:var(--text-dim)">ESC</kbd>
     </div>
     <div id="paletteResults" class="max-h-[52vh] overflow-y-auto p-2"></div>
   </div>
 </div>
 
+<!-- ============================ SCRIPT ============================ -->
 <script>
 /* =========================================================
-   STATE + NAV
+   MATRIX RAIN
    ========================================================= */
-const PAGES = {
-  dashboard:{ label:"Dashboard", icon:"▦", render:renderDashboard },
-  recon:{ label:"Recon Arsenal", icon:"◎", render:renderRecon },
-  osint:{ label:"OSINT", icon:"⌖", render:() => renderStub("OSINT Research Workspace","Open-source intelligence research for public information only","Modules: username research, domain research, public profile research, email/domain relationships, image metadata, document metadata, search operators and public breach awareness.") },
-  "web-security":{ label:"Web Security", icon:"◇", render:renderWebSecurity },
-  network:{ label:"Network Arsenal", icon:"▤", render:renderNetwork },
-  crypto:{ label:"Crypto & Hash", icon:"⚿", render:renderCrypto },
-  cve:{ label:"CVE Intelligence", icon:"⚠", render:renderCVE },
-  mitre:{ label:"MITRE ATT&CK", icon:"✛", render:renderMitre },
-  terminal:{ label:"Cyber Terminal", icon:"▮", render:renderTerminal },
-  ctf:{ label:"CTF Arena", icon:"⚑", render:renderCTF },
-  knowledge:{ label:"Knowledge Base", icon:"▤", render:() => renderStub("Knowledge Base","Searchable cybersecurity encyclopedia","Categories: Linux, Windows, Networking, Web Security, OWASP, Active Directory, Cloud Security, SOC, Digital Forensics, OSINT, Pentesting, Cryptography and Threat Intelligence.") },
-  cheatsheets:{ label:"Cheat Sheets", icon:"≡", render:renderCheatsheets },
-  reports:{ label:"Security Reports", icon:"✎", render:renderReports },
-  ai:{ label:"AI Security", icon:"✱", render:() => renderStub("ARSENAL AI","Security education assistant for analysis, detection and remediation","Ask ARSENAL AI to explain a CVE, an HTTP request, Nmap output, a Wireshark filter, a security header, a MITRE technique, or to suggest remediation. Prioritizes education, detection, analysis and remediation. Not an autonomous hacking agent.") },
-  profile:{ label:"Profile", icon:"☺", render:renderProfile },
-  settings:{ label:"Settings", icon:"⚙", render:renderSettings },
-};
-
-const SEARCH_INDEX = Object.entries(PAGES).map(([k,v]) => ({ id:k, label:v.label }));
-SEARCH_INDEX.push(
-  {id:"crypto", label:"SHA-256 Hasher"},
-  {id:"crypto", label:"Base64 Encoder"},
-  {id:"web-security", label:"JWT Decoder"},
-  {id:"web-security", label:"Security Headers Checker"},
-  {id:"network", label:"Subnet Calculator"},
-  {id:"cve", label:"NVD CVE Search"},
-  {id:"mitre", label:"ATT&CK Techniques"},
-  {id:"cheatsheets", label:"Nmap Cheat Sheet"},
-  {id:"terminal", label:"Cyber Terminal"},
-);
-
-let CURRENT = "dashboard";
+(function(){
+  const cv=document.getElementById("matrix");
+  const ctx=cv.getContext("2d");
+  let cols, drops, fontSize=15;
+  function resize(){
+    cv.width=window.innerWidth;
+    cv.height=window.innerHeight;
+    cols=Math.floor(cv.width/fontSize);
+    drops=Array(cols).fill(1);
+  }
+  resize();
+  window.addEventListener("resize",resize);
+  const chars="アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲ0123456789ABCDEF<>/\\{}[]#$%&*+=?";
+  function draw(){
+    ctx.fillStyle="rgba(0,0,0,0.06)";
+    ctx.fillRect(0,0,cv.width,cv.height);
+    ctx.fillStyle="#00ff41";
+    ctx.font=fontSize+"px monospace";
+    for(let i=0;i<drops.length;i++){
+      const ch=chars[Math.floor(Math.random()*chars.length)];
+      const x=i*fontSize;
+      const y=drops[i]*fontSize;
+      ctx.fillText(ch,x,y);
+      if(Math.random()>0.975) ctx.fillStyle="rgba(200,255,220,.9)";
+      else ctx.fillStyle="#00ff41";
+      if(y>cv.height && Math.random()>0.975) drops[i]=0;
+      drops[i]++;
+    }
+  }
+  let last=0;
+  function loop(t){
+    if(t-last>50){draw();last=t}
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+})();
 
 /* =========================================================
-   HELPERS
+   ENCODERS / HASHERS
    ========================================================= */
-const $ = (s,r=document) => r.querySelector(s);
-const esc = (s) => String(s).replace(/[&<>"']/g, m => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
-const el = (html) => { const d=document.createElement("div"); d.innerHTML=html.trim(); return d.firstElementChild; };
-function pageHeader(title, subtitle, badge){
-  return `
-    <div class="flex flex-wrap items-end justify-between gap-4 border-b pb-5" style="border-color:#1b1b22">
-      <div>
-        <h1 class="text-2xl font-semibold tracking-tight text-white">${esc(title)}</h1>
-        ${subtitle?`<p class="mt-1 text-sm text-neutral-400">${esc(subtitle)}</p>`:""}
-      </div>
-      ${badge?`<span class="badge badge-ok">${esc(badge)}</span>`:""}
-    </div>`;
-}
+const enc=new TextEncoder(), dec=new TextDecoder();
 
-/* ---------- encoding/hashing ---------- */
-const enc = new TextEncoder(), dec = new TextDecoder();
-function b64encode(s){let b="";enc.encode(s).forEach(x=>b+=String.fromCharCode(x));return btoa(b);}
-function b64decode(s){return dec.decode(Uint8Array.from(atob(s.trim()),c=>c.charCodeAt(0)));}
-function hexEncode(s){return Array.from(enc.encode(s)).map(b=>b.toString(16).padStart(2,"0")).join("");}
-function hexDecode(s){const c=s.replace(/\s+/g,"");const u=new Uint8Array(c.length/2);for(let i=0;i<u.length;i++)u[i]=parseInt(c.substr(i*2,2),16);return dec.decode(u);}
-function rot13(s){return s.replace(/[a-zA-Z]/g,ch=>{const b=ch<="Z"?65:97;return String.fromCharCode(((ch.charCodeAt(0)-b+13)%26)+b);});}
-function caesar(s,n){n=((n%26)+26)%26;return s.replace(/[a-zA-Z]/g,ch=>{const b=ch<="Z"?65:97;return String.fromCharCode(((ch.charCodeAt(0)-b+n)%26)+b);});}
+const b64encode=(s)=>{let b="";enc.encode(s).forEach(x=>b+=String.fromCharCode(x));return btoa(b)};
+const b64decode=(s)=>{try{return dec.decode(Uint8Array.from(atob(s.trim().replace(/-/g,"+").replace(/_/g,"/")),c=>c.charCodeAt(0)))}catch(e){throw new Error("Invalid Base64")}};
+const hexEncode=(s)=>Array.from(enc.encode(s)).map(b=>b.toString(16).padStart(2,"0")).join("");
+const hexDecode=(s)=>{const c=s.replace(/[^0-9a-fA-F]/g,"");if(c.length%2)throw new Error("Odd-length hex");const u=new Uint8Array(c.length/2);for(let i=0;i<u.length;i++)u[i]=parseInt(c.substr(i*2,2),16);return dec.decode(u)};
+const rot13=(s)=>s.replace(/[a-zA-Z]/g,ch=>{const b=ch<="Z"?65:97;return String.fromCharCode(((ch.charCodeAt(0)-b+13)%26)+b)});
+const caesar=(s,n)=>{n=((n%26)+26)%26;return s.replace(/[a-zA-Z]/g,ch=>{const b=ch<="Z"?65:97;return String.fromCharCode(((ch.charCodeAt(0)-b+n)%26)+b)})};
+const urlEncode=(s)=>encodeURIComponent(s);
+const urlDecode=(s)=>{try{return decodeURIComponent(s)}catch(e){throw new Error("Invalid URL encoding")}};
+const htmlEncode=(s)=>s.replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+const htmlDecode=(s)=>{const d=document.createElement("textarea");d.innerHTML=s;return d.value};
+
 async function digest(algo,text){
   const buf=await crypto.subtle.digest(algo,enc.encode(text));
   return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,"0")).join("");
@@ -254,18 +525,116 @@ async function hmacHex(algo,key,msg){
   const sig=await crypto.subtle.sign("HMAC",k,enc.encode(msg));
   return Array.from(new Uint8Array(sig)).map(b=>b.toString(16).padStart(2,"0")).join("");
 }
+
+/* ---------- MD5 (pure JS, well-tested) ---------- */
+const md5=(function(){
+  function safeAdd(x,y){var lsw=(x&0xffff)+(y&0xffff);var msw=(x>>16)+(y>>16)+(lsw>>16);return(msw<<16)|(lsw&0xffff)}
+  function bitRotateLeft(num,cnt){return(num<<cnt)|(num>>>(32-cnt))}
+  function md5cmn(q,a,b,x,s,t){return safeAdd(bitRotateLeft(safeAdd(safeAdd(a,q),safeAdd(x,t)),s),b)}
+  function md5ff(a,b,c,d,x,s,t){return md5cmn((b&c)|(~b&d),a,b,x,s,t)}
+  function md5gg(a,b,c,d,x,s,t){return md5cmn((b&d)|(c&~d),a,b,x,s,t)}
+  function md5hh(a,b,c,d,x,s,t){return md5cmn(b^c^d,a,b,x,s,t)}
+  function md5ii(a,b,c,d,x,s,t){return md5cmn(c^(b|~d),a,b,x,s,t)}
+  function binlMD5(x,len){
+    x[len>>5]|=0x80<<(len%32);
+    x[(((len+64)>>>9)<<4)+14]=len;
+    var i,olda,oldb,oldc,oldd,a=1732584193,b=-271733879,c=-1732584194,d=271733878;
+    for(i=0;i<x.length;i+=16){
+      olda=a;oldb=b;oldc=c;oldd=d;
+      a=md5ff(a,b,c,d,x[i],7,-680876936);d=md5ff(d,a,b,c,x[i+1],12,-389564586);c=md5ff(c,d,a,b,x[i+2],17,606105819);b=md5ff(b,c,d,a,x[i+3],22,-1044525330);
+      a=md5ff(a,b,c,d,x[i+4],7,-176418897);d=md5ff(d,a,b,c,x[i+5],12,1200080426);c=md5ff(c,d,a,b,x[i+6],17,-1473231341);b=md5ff(b,c,d,a,x[i+7],22,-45705983);
+      a=md5ff(a,b,c,d,x[i+8],7,1770035416);d=md5ff(d,a,b,c,x[i+9],12,-1958414417);c=md5ff(c,d,a,b,x[i+10],17,-42063);b=md5ff(b,c,d,a,x[i+11],22,-1990404162);
+      a=md5ff(a,b,c,d,x[i+12],7,1804603682);d=md5ff(d,a,b,c,x[i+13],12,-40341101);c=md5ff(c,d,a,b,x[i+14],17,-1502002290);b=md5ff(b,c,d,a,x[i+15],22,1236535329);
+      a=md5gg(a,b,c,d,x[i+1],5,-165796510);d=md5gg(d,a,b,c,x[i+6],9,-1069501632);c=md5gg(c,d,a,b,x[i+11],14,643717713);b=md5gg(b,c,d,a,x[i],20,-373897302);
+      a=md5gg(a,b,c,d,x[i+5],5,-701558691);d=md5gg(d,a,b,c,x[i+10],9,38016083);c=md5gg(c,d,a,b,x[i+15],14,-660478335);b=md5gg(b,c,d,a,x[i+4],20,-405537848);
+      a=md5gg(a,b,c,d,x[i+9],5,568446438);d=md5gg(d,a,b,c,x[i+14],9,-1019803690);c=md5gg(c,d,a,b,x[i+3],14,-187363961);b=md5gg(b,c,d,a,x[i+8],20,1163531501);
+      a=md5gg(a,b,c,d,x[i+13],5,-1444681467);d=md5gg(d,a,b,c,x[i+2],9,-51403784);c=md5gg(c,d,a,b,x[i+7],14,1735328473);b=md5gg(b,c,d,a,x[i+12],20,-1926607734);
+      a=md5hh(a,b,c,d,x[i+5],4,-378558);d=md5hh(d,a,b,c,x[i+8],11,-2022574463);c=md5hh(c,d,a,b,x[i+11],16,1839030562);b=md5hh(b,c,d,a,x[i+14],23,-35309556);
+      a=md5hh(a,b,c,d,x[i+1],4,-1530992060);d=md5hh(d,a,b,c,x[i+4],11,1272893353);c=md5hh(c,d,a,b,x[i+7],16,-155497632);b=md5hh(b,c,d,a,x[i+10],23,-1094730640);
+      a=md5hh(a,b,c,d,x[i+13],4,681279174);d=md5hh(d,a,b,c,x[i],11,-358537222);c=md5hh(c,d,a,b,x[i+3],16,-722521979);b=md5hh(b,c,d,a,x[i+6],23,76029189);
+      a=md5hh(a,b,c,d,x[i+9],4,-640364487);d=md5hh(d,a,b,c,x[i+12],11,-421815835);c=md5hh(c,d,a,b,x[i+15],16,530742520);b=md5hh(b,c,d,a,x[i+2],23,-995338651);
+      a=md5ii(a,b,c,d,x[i],6,-198630844);d=md5ii(d,a,b,c,x[i+7],10,1126891415);c=md5ii(c,d,a,b,x[i+14],15,-1416354905);b=md5ii(b,c,d,a,x[i+5],21,-57434055);
+      a=md5ii(a,b,c,d,x[i+12],6,1700485571);d=md5ii(d,a,b,c,x[i+3],10,-1894986606);c=md5ii(c,d,a,b,x[i+10],15,-1051523);b=md5ii(b,c,d,a,x[i+1],21,-2054922799);
+      a=md5ii(a,b,c,d,x[i+8],6,1873313359);d=md5ii(d,a,b,c,x[i+15],10,-30611744);c=md5ii(c,d,a,b,x[i+6],15,-1560198380);b=md5ii(b,c,d,a,x[i+13],21,1309151649);
+      a=md5ii(a,b,c,d,x[i+4],6,-145523070);d=md5ii(d,a,b,c,x[i+11],10,-1120210379);c=md5ii(c,d,a,b,x[i+2],15,718787259);b=md5ii(b,c,d,a,x[i+9],21,-343485551);
+      a=safeAdd(a,olda);b=safeAdd(b,oldb);c=safeAdd(c,oldc);d=safeAdd(d,oldd);
+    }
+    return[a,b,c,d];
+  }
+  function binl2rstr(input){var i,output="",length32=input.length*32;for(i=0;i<length32;i+=8){output+=String.fromCharCode((input[i>>5]>>>(i%32))&0xff)}return output}
+  function rstr2binl(input){var i,output=[];output[(input.length>>2)-1]=undefined;for(i=0;i<output.length;i+=1){output[i]=0}var length8=input.length*8;for(i=0;i<length8;i+=8){output[i>>5]|=(input.charCodeAt(i/8)&0xff)<<(i%32)}return output}
+  function rstr2utf8(input){return unescape(encodeURIComponent(input))}
+  function rstrMD5(s){return binl2rstr(binlMD5(rstr2binl(s),s.length*8))}
+  function rstr2hex(input){var hexTab="0123456789abcdef",output="",x,i;for(i=0;i<input.length;i+=1){x=input.charCodeAt(i);output+=hexTab.charAt((x>>>4)&0x0f)+hexTab.charAt(x&0x0f)}return output}
+  return function(string){return rstr2hex(rstrMD5(rstr2utf8(string)))};
+})();
+
+/* =========================================================
+   HASH IDENTIFIER + DICTIONARY LOOKUP
+   ========================================================= */
+const HASH_PATTERNS=[
+  {name:"MD5",len:32,re:/^[a-f0-9]{32}$/i},
+  {name:"SHA-1",len:40,re:/^[a-f0-9]{40}$/i},
+  {name:"SHA-224",len:56,re:/^[a-f0-9]{56}$/i},
+  {name:"SHA-256",len:64,re:/^[a-f0-9]{64}$/i},
+  {name:"SHA-384",len:96,re:/^[a-f0-9]{96}$/i},
+  {name:"SHA-512",len:128,re:/^[a-f0-9]{128}$/i},
+  {name:"bcrypt",len:60,re:/^\$2[aby]?\$\d{2}\$[./A-Za-z0-9]{53}$/},
+  {name:"MySQL5",len:41,re:/^\*[A-F0-9]{40}$/i},
+  {name:"CRC32",len:8,re:/^[a-f0-9]{8}$/i},
+];
+
+const COMMON_HASHES={
+  "5f4dcc3b5aa765d61d8327deb882cf99":"password",
+  "e10adc3949ba59abbe56e057f20f883e":"123456",
+  "25d55ad283aa400af464c76d713c07ad":"12345678",
+  "21232f297a57a5a743894a0e4a801fc3":"admin",
+  "e99a18c428cb38d5f260853678922e03":"abc123",
+  "5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8":"password",
+  "7c6a180b36896a0a8c02787eeafb0e4c":"password1",
+  "d0763edaa9d9bd2a9516280e9044d885":"monkey",
+  "d8578edf8458ce06fbc5bb76a58c5ca4":"qwerty",
+  "482c811da5d5b4bc6d497ffa98491e38":"password123",
+  "098f6bcd4621d373cade4e832627b4f6":"test",
+  "c33367701511b4f6020ec61ded352059":"abcd1234",
+  "d41d8cd98f00b204e9800998ecf8427e":"(empty string)",
+  "900150983cd24fb0d6963f7d28e17f72":"abc",
+  "aaf4c61ddcc5e8a2dabede0f3b482cd9aea9434d":"hello",
+};
+
+function identifyHash(h){
+  const t=h.trim();
+  if(!t) return [];
+  const matches=[];
+  for(const p of HASH_PATTERNS) if(p.re.test(t)) matches.push(p);
+  if(matches.length===0){
+    if(/^[a-f0-9]+$/i.test(t)) matches.push({name:`Unknown hex (length ${t.length})`});
+    else if(/^[A-Za-z0-9+/=]+$/.test(t)) matches.push({name:`Possible Base64 (length ${t.length})`});
+  }
+  return matches;
+}
+
+function lookupHash(h){
+  const low=h.trim().toLowerCase();
+  if(COMMON_HASHES[low]) return COMMON_HASHES[low];
+  return null;
+}
+
+/* =========================================================
+   JWT + SUBNET
+   ========================================================= */
 function decodeJwt(t){
-  const p=t.trim().split("."); if(p.length<2) throw new Error("Not a JWT");
-  const d=(s)=>JSON.parse(b64decode(s.replace(/-/g,"+").replace(/_/g,"/")));
+  const p=t.trim().split(".");
+  if(p.length<2) throw new Error("Not a valid JWT");
+  const d=(s)=>JSON.parse(b64decode(s));
   return {header:d(p[0]),payload:d(p[1]),signature:p[2]||""};
 }
-/* ---------- subnet ---------- */
 const ipToInt=(ip)=>ip.split(".").reduce((a,o)=>((a<<8)+(+o&255))>>>0,0);
 const intToIp=(n)=>[24,16,8,0].map(s=>(n>>>s)&255).join(".");
 function calcSubnet(input){
   const [ip,p="24"]=input.trim().split("/");
   const parts=ip.split(".");
-  if(parts.length!==4||parts.some(x=>isNaN(+x)||+x<0||+x>255))throw new Error("Invalid IPv4 address");
+  if(parts.length!==4||parts.some(x=>isNaN(+x)||+x<0||+x>255)) throw new Error("Invalid IPv4 address");
   const prefix=Math.min(32,Math.max(0,parseInt(p,10)||24));
   const mask=prefix===0?0:(0xffffffff<<(32-prefix))>>>0;
   const ipInt=ipToInt(ip);
@@ -283,121 +652,259 @@ function calcSubnet(input){
 }
 
 /* =========================================================
+   UTILS
+   ========================================================= */
+const esc=(s)=>String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
+function copyText(t,btn){
+  navigator.clipboard.writeText(t).then(()=>{
+    if(btn){const old=btn.textContent;btn.textContent="COPIED ✓";setTimeout(()=>btn.textContent=old,1200)}
+  }).catch(()=>{});
+}
+
+/* =========================================================
+   PAGES
+   ========================================================= */
+const PAGES={
+  dashboard:{label:"Dashboard",icon:"▦",render:renderDashboard},
+  recon:{label:"Recon Arsenal",icon:"◎",render:renderRecon},
+  osint:{label:"OSINT",icon:"⌖",render:()=>renderStub("OSINT Research Workspace","Open-source intelligence research — public information only","Modules: username research, domain research, public profile research, email/domain relationships, image metadata, document metadata, search operators and public breach awareness.")},
+  "web-security":{label:"Web Security",icon:"◇",render:renderWebSecurity},
+  network:{label:"Network Arsenal",icon:"▤",render:renderNetwork},
+  crypto:{label:"Crypto & Hash",icon:"⚿",render:renderCrypto},
+  cve:{label:"CVE Intelligence",icon:"⚠",render:renderCVE},
+  mitre:{label:"MITRE ATT&CK",icon:"✛",render:renderMitre},
+  terminal:{label:"Cyber Terminal",icon:"▮",render:renderTerminal},
+  ctf:{label:"CTF Arena",icon:"⚑",render:renderCTF},
+  knowledge:{label:"Knowledge Base",icon:"▤",render:()=>renderStub("Knowledge Base","Searchable cybersecurity encyclopedia","Categories: Linux, Windows, Networking, Web Security, OWASP, Active Directory, Cloud Security, SOC, Digital Forensics, OSINT, Pentesting, Cryptography and Threat Intelligence.")},
+  cheatsheets:{label:"Cheat Sheets",icon:"≡",render:renderCheatsheets},
+  reports:{label:"Security Reports",icon:"✎",render:renderReports},
+  ai:{label:"AI Security",icon:"✱",render:()=>renderStub("ARSENAL AI","Security education assistant for analysis, detection and remediation","Ask ARSENAL AI to explain a CVE, HTTP request, Nmap output, Wireshark filter, security header, MITRE technique, or to suggest remediation. Prioritizes education, detection, analysis and remediation. Not an autonomous hacking agent.")},
+  profile:{label:"Profile",icon:"☺",render:renderProfile},
+  settings:{label:"Settings",icon:"⚙",render:renderSettings},
+};
+
+const SEARCH_INDEX=Object.entries(PAGES).map(([k,v])=>({id:k,label:v.label,icon:v.icon}));
+SEARCH_INDEX.push(
+  {id:"crypto",label:"SHA-256 Hasher",icon:"⚿"},
+  {id:"crypto",label:"MD5 Generator",icon:"⚿"},
+  {id:"crypto",label:"Hash Identifier",icon:"⚿"},
+  {id:"crypto",label:"HMAC Generator",icon:"⚿"},
+  {id:"crypto",label:"Base64 Encoder",icon:"⚿"},
+  {id:"web-security",label:"JWT Decoder",icon:"◇"},
+  {id:"web-security",label:"Security Headers Checker",icon:"◇"},
+  {id:"web-security",label:"URL Encoder / Decoder",icon:"◇"},
+  {id:"web-security",label:"HTML Entity Encoder",icon:"◇"},
+  {id:"network",label:"Subnet Calculator",icon:"▤"},
+  {id:"cve",label:"NVD CVE Search",icon:"⚠"},
+  {id:"mitre",label:"ATT&CK Techniques",icon:"✛"},
+  {id:"cheatsheets",label:"Nmap Cheat Sheet",icon:"≡"},
+  {id:"terminal",label:"Cyber Terminal",icon:"▮"},
+);
+
+let CURRENT="dashboard";
+
+/* =========================================================
    ROUTER
    ========================================================= */
 function go(id){
   if(!PAGES[id]) id="dashboard";
   CURRENT=id;
-  document.querySelectorAll(".nav-item").forEach(n=>n.classList.toggle("active",n.dataset.id===id));
-  $("#content").innerHTML = PAGES[id].render();
-  window.scrollTo({top:0,behavior:"instant"});
-  location.hash = id;
-  if(window.innerWidth<1024) $("#sidebar").classList.add("hidden");
-  if(id==="terminal") initTerminal();
+  $$(".nav-item").forEach(n=>n.classList.toggle("active",n.dataset.id===id));
+  const content=$("#content");
+  content.style.opacity=0;
+  content.style.transform="translateY(8px)";
+  setTimeout(()=>{
+    content.innerHTML=PAGES[id].render();
+    content.style.transition="opacity .25s ease,transform .25s ease";
+    content.style.opacity=1;
+    content.style.transform="none";
+    window.scrollTo({top:0,behavior:"instant"});
+    if(id==="terminal") initTerminal();
+    if(id==="cve") setTimeout(()=>{const i=$("#cveQ");if(i)i.focus()},100);
+  },80);
+  if(location.hash.slice(1)!==id) history.replaceState(null,"","#"+id);
+  closeSidebar();
 }
-function toggleSidebar(){ $("#sidebar").classList.toggle("hidden"); }
-function backHome(){ $("#app").classList.add("hidden"); $("#landing").classList.remove("hidden"); location.hash=""; }
-function enterArsenal(id){ $("#landing").classList.add("hidden"); $("#app").classList.remove("hidden"); go(id||"dashboard"); }
+window.go=go;
+
+function enterArsenal(id){
+  $("#landing").classList.add("hidden");
+  $("#app").classList.remove("hidden");
+  buildNav();
+  go(id||"dashboard");
+}
+window.enterArsenal=enterArsenal;
+
+function backHome(){
+  $("#app").classList.add("hidden");
+  $("#landing").classList.remove("hidden");
+  history.replaceState(null,"","");
+}
+window.backHome=backHome;
 
 /* =========================================================
-   BOOT LOG (landing)
+   SIDEBAR
+   ========================================================= */
+function buildNav(){
+  const primary=Object.entries(PAGES).slice(0,15);
+  const secondary=[["profile",PAGES.profile],["settings",PAGES.settings]];
+  let html=`<div class="px-3 pb-2 mono text-[10px] tracking-[.22em]" style="color:var(--text-dim-2)">MODULES</div>`;
+  primary.forEach(([id,p])=>{html+=`<button class="nav-item" data-id="${id}" onclick="go('${id}')"><span class="nav-ico">${p.icon}</span><span class="truncate">${p.label}</span></button>`});
+  html+=`<div class="mt-4 px-3 pb-2 mono text-[10px] tracking-[.22em]" style="color:var(--text-dim-2)">ACCOUNT</div>`;
+  secondary.forEach(([id,p])=>{html+=`<button class="nav-item" data-id="${id}" onclick="go('${id}')"><span class="nav-ico">${p.icon}</span><span class="truncate">${p.label}</span></button>`});
+  html+=`<div class="mt-auto px-3 pt-6"><div class="rounded-lg border p-3" style="border-color:var(--border);background:#000"><div class="flex items-center gap-2 mono text-[10px] tracking-wider" style="color:var(--accent)"><span class="h-1.5 w-1.5 rounded-full pulse-dot" style="background:var(--accent);box-shadow:0 0 6px var(--accent)"></span> LAB MODE</div><p class="mt-1.5 text-[11px] leading-relaxed" style="color:var(--text-dim-2)">Authorized testing, CTFs &amp; research only.</p></div></div>`;
+  $("#nav").innerHTML=html;
+  $("#sidebar-mobile").innerHTML=$("#nav").outerHTML.replace('id="nav"','id="nav-mobile"');
+  // re-wire mobile
+  $$("#nav-mobile .nav-item").forEach(b=>b.setAttribute("onclick",`go('${b.dataset.id}')`));
+}
+
+function openSidebar(){
+  const s=$("#sidebar-mobile");
+  s.classList.remove("hidden");
+  s.classList.add("flex","open");
+  $("#overlay").classList.remove("hidden");
+  const active=s.querySelector(".nav-item.active");
+  if(!active && CURRENT){
+    const cur=s.querySelector(`[data-id="${CURRENT}"]`);
+    if(cur) cur.classList.add("active");
+  }
+}
+function closeSidebar(){
+  const s=$("#sidebar-mobile");
+  s.classList.remove("open");
+  setTimeout(()=>{s.classList.add("hidden");s.classList.remove("flex")},300);
+  $("#overlay").classList.add("hidden");
+}
+window.openSidebar=openSidebar;
+window.closeSidebar=closeSidebar;
+
+/* =========================================================
+   PALETTE
+   ========================================================= */
+function openPalette(){
+  $("#palette").classList.remove("hidden");
+  $("#paletteInput").value="";
+  renderPalette("");
+  setTimeout(()=>$("#paletteInput").focus(),60);
+}
+function closePalette(){ $("#palette").classList.add("hidden"); }
+window.openPalette=openPalette;
+window.closePalette=closePalette;
+
+function renderPalette(q){
+  const term=(q||"").trim().toLowerCase();
+  const items=term?SEARCH_INDEX.filter(i=>i.label.toLowerCase().includes(term)):SEARCH_INDEX;
+  const box=$("#paletteResults");
+  if(!items.length){box.innerHTML=`<div class="px-3 py-10 text-center mono text-xs" style="color:var(--text-dim-2)">NO RESULTS</div>`;return;}
+  box.innerHTML=items.slice(0,30).map(i=>`<button class="palette-item" onclick="closePalette();go('${i.id}')"><span class="pi-ico" style="width:18px;text-align:center;color:var(--text-dim)">${i.icon||"▸"}</span><span>${esc(i.label)}</span></button>`).join("");
+}
+window.renderPalette=renderPalette;
+
+document.addEventListener("keydown",(e)=>{
+  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="k"){
+    e.preventDefault();
+    $("#palette").classList.contains("hidden")?openPalette():closePalette();
+  }
+  if(e.key==="Escape"){ closePalette(); closeSidebar(); }
+});
+
+/* =========================================================
+   BOOT LOG
    ========================================================= */
 const BOOT=[
-  {t:"$ ./initialize",c:"#ff3b4e"},
+  {t:"$ ./initialize",c:"var(--accent)"},
   {t:"[+] Loading reconnaissance modules .............. OK"},
   {t:"[+] Loading OSINT engine ........................ OK"},
   {t:"[+] Loading security intelligence ............... OK"},
   {t:"[+] Loading vulnerability database .............. OK"},
   {t:"[+] Loading research environment ................ OK"},
   {t:""},
-  {t:"SYSTEM READY",c:"#34d399",b:true},
+  {t:"SYSTEM READY",c:"var(--accent)",b:true},
 ];
-(function bootSequence(){
+(function(){
   const box=$("#bootlog"); let i=0;
   const tick=()=>{
-    if(i>=BOOT.length){box.insertAdjacentHTML("beforeend",`<div class="cursor-blink text-neutral-400"></div>`);return;}
+    if(i>=BOOT.length){box.insertAdjacentHTML("beforeend",`<div class="cursor-blink" style="color:var(--text-dim)"></div>`);return;}
     const b=BOOT[i];
-    const div=document.createElement("div");
-    div.className=b.c||"text-neutral-300";
-    if(b.b) div.classList.add("mt-2","font-semibold");
-    div.textContent=b.t||"\u00A0";
-    box.appendChild(div); i++;
-    setTimeout(tick, i===1?350:260);
+    const d=document.createElement("div");
+    d.className="anim-fade-in";
+    if(b.c) d.style.color=b.c;
+    if(b.b) d.style.fontWeight="700";
+    d.textContent=b.t||"\u00A0";
+    box.appendChild(d); i++;
+    setTimeout(tick, i===1?320:220);
   };
   tick();
 })();
 
 /* =========================================================
-   SIDEBAR
+   PAGE HELPERS
    ========================================================= */
-function buildNav(){
-  const box=$("#nav");
-  const primary=Object.entries(PAGES).slice(0,15);
-  const secondary=[["profile",PAGES.profile],["settings",PAGES.settings]];
-  let html=`<div class="px-3 pb-2 font-mono text-[10px] tracking-[0.2em] text-neutral-600">MODULES</div>`;
-  primary.forEach(([id,p])=>{html+=`<button class="nav-item" data-id="${id}" onclick="go('${id}')"><span class="w-4 text-center text-[13px]">${p.icon}</span><span class="truncate">${p.label}</span></button>`;});
-  html+=`<div class="mt-4 px-3 pb-2 font-mono text-[10px] tracking-[0.2em] text-neutral-600">ACCOUNT</div>`;
-  secondary.forEach(([id,p])=>{html+=`<button class="nav-item" data-id="${id}" onclick="go('${id}')"><span class="w-4 text-center text-[13px]">${p.icon}</span><span class="truncate">${p.label}</span></button>`;});
-  html+=`<div class="mt-auto px-3 pt-6"><div class="rounded-lg border p-3" style="border-color:#1b1b22;background:#0a0a0d"><div class="flex items-center gap-2 font-mono text-[10px] tracking-wider" style="color:#34d399"><span class="h-1.5 w-1.5 rounded-full bg-emerald-400"></span> LAB MODE</div><p class="mt-1.5 text-[11px] leading-relaxed text-neutral-500">Authorized testing, CTFs &amp; research only.</p></div></div>`;
-  box.innerHTML=html;
+function pageHeader(title,subtitle,badge){
+  return `
+  <div class="anim-fade-up flex flex-wrap items-end justify-between gap-4 border-b pb-5" style="border-color:var(--border)">
+    <div>
+      <h1 class="text-2xl font-bold tracking-tight text-white">${esc(title)}</h1>
+      ${subtitle?`<p class="mt-1 text-sm" style="color:var(--text-dim)">${esc(subtitle)}</p>`:""}
+    </div>
+    ${badge?`<span class="badge badge-ok"><span class="h-1.5 w-1.5 rounded-full pulse-dot" style="background:var(--accent)"></span>${esc(badge)}</span>`:""}
+  </div>`;
 }
-
-/* =========================================================
-   COMMAND PALETTE
-   ========================================================= */
-function openPalette(){ $("#palette").classList.remove("hidden"); setTimeout(()=>$("#paletteInput").focus(),50); renderPalette(""); }
-function closePalette(){ $("#palette").classList.add("hidden"); $("#paletteInput").value=""; }
-function renderPalette(q){
-  const term=q.trim().toLowerCase();
-  const items=term?SEARCH_INDEX.filter(i=>i.label.toLowerCase().includes(term)):SEARCH_INDEX;
-  const box=$("#paletteResults");
-  if(!items.length){box.innerHTML=`<div class="px-3 py-8 text-center font-mono text-xs text-neutral-600">NO RESULTS</div>`;return;}
-  box.innerHTML=items.map(i=>`<button onclick="closePalette();go('${i.id}')" class="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-[13px] text-neutral-300 hover:bg-[#131318] hover:text-white"><span class="w-4 text-center">${PAGES[i.id].icon}</span>${esc(i.label)}</button>`).join("");
-}
-document.addEventListener("keydown",e=>{
-  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="k"){e.preventDefault();$("#palette").classList.contains("hidden")?openPalette():closePalette();}
-  if(e.key==="Escape") closePalette();
-});
-document.addEventListener("input",e=>{ if(e.target.id==="paletteInput") renderPalette(e.target.value); });
+function kv(k,v){return `<div class="kv"><span class="kv-k">${esc(k)}</span><span class="kv-v">${esc(v)}</span></div>`}
+function loader(){return `<p class="py-10 text-center mono text-xs" style="color:var(--text-dim)"><span class="loader"></span> PROCESSING…</p>`}
 
 /* =========================================================
    DASHBOARD
    ========================================================= */
 function renderDashboard(){
-  const quick=[["DNS Lookup","recon"],["IP Intelligence","recon"],["HTTP Analyzer","web-security"],["Hash Generator","crypto"],["JWT Decoder","web-security"],["CVE Search","cve"],["MITRE Search","mitre"],["Subnet Calculator","network"]];
-  const sev=[{s:"Critical",n:2,c:"#e11d2e"},{s:"High",n:5,c:"#f97316"},{s:"Medium",n:9,c:"#f59e0b"},{s:"Low",n:6,c:"#0ea5e9"}];
+  const quick=[["DNS Lookup","recon"],["IP Intelligence","recon"],["HTTP Analyzer","web-security"],["Hash Generator","crypto"],["JWT Decoder","web-security"],["CVE Search","cve"],["MITRE Search","mitre"],["Subnet Calc","network"]];
+  const sev=[{s:"Critical",n:2,c:"#ff3c5a"},{s:"High",n:5,c:"#ffb400"},{s:"Medium",n:9,c:"#ffd500"},{s:"Low",n:6,c:"#00ff41"}];
   return `
-  ${pageHeader("Dashboard","Security operations overview — lab environment","● OPERATIONAL")}
-  <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-    ${[["Modules Online","16","all systems nominal"],["Saved Targets","07","3 added this week"],["Research Notes","23","across 5 projects"],["CTF Points","1,450","rank #12 (demo)"]]
-      .map(([l,v,s])=>`<div class="card"><div class="font-mono text-[10px] tracking-[0.18em] text-neutral-500">${l.toUpperCase()}</div><div class="mt-2 font-mono text-2xl font-semibold text-white">${v}</div><div class="mt-1 text-[11px] text-neutral-500">${s}</div></div>`).join("")}
+  ${pageHeader("Dashboard","Security operations overview — lab environment","OPERATIONAL")}
+  <div class="mt-6 stagger grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    ${[["Modules Online","19","all systems nominal"],["Saved Targets","07","3 added this week"],["Research Notes","23","across 5 projects"],["CTF Points","1,450","rank #12 (demo)"]]
+      .map(([l,v,s])=>`<div class="card card-hover"><div class="mono text-[10px] tracking-[.18em]" style="color:var(--text-dim-2)">${l.toUpperCase()}</div><div class="mt-2 mono text-2xl font-bold" style="color:var(--accent);text-shadow:0 0 12px var(--accent-dim)">${v}</div><div class="mt-1 text-[11px]" style="color:var(--text-dim)">${s}</div></div>`).join("")}
   </div>
   <div class="mt-4 grid gap-4 lg:grid-cols-3">
-    <div class="card lg:col-span-2">
-      <div class="mb-4 flex items-center justify-between"><h2 class="text-sm font-semibold text-white">Quick Tools</h2><span class="font-mono text-[10px] tracking-wider text-neutral-500">LAUNCH</span></div>
+    <div class="card lg:col-span-2 anim-fade-up">
+      <div class="mb-4 flex items-center justify-between">
+        <h2 class="text-sm font-bold text-white">Quick Tools</h2>
+        <span class="mono text-[10px] tracking-wider" style="color:var(--text-dim-2)">LAUNCH</span>
+      </div>
       <div class="grid grid-cols-2 gap-2 sm:grid-cols-4">
-        ${quick.map(([l,h])=>`<button onclick="go('${h}')" class="rounded-lg border px-3 py-3 text-center font-mono text-[11px] text-neutral-300 hover:text-white transition" style="border-color:#1b1b22;background:#0a0a0d" onmouseover="this.style.borderColor='rgba(225,29,46,.5)'" onmouseout="this.style.borderColor='#1b1b22'">${l}</button>`).join("")}
+        ${quick.map(([l,h])=>`<button onclick="go('${h}')" class="tab !px-2 !py-3 !w-full !justify-center" style="display:flex">${l}</button>`).join("")}
       </div>
     </div>
-    <div class="card">
-      <h2 class="mb-4 text-sm font-semibold text-white">Findings by Severity</h2>
+    <div class="card anim-fade-up" style="animation-delay:.1s">
+      <h2 class="mb-4 text-sm font-bold text-white">Findings by Severity</h2>
       <div class="space-y-3">
-        ${sev.map(x=>`<div><div class="mb-1 flex justify-between font-mono text-[11px]"><span class="text-neutral-400">${x.s}</span><span class="text-neutral-500">${x.n}</span></div><div class="h-1.5 overflow-hidden rounded-full" style="background:#1b1b22"><div style="width:${(x.n/12)*100}%;height:100%;background:${x.c}"></div></div></div>`).join("")}
+        ${sev.map(x=>`<div>
+          <div class="mb-1 flex justify-between mono text-[11px]">
+            <span style="color:var(--text-dim)">${x.s}</span>
+            <span style="color:var(--text-dim-2)">${x.n}</span>
+          </div>
+          <div class="h-1.5 overflow-hidden rounded-full" style="background:var(--border)">
+            <div style="width:${(x.n/12)*100}%;height:100%;background:${x.c};box-shadow:0 0 8px ${x.c};animation:barGrow .8s ease"></div>
+          </div>
+        </div>`).join("")}
       </div>
-      <p class="mt-4 border-t pt-3 font-mono text-[10px] text-neutral-600" style="border-color:#1b1b22">SIMULATED DEMO DATA</p>
+      <p class="mt-4 border-t pt-3 mono text-[10px]" style="border-color:var(--border);color:var(--text-dim-2)">SIMULATED DEMO DATA</p>
     </div>
   </div>
   <div class="mt-4 grid gap-4 lg:grid-cols-2">
-    <div class="card">
-      <h2 class="mb-2 text-sm font-semibold text-white">System Status</h2>
-      ${[["Platform","HACKING-ARSENAL v1.0"],["Environment","Lab / Research"],["Terminal","ha@arsenal:~$"],["AI Assistant","ARSENAL AI"],["Data Sources","NVD · MITRE ATT&CK"]]
-        .map(([k,v])=>`<div class="kv"><span class="kv-k">${k}</span><span class="kv-v">${v}</span></div>`).join("")}
+    <div class="card anim-fade-up">
+      <h2 class="mb-2 text-sm font-bold text-white">System Status</h2>
+      ${[["Platform","HACKING-ARSENAL v2.0"],["Environment","Lab / Research"],["Terminal","ha@arsenal:~$"],["AI Assistant","ARSENAL AI"],["Data Sources","NVD · MITRE ATT&CK"],["Theme","Matrix Green"]]
+        .map(([k,v])=>kv(k,v)).join("")}
     </div>
-    <div class="card">
-      <h2 class="mb-2 text-sm font-semibold text-white">Recent Activity</h2>
-      <div class="pt-1 space-y-3">
+    <div class="card anim-fade-up" style="animation-delay:.1s">
+      <h2 class="mb-2 text-sm font-bold text-white">Recent Activity</h2>
+      <div class="space-y-2 pt-1">
         ${[["CVE bookmarked","CVE-2024-3094","2m ago"],["Research saved","example.com recon","26m ago"],["Tool used","SHA-256 hasher","1h ago"],["CTF completed","Web / Easy — Login Bypass","3h ago"],["Report generated","Lab Assessment #04","1d ago"]]
-          .map(([a,b,t])=>`<div class="flex items-center justify-between gap-3 border-b pb-2 last:border-0" style="border-color:#1b1b22"><div class="min-w-0"><div class="truncate text-[13px] text-neutral-200">${a}</div><div class="truncate font-mono text-[11px] text-neutral-500">${b}</div></div><span class="shrink-0 font-mono text-[10px] text-neutral-600">${t}</span></div>`).join("")}
+          .map(([a,b,t])=>`<div class="flex items-center justify-between gap-3 border-b pb-2 last:border-0" style="border-color:var(--border)"><div class="min-w-0"><div class="truncate text-[13px]" style="color:var(--text)">${a}</div><div class="truncate mono text-[11px]" style="color:var(--text-dim-2)">${b}</div></div><span class="shrink-0 mono text-[10px]" style="color:var(--text-dim-2)">${t}</span></div>`).join("")}
       </div>
     </div>
   </div>`;
@@ -408,47 +915,47 @@ function renderDashboard(){
    ========================================================= */
 function renderRecon(){
   return `
-  ${pageHeader("Recon Arsenal","Authorized reconnaissance workspace","● MODULE READY")}
+  ${pageHeader("Recon Arsenal","Authorized reconnaissance workspace — safe public info only","MODULE READY")}
   <div class="mt-6 grid gap-4 lg:grid-cols-2">
-    <div class="card">
+    <div class="card anim-fade-up">
       <label class="block">
-        <span class="mb-1.5 block font-mono text-[11px] uppercase tracking-wider text-neutral-500">Target (Domain / IP)</span>
-        <input id="reconTarget" class="field" placeholder="example.com" />
+        <span class="mb-2 block mono text-[11px] uppercase tracking-wider" style="color:var(--text-dim)">Target (Domain / IP)</span>
+        <input id="reconTarget" class="field" placeholder="example.com" onkeydown="if(event.key==='Enter')runRecon()" />
       </label>
-      <div class="mt-3 flex gap-2">
+      <div class="mt-3 flex flex-wrap gap-2">
         <button class="btn-primary" onclick="runRecon()">ANALYZE</button>
-        <button class="btn-ghost" onclick="document.getElementById('reconTarget').value='';document.getElementById('reconOut').innerHTML=''">CLEAR</button>
+        <button class="btn-ghost" onclick="document.getElementById('reconTarget').value='';document.getElementById('reconOut').innerHTML='<p class=\\'py-10 text-center mono text-xs\\' style=\\'color:var(--text-dim)\\'>AWAITING TARGET</p>'">CLEAR</button>
       </div>
-      <p class="mt-4 border-t pt-3 text-[12px] leading-relaxed text-neutral-500" style="border-color:#1b1b22">
+      <p class="mt-4 border-t pt-3 text-[12px] leading-relaxed" style="border-color:var(--border);color:var(--text-dim)">
         Only safe public information and explicitly authorized targets are supported.
-        Result sections: TARGET · NETWORK · DNS · HTTP · TLS · TECHNOLOGY · INTELLIGENCE.
       </p>
     </div>
-    <div class="card">
-      <h2 class="mb-3 text-sm font-semibold text-white">Result</h2>
-      <div id="reconOut"><p class="py-10 text-center font-mono text-xs text-neutral-600">AWAITING TARGET</p></div>
+    <div class="card anim-fade-up" style="animation-delay:.1s">
+      <h2 class="mb-3 text-sm font-bold text-white">Result</h2>
+      <div id="reconOut"><p class="py-10 text-center mono text-xs" style="color:var(--text-dim)">AWAITING TARGET</p></div>
     </div>
   </div>
-  <div class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+  <div class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
     ${["Domain Intelligence","DNS Records","WHOIS","IP Information","ASN Lookup","Reverse DNS","HTTP Headers","TLS Certificate","Technology Detection","Subdomain Discovery"]
-      .map(m=>`<div class="card"><div class="font-mono text-[11px]" style="color:#ff6b78">${m}</div><p class="mt-1 text-[12px] leading-relaxed text-neutral-500">Authorized module — connect a data source in production.</p></div>`).join("")}
+      .map(m=>`<div class="card card-hover"><div class="mono text-[11px]" style="color:var(--accent)">${m}</div><p class="mt-1.5 text-[12px] leading-relaxed" style="color:var(--text-dim)">Authorized module — connect a data source in production.</p></div>`).join("")}
   </div>`;
 }
-function runRecon(){
+window.runRecon=function(){
   const t=$("#reconTarget").value.trim();
-  if(!t){$("#reconOut").innerHTML=`<p class="py-10 text-center font-mono text-xs" style="color:#ff6b78">ENTER A TARGET</p>`;return;}
-  $("#reconOut").innerHTML=`<p class="py-10 text-center font-mono text-xs text-neutral-600">QUERYING (DEMO MODE)…</p>`;
+  const out=$("#reconOut");
+  if(!t){out.innerHTML=`<p class="py-10 text-center mono text-xs" style="color:#ff3c5a">ENTER A TARGET</p>`;return;}
+  out.innerHTML=loader();
   setTimeout(()=>{
     const domain=t.replace(/^https?:\/\//,"").split("/")[0];
-    const fake=[["TARGET",domain],["TYPE", /^\d+\./.test(domain)?"IPv4 address":"Domain"],["RECORD A","93.184.216.34 (demo)"],["NAMESERVERS","a.iana-servers.net, b.iana-servers.net"],["HTTP STATUS","200 OK"],["SERVER","nginx (demo)"],["TLS ISSUER","DigiCert Inc (demo)"],["TECHNOLOGY","HTML, TLS 1.3"],["NOTE","Simulated data for demonstration only"]];
-    $("#reconOut").innerHTML=fake.map(([k,v])=>`<div class="kv"><span class="kv-k">${k}</span><span class="kv-v">${esc(v)}</span></div>`).join("");
+    const fake=[["TARGET",domain],["TYPE",/^\d+\./.test(domain)?"IPv4 address":"Domain"],["RECORD A","93.184.216.34 (demo)"],["NAMESERVERS","a.iana-servers.net, b.iana-servers.net"],["HTTP STATUS","200 OK"],["SERVER","nginx (demo)"],["TLS ISSUER","DigiCert Inc (demo)"],["TECHNOLOGY","HTML, TLS 1.3"],["NOTE","Simulated data for demonstration only"]];
+    out.innerHTML=fake.map(([k,v])=>kv(k,v)).join("");
   },500);
-}
+};
 
 /* =========================================================
    WEB SECURITY
    ========================================================= */
-const WTABS=[["headers","Security Headers"],["jwt","JWT Decoder"],["url","URL Encode/Decode"],["base64","Base64"],["json","JSON Formatter"]];
+const WTABS=[["headers","Security Headers"],["jwt","JWT Decoder"],["url","URL Encode/Decode"],["base64","Base64"],["html","HTML Entities"],["json","JSON Formatter"]];
 const RECOMMENDED=[
   ["strict-transport-security","Enforce HTTPS for all future requests."],
   ["content-security-policy","Mitigate XSS and injection via source allowlists."],
@@ -461,44 +968,58 @@ let wtool="headers";
 function renderWebSecurity(){
   return `
   ${pageHeader("Web Security Arsenal","Header analysis, token inspection and encoding utilities")}
-  <div class="mt-6 flex flex-wrap gap-2">
+  <div class="mt-6 flex flex-wrap gap-2 anim-fade-up">
     ${WTABS.map(([id,l])=>`<button class="tab ${id===wtool?'active':''}" data-wtab="${id}" onclick="setWebTab('${id}')">${l}</button>`).join("")}
   </div>
   <div class="mt-4 grid gap-4 lg:grid-cols-2">
-    <div class="card space-y-4">
+    <div class="card anim-fade-up">
       <label class="block">
-        <span class="mb-1.5 block font-mono text-[11px] uppercase tracking-wider text-neutral-500" id="wLabel">Input</span>
-        <textarea id="wInput" rows="10" class="field font-mono" placeholder="Paste headers or input…"></textarea>
+        <span id="wLabel" class="mb-2 block mono text-[11px] uppercase tracking-wider" style="color:var(--text-dim)">Input</span>
+        <textarea id="wInput" rows="10" class="field" placeholder="Paste headers or input…"></textarea>
       </label>
-      <div class="flex gap-2">
+      <div class="mt-3 flex gap-2">
         <button class="btn-primary" onclick="runWebTool()">ANALYZE</button>
-        <button class="btn-ghost" onclick="document.getElementById('wInput').value='';document.getElementById('wOut').innerHTML='<p class=\\'py-10 text-center font-mono text-xs text-neutral-600\\'>AWAITING INPUT</p>'">CLEAR</button>
+        <button class="btn-ghost" onclick="resetWeb()">CLEAR</button>
       </div>
     </div>
-    <div class="card">
-      <h2 class="mb-3 text-sm font-semibold text-white">Result</h2>
-      <div id="wOut"><p class="py-10 text-center font-mono text-xs text-neutral-600">AWAITING INPUT</p></div>
+    <div class="card anim-fade-up" style="animation-delay:.1s">
+      <div class="flex items-center justify-between">
+        <h2 class="text-sm font-bold text-white">Result</h2>
+        <button class="btn-ghost !px-2 !py-1 text-[11px]" onclick="copyWebResult(this)">COPY</button>
+      </div>
+      <div id="wOut" class="mt-3"><p class="py-10 text-center mono text-xs" style="color:var(--text-dim)">AWAITING INPUT</p></div>
     </div>
   </div>
-  <div class="mt-4 card">
-    <h2 class="mb-3 text-sm font-semibold text-white">Recommended Security Headers</h2>
+  <div class="mt-4 card anim-fade-up">
+    <h2 class="mb-3 text-sm font-bold text-white">Recommended Security Headers</h2>
     <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-      ${RECOMMENDED.map(([h,d])=>`<div class="rounded-lg border p-3" style="border-color:#1b1b22;background:#0a0a0d"><div class="font-mono text-[11.5px]" style="color:#ff6b78">${h}</div><div class="mt-1 text-[12px] leading-relaxed text-neutral-400">${d}</div></div>`).join("")}
+      ${RECOMMENDED.map(([h,d])=>`<div class="rounded-lg border p-3" style="border-color:var(--border);background:#000"><div class="mono text-[11.5px]" style="color:var(--accent)">${h}</div><div class="mt-1 text-[12px] leading-relaxed" style="color:var(--text-dim)">${d}</div></div>`).join("")}
     </div>
   </div>`;
 }
-function setWebTab(id){
+window.setWebTab=function(id){
   wtool=id;
-  document.querySelectorAll("[data-wtab]").forEach(b=>b.classList.toggle("active",b.dataset.wtab===id));
-  const t=$("#wInput");
+  $$("[data-wtab]").forEach(b=>b.classList.toggle("active",b.dataset.wtab===id));
+  const t=$("#wInput"), lab=$("#wLabel");
   t.value="";
-  if(id==="headers"){t.rows=10;$("#wLabel").textContent="Raw HTTP Response Headers";t.placeholder="HTTP/1.1 200 OK\nContent-Type: text/html\nStrict-Transport-Security: max-age=63072000";}
-  else if(id==="jwt"){t.rows=4;$("#wLabel").textContent="JWT Token";t.placeholder="eyJhbGciOi…";}
-  else{t.rows=6;$("#wLabel").textContent="Input";t.placeholder="Enter value…";}
-  $("#wOut").innerHTML='<p class="py-10 text-center font-mono text-xs text-neutral-600">AWAITING INPUT</p>';
-}
-function runWebTool(){
-  const v=$("#wInput").value;const out=$("#wOut");
+  if(id==="headers"){t.rows=10;lab.textContent="Raw HTTP Response Headers";t.placeholder="HTTP/1.1 200 OK\nContent-Type: text/html\nStrict-Transport-Security: max-age=63072000";}
+  else if(id==="jwt"){t.rows=4;lab.textContent="JWT Token";t.placeholder="eyJhbGciOi…";}
+  else if(id==="json"){t.rows=8;lab.textContent="JSON";t.placeholder='{"hello":"world"}';}
+  else {t.rows=6;lab.textContent="Input";t.placeholder="Enter value…";}
+  $("#wOut").innerHTML=`<p class="py-10 text-center mono text-xs" style="color:var(--text-dim)">AWAITING INPUT</p>`;
+};
+window.resetWeb=function(){
+  $("#wInput").value="";
+  $("#wOut").innerHTML=`<p class="py-10 text-center mono text-xs" style="color:var(--text-dim)">AWAITING INPUT</p>`;
+};
+window.copyWebResult=function(btn){
+  const t=$("#wOut").innerText;
+  if(t) copyText(t,btn);
+};
+window.runWebTool=function(){
+  const v=$("#wInput").value;
+  const out=$("#wOut");
+  if(!v.trim()){out.innerHTML=`<p class="py-10 text-center mono text-xs" style="color:var(--text-dim)">AWAITING INPUT</p>`;return;}
   try{
     if(wtool==="headers"){
       const lines=v.split("\n").map(l=>l.trim()).filter(Boolean);
@@ -506,23 +1027,32 @@ function runWebTool(){
       const lower=hs.map(h=>h.n.toLowerCase());
       const missing=RECOMMENDED.filter(([h])=>!lower.includes(h));
       out.innerHTML=`
-        <div class="kv"><span class="kv-k">Total headers</span><span class="kv-v">${hs.length}</span></div>
-        <div class="kv"><span class="kv-k">Security headers present</span><span class="kv-v">${RECOMMENDED.length-missing.length}</span></div>
-        <div class="kv"><span class="kv-k">Missing</span><span class="kv-v">${missing.length?missing.map(m=>m[0]).join(", "):"None — good posture"}</span></div>
-        <div class="mt-4 space-y-1 border-t pt-3" style="border-color:#1b1b22">${hs.map(h=>`<div class="flex gap-3 font-mono text-[11.5px]"><span class="w-[46%] shrink-0 truncate" style="color:#ff6b78">${esc(h.n)}</span><span class="truncate text-neutral-400">${esc(h.v)}</span></div>`).join("")}</div>`;
+        ${kv("Total headers",String(hs.length))}
+        ${kv("Security headers present",String(RECOMMENDED.length-missing.length))}
+        ${kv("Missing",missing.length?missing.map(m=>m[0]).join(", "):"None — good posture")}
+        <div class="mt-4 space-y-1.5 border-t pt-3" style="border-color:var(--border)">${hs.map(h=>`<div class="flex gap-3 mono text-[11.5px]"><span class="w-[46%] shrink-0 truncate" style="color:var(--accent)">${esc(h.n)}</span><span class="truncate" style="color:var(--text-dim)">${esc(h.v)}</span></div>`).join("")}</div>`;
     } else if(wtool==="jwt"){
       const {header,payload}=decodeJwt(v);
-      out.innerHTML=`<div class="kv"><span class="kv-k">Header</span><span class="kv-v" style="text-align:left;max-width:60%"><pre class="whitespace-pre-wrap text-left">${esc(JSON.stringify(header,null,2))}</pre></span></div><div class="kv"><span class="kv-k">Payload</span><span class="kv-v" style="text-align:left;max-width:60%"><pre class="whitespace-pre-wrap text-left">${esc(JSON.stringify(payload,null,2))}</pre></span></div>`;
+      out.innerHTML=`
+        ${kv("Header",JSON.stringify(header))}
+        ${kv("Payload",JSON.stringify(payload))}
+        <div class="mt-3 rounded-lg border p-3 mono text-[11.5px]" style="border-color:var(--border);background:#000">
+          <pre style="white-space:pre-wrap;color:var(--text);margin:0">${esc(JSON.stringify({header,payload},null,2))}</pre>
+        </div>`;
     } else if(wtool==="url"){
-      out.innerHTML=`<div class="kv"><span class="kv-k">Encoded</span><span class="kv-v">${esc(encodeURIComponent(v))}</span></div><div class="kv"><span class="kv-k">Decoded</span><span class="kv-v">${esc(decodeURIComponent(v))}</span></div>`;
+      let d="—";try{d=urlDecode(v)}catch(e){d="(not valid URL-encoded)"}
+      out.innerHTML=kv("Encoded",urlEncode(v))+kv("Decoded",d);
     } else if(wtool==="base64"){
-      let d="—";try{d=b64decode(v);}catch{}
-      out.innerHTML=`<div class="kv"><span class="kv-k">Encoded</span><span class="kv-v">${esc(b64encode(v))}</span></div><div class="kv"><span class="kv-k">Decoded</span><span class="kv-v">${esc(d)}</span></div>`;
+      let d="—";try{d=b64decode(v)}catch(e){d="(not valid Base64)"}
+      out.innerHTML=kv("Encoded",b64encode(v))+kv("Decoded",d);
+    } else if(wtool==="html"){
+      out.innerHTML=kv("Encoded",htmlEncode(v))+kv("Decoded",htmlDecode(v));
     } else if(wtool==="json"){
-      out.innerHTML=`<pre class="whitespace-pre-wrap font-mono text-[12px] text-neutral-200">${esc(JSON.stringify(JSON.parse(v),null,2))}</pre>`;
+      const o=JSON.parse(v);
+      out.innerHTML=`<pre class="mono text-[12px]" style="white-space:pre-wrap;color:var(--text);margin:0">${esc(JSON.stringify(o,null,2))}</pre>`;
     }
-  }catch(e){ out.innerHTML=`<p class="font-mono text-[12px]" style="color:#ff6b78">ERROR: ${esc(e.message)}</p>`; }
-}
+  }catch(e){ out.innerHTML=`<p class="mono text-[12px]" style="color:#ff3c5a">ERROR: ${esc(e.message)}</p>`; }
+};
 
 /* =========================================================
    NETWORK
@@ -535,151 +1065,203 @@ const PORTS=[
 ];
 function renderNetwork(){
   return `
-  ${pageHeader("Network Arsenal","Subnetting, port reference and protocol documentation")}
+  ${pageHeader("Network Arsenal","Subnetting, port reference and protocol documentation","LAB")}
   <div class="mt-6 grid gap-4 lg:grid-cols-2">
-    <div class="card">
+    <div class="card anim-fade-up">
       <label class="block">
-        <span class="mb-1.5 block font-mono text-[11px] uppercase tracking-wider text-neutral-500">IPv4 / CIDR</span>
-        <input id="cidrIn" class="field font-mono" value="192.168.1.10/24" />
+        <span class="mb-2 block mono text-[11px] uppercase tracking-wider" style="color:var(--text-dim)">IPv4 / CIDR</span>
+        <input id="cidrIn" class="field" value="192.168.1.10/24" onkeydown="if(event.key==='Enter')runSubnet()" />
       </label>
       <div class="mt-3 flex gap-2">
         <button class="btn-primary" onclick="runSubnet()">CALCULATE</button>
-        <button class="btn-ghost" onclick="document.getElementById('cidrIn').value='';document.getElementById('subOut').innerHTML='<p class=\\'py-10 text-center font-mono text-xs text-neutral-600\\'>AWAITING INPUT</p>'">CLEAR</button>
+        <button class="btn-ghost" onclick="document.getElementById('cidrIn').value='';document.getElementById('subOut').innerHTML='<p class=\\'py-10 text-center mono text-xs\\' style=\\'color:var(--text-dim)\\'>AWAITING INPUT</p>'">CLEAR</button>
       </div>
-      <p class="mt-4 border-t pt-3 text-[12px] leading-relaxed text-neutral-500" style="border-color:#1b1b22">
-        Performs arithmetic only. No packets sent. Any scanning must target localhost, private lab ranges, or explicitly authorized systems.
+      <p class="mt-4 border-t pt-3 text-[12px] leading-relaxed" style="border-color:var(--border);color:var(--text-dim)">
+        Arithmetic only. No packets sent. Scanning must target localhost, private lab ranges or explicitly authorized systems.
       </p>
     </div>
-    <div class="card">
-      <h2 class="mb-3 text-sm font-semibold text-white">Subnet Details</h2>
-      <div id="subOut"><p class="py-10 text-center font-mono text-xs text-neutral-600">AWAITING INPUT</p></div>
+    <div class="card anim-fade-up" style="animation-delay:.1s">
+      <h2 class="mb-3 text-sm font-bold text-white">Subnet Details</h2>
+      <div id="subOut"><p class="py-10 text-center mono text-xs" style="color:var(--text-dim)">AWAITING INPUT</p></div>
     </div>
   </div>
-  <div class="mt-4 card">
-    <h2 class="mb-3 text-sm font-semibold text-white">Common Port Reference</h2>
+  <div class="mt-4 card anim-fade-up">
+    <h2 class="mb-3 text-sm font-bold text-white">Common Port Reference</h2>
     <div class="overflow-x-auto">
-      <table class="w-full min-w-[520px] text-left font-mono text-[12px]">
-        <thead><tr class="border-b" style="border-color:#1b1b22"><th class="py-2 pr-4 text-neutral-500">PORT</th><th class="py-2 pr-4 text-neutral-500">SERVICE</th><th class="py-2 text-neutral-500">DESCRIPTION</th></tr></thead>
-        <tbody>${PORTS.map(([p,s,d])=>`<tr class="border-b last:border-0" style="border-color:#131318"><td class="py-2 pr-4" style="color:#ff6b78">${p}</td><td class="py-2 pr-4 text-neutral-200">${s}</td><td class="py-2 text-neutral-400">${d}</td></tr>`).join("")}</tbody>
+      <table class="w-full min-w-[520px] text-left mono text-[12px]">
+        <thead><tr class="border-b" style="border-color:var(--border)"><th class="py-2 pr-4" style="color:var(--text-dim-2)">PORT</th><th class="py-2 pr-4" style="color:var(--text-dim-2)">SERVICE</th><th class="py-2" style="color:var(--text-dim-2)">DESCRIPTION</th></tr></thead>
+        <tbody>${PORTS.map(([p,s,d])=>`<tr class="border-b last:border-0" style="border-color:var(--border)"><td class="py-2 pr-4" style="color:var(--accent)">${p}</td><td class="py-2 pr-4" style="color:var(--text)">${s}</td><td class="py-2" style="color:var(--text-dim)">${d}</td></tr>`).join("")}</tbody>
       </table>
     </div>
   </div>`;
 }
-function runSubnet(){
-  const v=$("#cidrIn").value;const out=$("#subOut");
+window.runSubnet=function(){
+  const v=$("#cidrIn").value;
+  const out=$("#subOut");
   try{
     const r=calcSubnet(v);
     out.innerHTML=`
-      <div class="kv"><span class="kv-k">Network</span><span class="kv-v">${r.network}</span></div>
-      <div class="kv"><span class="kv-k">CIDR</span><span class="kv-v">${r.cidr}</span></div>
-      <div class="kv"><span class="kv-k">Broadcast</span><span class="kv-v">${r.broadcast}</span></div>
-      <div class="kv"><span class="kv-k">Subnet Mask</span><span class="kv-v">${r.mask}</span></div>
-      <div class="kv"><span class="kv-k">Wildcard Mask</span><span class="kv-v">${r.wildcard}</span></div>
-      <div class="kv"><span class="kv-k">First Host</span><span class="kv-v">${r.firstHost}</span></div>
-      <div class="kv"><span class="kv-k">Last Host</span><span class="kv-v">${r.lastHost}</span></div>
-      <div class="kv"><span class="kv-k">Usable Hosts</span><span class="kv-v">${r.usableHosts.toLocaleString()}</span></div>
-      <div class="kv"><span class="kv-k">Total Addresses</span><span class="kv-v">${r.totalHosts.toLocaleString()}</span></div>
-      <div class="kv"><span class="kv-k">Prefix</span><span class="kv-v">/${r.prefix}</span></div>
-      <div class="kv"><span class="kv-k">Class</span><span class="kv-v">${r.ipClass}</span></div>
-      <div class="kv"><span class="kv-k">RFC1918 Private</span><span class="kv-v">${r.private?"YES":"NO"}</span></div>`;
-  }catch(e){ out.innerHTML=`<p class="font-mono text-[12px]" style="color:#ff6b78">ERROR: ${esc(e.message)}</p>`; }
-}
+      ${kv("Network",r.network)}
+      ${kv("CIDR",r.cidr)}
+      ${kv("Broadcast",r.broadcast)}
+      ${kv("Subnet Mask",r.mask)}
+      ${kv("Wildcard Mask",r.wildcard)}
+      ${kv("First Host",r.firstHost)}
+      ${kv("Last Host",r.lastHost)}
+      ${kv("Usable Hosts",r.usableHosts.toLocaleString())}
+      ${kv("Total Addresses",r.totalHosts.toLocaleString())}
+      ${kv("Prefix","/"+r.prefix)}
+      ${kv("Class",r.ipClass)}
+      ${kv("RFC1918 Private",r.private?"YES":"NO")}`;
+  }catch(e){out.innerHTML=`<p class="mono text-[12px]" style="color:#ff3c5a">ERROR: ${esc(e.message)}</p>`}
+};
 
 /* =========================================================
-   CRYPTO & HASH
+   CRYPTO
    ========================================================= */
-const CTABS=[["hash","Hash"],["hmac","HMAC"],["base64","Base64"],["hex","Hex"],["rot13","ROT13"],["caesar","Caesar"]];
+const CTABS=[["hash","Hash Generator"],["identify","Hash Identifier"],["hmac","HMAC"],["base64","Base64"],["hex","Hex"],["rot13","ROT13"],["caesar","Caesar"]];
 let ctool="hash";
 function renderCrypto(){
   return `
-  ${pageHeader("Crypto & Hash Arsenal","Hashing, encoding and classical ciphers — no credential cracking")}
-  <div class="mt-6 flex flex-wrap gap-2">
+  ${pageHeader("Crypto & Hash Arsenal","Hashing, encoding and hash identification — no cracking","CLIENT-SIDE")}
+  <div class="mt-6 flex flex-wrap gap-2 anim-fade-up">
     ${CTABS.map(([id,l])=>`<button class="tab ${id===ctool?'active':''}" data-ctab="${id}" onclick="setCryptoTab('${id}')">${l}</button>`).join("")}
   </div>
   <div class="mt-4 grid gap-4 lg:grid-cols-2">
-    <div class="card space-y-4">
+    <div class="card anim-fade-up">
       <label class="block">
-        <span class="mb-1.5 block font-mono text-[11px] uppercase tracking-wider text-neutral-500">Input</span>
-        <textarea id="cInput" rows="6" class="field font-mono" placeholder="Enter text…">HACKING-ARSENAL</textarea>
+        <span id="cLabel" class="mb-2 block mono text-[11px] uppercase tracking-wider" style="color:var(--text-dim)">Input</span>
+        <textarea id="cInput" rows="6" class="field" placeholder="Enter text…" oninput="if(ctool==='identify')autoIdentify()">HACKING-ARSENAL</textarea>
       </label>
-      <div id="cExtra"></div>
-      <div class="flex flex-wrap gap-2">
-        <button class="btn-primary" onclick="runCryptoTool('encode')">GENERATE</button>
-        <button class="btn-outline" id="cDecodeBtn" onclick="runCryptoTool('decode')" style="display:none">DECODE</button>
-        <button class="btn-ghost" onclick="document.getElementById('cInput').value='';document.getElementById('cOut').innerHTML='<p class=\\'py-10 text-center font-mono text-xs text-neutral-600\\'>AWAITING INPUT</p>'">CLEAR</button>
+      <div id="cExtra" class="mt-3"></div>
+      <div class="mt-3 flex flex-wrap gap-2">
+        <button id="cRunBtn" class="btn-primary" onclick="runCryptoTool('encode')">GENERATE</button>
+        <button id="cDecodeBtn" class="btn-outline" onclick="runCryptoTool('decode')" style="display:none">DECODE</button>
+        <button class="btn-ghost" onclick="resetCrypto()">CLEAR</button>
+        <button class="btn-ghost" onclick="copyCryptoResult(this)">COPY</button>
       </div>
     </div>
-    <div class="card">
-      <h2 class="mb-3 text-sm font-semibold text-white">Output</h2>
-      <div id="cOut"><p class="py-10 text-center font-mono text-xs text-neutral-600">AWAITING INPUT</p></div>
+    <div class="card anim-fade-up" style="animation-delay:.1s">
+      <h2 class="mb-3 text-sm font-bold text-white">Output</h2>
+      <div id="cOut"><p class="py-10 text-center mono text-xs" style="color:var(--text-dim)">AWAITING INPUT</p></div>
     </div>
   </div>`;
 }
-function setCryptoTab(id){
+window.setCryptoTab=function(id){
   ctool=id;
-  document.querySelectorAll("[data-ctab]").forEach(b=>b.classList.toggle("active",b.dataset.ctab===id));
-  const ex=$("#cExtra"); ex.innerHTML="";
-  $("#cDecodeBtn").style.display=(id==="base64"||id==="hex")?"inline-flex":"none";
-  if(id==="hmac"){ex.innerHTML=`<label class="block"><span class="mb-1.5 block font-mono text-[11px] uppercase tracking-wider text-neutral-500">HMAC Key</span><input id="hmacKey" class="field font-mono" value="secret" /></label>`;}
-  if(id==="caesar"){ex.innerHTML=`<label class="block"><span class="mb-1.5 block font-mono text-[11px] uppercase tracking-wider text-neutral-500">Shift</span><input id="caesarShift" type="range" min="-25" max="25" value="3" class="w-full" style="accent-color:#e11d2e" /></label>`;}
-  $("#cOut").innerHTML='<p class="py-10 text-center font-mono text-xs text-neutral-600">AWAITING INPUT</p>';
-}
-async function runCryptoTool(mode){
-  const v=$("#cInput").value;const out=$("#cOut");
+  $$("[data-ctab]").forEach(b=>b.classList.toggle("active",b.dataset.ctab===id));
+  const ex=$("#cExtra");
+  ex.innerHTML="";
+  const run=$("#cRunBtn"), dec=$("#cDecodeBtn"), lab=$("#cLabel"), inp=$("#cInput");
+  dec.style.display=(id==="base64"||id==="hex")?"inline-flex":"none";
+  run.textContent=id==="identify"?"IDENTIFY":"GENERATE";
+  if(id==="hmac"){ex.innerHTML=`<label class="block"><span class="mb-2 block mono text-[11px] uppercase tracking-wider" style="color:var(--text-dim)">HMAC Key</span><input id="hmacKey" class="field" value="secret" /></label>`;lab.textContent="Message";}
+  else if(id==="caesar"){ex.innerHTML=`<label class="block"><span class="mb-2 block mono text-[11px] uppercase tracking-wider" style="color:var(--text-dim)">Shift: <span id="shiftVal">3</span></span><input id="caesarShift" type="range" min="-25" max="25" value="3" class="w-full" style="accent-color:var(--accent)" oninput="document.getElementById('shiftVal').textContent=this.value" /></label>`;lab.textContent="Plaintext";}
+  else if(id==="identify"){lab.textContent="Hash to identify";inp.placeholder="Paste a hash…";}
+  else if(id==="base64"){lab.textContent="Text / Base64";inp.placeholder="Text or base64…";}
+  else if(id==="hex"){lab.textContent="Text / Hex";inp.placeholder="Text or hex…";}
+  else {lab.textContent="Input";inp.placeholder="Enter text…";}
+  $("#cOut").innerHTML=`<p class="py-10 text-center mono text-xs" style="color:var(--text-dim)">AWAITING INPUT</p>`;
+};
+window.resetCrypto=function(){
+  $("#cInput").value="";
+  $("#cOut").innerHTML=`<p class="py-10 text-center mono text-xs" style="color:var(--text-dim)">AWAITING INPUT</p>`;
+};
+window.copyCryptoResult=function(btn){
+  const t=$("#cOut").innerText;
+  if(t) copyText(t,btn);
+};
+window.autoIdentify=function(){ if(ctool==="identify") runCryptoTool(); };
+window.runCryptoTool=async function(mode){
+  const v=$("#cInput").value;
+  const out=$("#cOut");
+  if(!v.trim()){out.innerHTML=`<p class="py-10 text-center mono text-xs" style="color:var(--text-dim)">AWAITING INPUT</p>`;return;}
+  out.innerHTML=loader();
   try{
     let rows=[];
     if(ctool==="hash"){
-      rows=[["SHA-256",await digest("SHA-256",v)],["SHA-512",await digest("SHA-512",v)],["SHA-1 (legacy)",await digest("SHA-1",v)]];
+      rows=[
+        ["MD5",md5(v)],
+        ["SHA-1",await digest("SHA-1",v)],
+        ["SHA-256",await digest("SHA-256",v)],
+        ["SHA-512",await digest("SHA-512",v)],
+      ];
+    } else if(ctool==="identify"){
+      const matches=identifyHash(v);
+      const lookup=lookupHash(v);
+      if(!matches.length){
+        out.innerHTML=`<p class="mono text-[12px]" style="color:#ffb400">Unrecognized hash format.</p>`;
+        return;
+      }
+      out.innerHTML=matches.map(m=>`<div class="rounded-lg border p-3 mb-2" style="border-color:var(--border);background:#000"><div class="mono text-[11px]" style="color:var(--accent)">✓ Possible: ${esc(m.name)}</div>${m.len?`<div class="mt-1 mono text-[11px]" style="color:var(--text-dim)">Length: ${m.len} chars</div>`:""}</div>`).join("")
+        + (lookup?`<div class="mt-3 rounded-lg border p-3" style="border-color:var(--accent-dim);background:rgba(0,255,65,.06)"><div class="mono text-[11px]" style="color:var(--accent)">◉ Dictionary match found</div><div class="mt-1 mono text-[13px]" style="color:var(--text)">Plaintext: <b>${esc(lookup)}</b></div></div>`:`<p class="mt-3 mono text-[11px]" style="color:var(--text-dim-2)">No dictionary match. This is expected for most hashes — hashes are one-way functions.</p>`);
+      return;
     } else if(ctool==="hmac"){
       const k=($("#hmacKey")||{}).value||"secret";
-      rows=[["HMAC-SHA256",await hmacHex("SHA-256",k,v)],["HMAC-SHA512",await hmacHex("SHA-512",k,v)]];
+      rows=[
+        ["HMAC-MD5 (hex)",(function(){try{return typeof CryptoJS!=="undefined"?CryptoJS.HmacMD5(v,k).toString():"(unavailable)"}catch{return"(unavailable)"}})()],
+        ["HMAC-SHA256",await hmacHex("SHA-256",k,v)],
+        ["HMAC-SHA512",await hmacHex("SHA-512",k,v)],
+      ];
     } else if(ctool==="base64"){
-      rows=[["Output", mode==="decode"?b64decode(v):b64encode(v)]];
+      rows=[["Output",mode==="decode"?b64decode(v):b64encode(v)]];
     } else if(ctool==="hex"){
-      rows=[["Output", mode==="decode"?hexDecode(v):hexEncode(v)]];
+      rows=[["Output",mode==="decode"?hexDecode(v):hexEncode(v)]];
     } else if(ctool==="rot13"){
-      rows=[["Output", rot13(v)]];
+      rows=[["Output",rot13(v)]];
     } else if(ctool==="caesar"){
-      const s=+($("#caesarShift")||{}).value||0; rows=[["Output",caesar(v,s)]];
+      const s=+($("#caesarShift")||{}).value||0;
+      rows=[["Output",caesar(v,s)]];
     }
-    out.innerHTML=rows.map(([k,val])=>`<div class="kv"><span class="kv-k">${k}</span><span class="kv-v">${esc(val)}</span></div>`).join("");
-  }catch(e){ out.innerHTML=`<p class="font-mono text-[12px]" style="color:#ff6b78">ERROR: ${esc(e.message)}</p>`; }
-}
+    out.innerHTML=rows.map(([k,val])=>kv(k,val)).join("");
+  }catch(e){ out.innerHTML=`<p class="mono text-[12px]" style="color:#ff3c5a">ERROR: ${esc(e.message)}</p>`; }
+};
 
 /* =========================================================
-   CVE (NVD live)
+   CVE
    ========================================================= */
 function renderCVE(){
   return `
-  ${pageHeader("CVE Intelligence","Live vulnerability data from the NIST National Vulnerability Database","SOURCE: NVD API 2.0")}
-  <div class="mt-6 card">
+  ${pageHeader("CVE Intelligence","Live vulnerability data from the NIST National Vulnerability Database","NVD API 2.0")}
+  <div class="mt-6 card anim-fade-up">
     <div class="grid gap-3 sm:grid-cols-[2fr_1fr_auto]">
-      <label class="block"><span class="mb-1.5 block font-mono text-[11px] uppercase tracking-wider text-neutral-500">CVE ID / Keyword</span><input id="cveQ" class="field font-mono" placeholder="CVE-2024-3094 or 'openssh'" /></label>
-      <label class="block"><span class="mb-1.5 block font-mono text-[11px] uppercase tracking-wider text-neutral-500">Year (optional)</span><input id="cveYear" class="field font-mono" placeholder="2024" /></label>
+      <label class="block">
+        <span class="mb-2 block mono text-[11px] uppercase tracking-wider" style="color:var(--text-dim)">CVE ID / Keyword</span>
+        <input id="cveQ" class="field" placeholder="CVE-2024-3094 or 'openssh'" onkeydown="if(event.key==='Enter')runCveSearch()" />
+      </label>
+      <label class="block">
+        <span class="mb-2 block mono text-[11px] uppercase tracking-wider" style="color:var(--text-dim)">Year (optional)</span>
+        <input id="cveYear" class="field" placeholder="2024" />
+      </label>
       <div class="flex items-end"><button id="cveBtn" class="btn-primary w-full sm:w-auto" onclick="runCveSearch()">SEARCH</button></div>
     </div>
-    <p id="cveNote" class="mt-3 font-mono text-[11px]"></p>
+    <p id="cveNote" class="mt-3 mono text-[11px]"></p>
   </div>
   <div class="mt-4 grid gap-4 lg:grid-cols-[1.1fr_1fr]">
-    <div class="card !p-0">
-      <div class="border-b px-4 py-3 font-mono text-[10px] tracking-[0.2em] text-neutral-500" style="border-color:#1b1b22">RESULTS</div>
-      <div id="cveList" class="max-h-[560px] overflow-y-auto"><p class="py-14 text-center font-mono text-xs text-neutral-600">NO QUERY EXECUTED</p></div>
+    <div class="card !p-0 anim-fade-up">
+      <div class="border-b px-4 py-3 mono text-[10px] tracking-[.2em]" style="border-color:var(--border);color:var(--text-dim-2)">RESULTS</div>
+      <div id="cveList" class="max-h-[560px] overflow-y-auto"><p class="py-14 text-center mono text-xs" style="color:var(--text-dim)">NO QUERY EXECUTED</p></div>
     </div>
-    <div class="card">
-      <h2 class="mb-3 text-sm font-semibold text-white">CVE Detail</h2>
-      <div id="cveDetail"><p class="py-14 text-center font-mono text-xs text-neutral-600">SELECT A RECORD</p></div>
+    <div class="card anim-fade-up" style="animation-delay:.1s">
+      <h2 class="mb-3 text-sm font-bold text-white">CVE Detail</h2>
+      <div id="cveDetail"><p class="py-14 text-center mono text-xs" style="color:var(--text-dim)">SELECT A RECORD</p></div>
     </div>
   </div>`;
 }
 let CVE_RESULTS=[];
-async function runCveSearch(){
-  const q=$("#cveQ").value.trim();const year=$("#cveYear").value.trim();const note=$("#cveNote");const list=$("#cveList");
-  if(!q){note.textContent="Enter a query.";note.style.color="#ff6b78";return;}
-  $("#cveBtn").disabled=true;$("#cveBtn").textContent="SEARCHING…";note.textContent="";
-  list.innerHTML=`<p class="py-14 text-center font-mono text-xs text-neutral-600">QUERYING NVD…</p>`;
+window.runCveSearch=async function(){
+  const q=$("#cveQ").value.trim();
+  const year=$("#cveYear").value.trim();
+  const note=$("#cveNote");
+  const list=$("#cveList");
+  if(!q){note.textContent="Enter a query.";note.style.color="#ffb400";return;}
+  $("#cveBtn").disabled=true;$("#cveBtn").innerHTML='<span class="loader"></span> SEARCHING';
+  note.textContent="";
+  list.innerHTML=loader();
   try{
     const p=new URLSearchParams();
-    if(/^CVE-\d{4}-\d+$/i.test(q)) p.set("cveId",q.toUpperCase()); else p.set("keywordSearch",q);
+    if(/^CVE-\d{4}-\d+$/i.test(q)) p.set("cveId",q.toUpperCase());
+    else p.set("keywordSearch",q);
     if(year){p.set("pubStartDate",`${year}-01-01T00:00:00.000`);p.set("pubEndDate",`${year}-12-31T23:59:59.999`);}
     p.set("resultsPerPage","20");
     const r=await fetch(`https://services.nvd.nist.gov/rest/json/cves/2.0?${p}`);
@@ -692,43 +1274,46 @@ async function runCveSearch(){
       const met=m.cvssMetricV31?.[0]||m.cvssMetricV30?.[0]||m.cvssMetricV2?.[0];
       return {id:c.id,desc,score:met?.cvssData?.baseScore??null,severity:met?.cvssData?.baseSeverity||met?.baseSeverity||"UNKNOWN",published:(c.published||"").slice(0,10),vector:met?.cvssData?.vectorString||"—",refs:(c.references||[]).slice(0,6).map(x=>x.url)};
     });
-    if(!CVE_RESULTS.length){list.innerHTML=`<p class="py-14 text-center font-mono text-xs text-neutral-600">NO MATCHES</p>`;}
-    else{
+    if(!CVE_RESULTS.length){
+      list.innerHTML=`<p class="py-14 text-center mono text-xs" style="color:var(--text-dim)">NO MATCHES</p>`;
+    } else {
       list.innerHTML=CVE_RESULTS.map((c,i)=>`
-        <button onclick="selectCve(${i})" class="block w-full border-b px-4 py-3 text-left hover:bg-[#131318] transition" style="border-color:#131318">
-          <div class="flex items-center gap-2">
-            <span class="font-mono text-[12.5px] font-semibold text-white">${esc(c.id)}</span>
-            <span class="badge ${c.severity==='CRITICAL'?'badge-red':'badge-warn'}">${esc(c.severity)}</span>
-            ${c.score!=null?`<span class="ml-auto font-mono text-[11px] text-neutral-500">${c.score}</span>`:""}
+        <button class="cve-row" data-cve-i="${i}" onclick="selectCve(${i})">
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="mono text-[12.5px] font-bold text-white">${esc(c.id)}</span>
+            <span class="badge ${c.severity==='CRITICAL'?'badge-err':c.severity==='HIGH'?'badge-warn':'badge-ok'}">${esc(c.severity)}</span>
+            ${c.score!=null?`<span class="ml-auto mono text-[11px]" style="color:var(--text-dim)">CVSS ${c.score}</span>`:""}
           </div>
-          <p class="mt-1.5 line-clamp-2 text-[12.5px] leading-relaxed text-neutral-400">${esc(c.desc)}</p>
+          <p class="mt-1.5 clamp-2 text-[12.5px] leading-relaxed" style="color:var(--text-dim)">${esc(c.desc)}</p>
         </button>`).join("");
     }
   }catch(e){
-    note.textContent="NVD API unavailable or rate-limited. Try again shortly.";note.style.color="#fbbf24";
-    list.innerHTML=`<p class="py-14 text-center font-mono text-xs text-neutral-600">FETCH FAILED</p>`;
+    note.textContent="NVD API unavailable or rate-limited (usually 5 req/30s without an API key). Try again in ~30 seconds.";
+    note.style.color="#ffb400";
+    list.innerHTML=`<p class="py-14 text-center mono text-xs" style="color:var(--text-dim-2)">FETCH FAILED</p>`;
   }finally{
     $("#cveBtn").disabled=false;$("#cveBtn").textContent="SEARCH";
   }
-}
-function selectCve(i){
+};
+window.selectCve=function(i){
   const c=CVE_RESULTS[i];if(!c)return;
+  $$(".cve-row").forEach(r=>r.classList.toggle("active",+r.dataset.cveI===i));
   $("#cveDetail").innerHTML=`
     <div class="flex flex-wrap items-center gap-2">
-      <span class="font-mono text-base font-semibold text-white">${esc(c.id)}</span>
-      <span class="badge ${c.severity==='CRITICAL'?'badge-red':'badge-warn'}">${esc(c.severity)}</span>
-      ${c.score!=null?`<span class="badge">CVSS ${c.score}</span>`:""}
+      <span class="mono text-base font-bold text-white">${esc(c.id)}</span>
+      <span class="badge ${c.severity==='CRITICAL'?'badge-err':c.severity==='HIGH'?'badge-warn':'badge-ok'}">${esc(c.severity)}</span>
+      ${c.score!=null?`<span class="badge badge-accent">CVSS ${c.score}</span>`:""}
     </div>
-    <p class="mt-3 text-[13px] leading-relaxed text-neutral-300">${esc(c.desc)}</p>
+    <p class="mt-3 text-[13px] leading-relaxed" style="color:var(--text)">${esc(c.desc)}</p>
     <div class="mt-3">
-      <div class="kv"><span class="kv-k">Published</span><span class="kv-v">${esc(c.published)}</span></div>
-      <div class="kv"><span class="kv-k">Vector</span><span class="kv-v">${esc(c.vector)}</span></div>
+      ${kv("Published",c.published)}
+      ${kv("Vector",c.vector)}
     </div>
-    ${c.refs.length?`<div class="mt-3"><div class="mb-2 font-mono text-[10px] tracking-[0.2em] text-neutral-500">REFERENCES</div>${c.refs.map(u=>`<a href="${esc(u)}" target="_blank" rel="noreferrer noopener" class="block truncate font-mono text-[11.5px] hover:underline" style="color:#ff6b78">${esc(u)}</a>`).join("")}</div>`:""}`;
-}
+    ${c.refs.length?`<div class="mt-3"><div class="mb-2 mono text-[10px] tracking-[.2em]" style="color:var(--text-dim-2)">REFERENCES</div>${c.refs.map(u=>`<a href="${esc(u)}" target="_blank" rel="noreferrer noopener" class="block truncate mono text-[11.5px] hover:underline" style="color:var(--accent)">${esc(u)}</a>`).join("")}</div>`:""}`;
+};
 
 /* =========================================================
-   MITRE (reference list)
+   MITRE
    ========================================================= */
 function renderMitre(){
   const tactics=["Reconnaissance","Resource Development","Initial Access","Execution","Persistence","Privilege Escalation","Defense Evasion","Credential Access","Discovery","Lateral Movement","Collection","Command and Control","Exfiltration","Impact"];
@@ -746,153 +1331,153 @@ function renderMitre(){
   ];
   return `
   ${pageHeader("MITRE ATT&CK Explorer","Interactive ATT&CK matrix with a defensive education focus","DEFENSIVE FOCUS")}
-  <div class="mt-6 card">
-    <h2 class="mb-3 text-sm font-semibold text-white">Tactics</h2>
+  <div class="mt-6 card anim-fade-up">
+    <h2 class="mb-3 text-sm font-bold text-white">Tactics</h2>
     <div class="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
-      ${tactics.map(t=>`<div class="rounded-lg border px-3 py-2 font-mono text-[11.5px] text-neutral-300" style="border-color:#1b1b22;background:#0a0a0d">${t}</div>`).join("")}
+      ${tactics.map(t=>`<div class="rounded-lg border px-3 py-2 mono text-[11.5px] card-hover" style="border-color:var(--border);background:#000;color:var(--text)">${t}</div>`).join("")}
     </div>
   </div>
-  <div class="mt-4 card">
-    <h2 class="mb-3 text-sm font-semibold text-white">Sample Techniques</h2>
+  <div class="mt-4 card anim-fade-up">
+    <h2 class="mb-3 text-sm font-bold text-white">Sample Techniques</h2>
     <div class="overflow-x-auto">
-      <table class="w-full min-w-[600px] text-left font-mono text-[12px]">
-        <thead><tr class="border-b" style="border-color:#1b1b22">
-          <th class="py-2 pr-4 text-neutral-500">ID</th><th class="py-2 pr-4 text-neutral-500">NAME</th><th class="py-2 text-neutral-500">TACTIC</th>
+      <table class="w-full min-w-[600px] text-left mono text-[12px]">
+        <thead><tr class="border-b" style="border-color:var(--border)">
+          <th class="py-2 pr-4" style="color:var(--text-dim-2)">ID</th>
+          <th class="py-2 pr-4" style="color:var(--text-dim-2)">NAME</th>
+          <th class="py-2" style="color:var(--text-dim-2)">TACTIC</th>
         </tr></thead>
-        <tbody>${samples.map(([id,n,t])=>`<tr class="border-b last:border-0" style="border-color:#131318"><td class="py-2 pr-4" style="color:#ff6b78">${id}</td><td class="py-2 pr-4 text-neutral-200">${n}</td><td class="py-2 text-neutral-400">${t}</td></tr>`).join("")}</tbody>
+        <tbody>${samples.map(([id,n,t])=>`<tr class="border-b last:border-0" style="border-color:var(--border)"><td class="py-2 pr-4" style="color:var(--accent)">${id}</td><td class="py-2 pr-4" style="color:var(--text)">${n}</td><td class="py-2" style="color:var(--text-dim)">${t}</td></tr>`).join("")}</tbody>
       </table>
     </div>
-    <p class="mt-4 border-t pt-3 text-[12px] text-neutral-500" style="border-color:#1b1b22">Full technique pages include: ID, name, description, examples, detection, mitigation and references. Data source: MITRE ATT&CK®.</p>
+    <p class="mt-4 border-t pt-3 text-[12px]" style="border-color:var(--border);color:var(--text-dim)">Data source: MITRE ATT&CK®</p>
   </div>`;
 }
 
 /* =========================================================
    TERMINAL
    ========================================================= */
+const TERM_BANNER=[
+  {t:"HACKING-ARSENAL // CYBER TERMINAL v2",c:"var(--accent)",b:true},
+  {t:"ha@arsenal:~$ type 'help' for available commands",c:"var(--text-dim-2)"},
+  {t:""},
+];
 function renderTerminal(){
   return `
   ${pageHeader("Cyber Terminal","Simulated in-app command environment — no host execution","SANDBOXED")}
-  <div class="mt-6 card !p-0">
-    <div class="flex items-center gap-2 border-b px-4 py-3" style="border-color:#1b1b22">
-      <span class="h-2.5 w-2.5 rounded-full" style="background:rgba(225,29,46,.7)"></span>
-      <span class="h-2.5 w-2.5 rounded-full bg-neutral-700"></span>
-      <span class="h-2.5 w-2.5 rounded-full bg-neutral-700"></span>
-      <span class="ml-2 font-mono text-[11px] text-neutral-500">ha@arsenal:~$</span>
+  <div class="mt-6 term-shell anim-fade-up">
+    <div class="term-bar">
+      <span class="term-dot" style="background:#ff3c5a"></span>
+      <span class="term-dot" style="background:#ffb400"></span>
+      <span class="term-dot" style="background:var(--accent);box-shadow:0 0 8px var(--accent)"></span>
+      <span class="ml-2 mono text-[11px]" style="color:var(--text-dim)">ha@arsenal:~$</span>
     </div>
-    <div id="termOut" class="h-[440px] overflow-y-auto p-4 font-mono text-[12.5px] leading-relaxed" style="background:#08080a"></div>
-    <form onsubmit="event.preventDefault();execTerm(document.getElementById('termIn').value);document.getElementById('termIn').value=''" class="flex items-center gap-2 border-t px-4 py-3" style="border-color:#1b1b22;background:#0a0a0d">
-      <span class="font-mono text-[12.5px]" style="color:#ff3b4e">ha@arsenal:~$</span>
-      <input id="termIn" autocomplete="off" class="flex-1 bg-transparent font-mono text-[12.5px] text-neutral-100 outline-none placeholder:text-neutral-700" placeholder="type a command…" />
+    <div id="termOut" class="term-body" style="height:440px"></div>
+    <form onsubmit="event.preventDefault();execTerm(document.getElementById('termIn').value);document.getElementById('termIn').value=''" class="flex items-center gap-2 border-t px-4 py-3" style="border-color:var(--border);background:var(--card)">
+      <span class="mono text-[12.5px] font-bold" style="color:var(--accent)">ha@arsenal:~$</span>
+      <input id="termIn" autocomplete="off" spellcheck="false" class="flex-1 bg-transparent mono text-[12.5px] outline-none" style="color:var(--text)" placeholder="type a command…" />
     </form>
   </div>
   <div class="mt-3 flex flex-wrap gap-2">
-    ${["help","about","tools","network 10.0.0.1/24","hash sha-256 arsenal","labs"].map(c=>`<button onclick="execTerm('${c}')" class="tab">${c}</button>`).join("")}
+    ${["help","about","tools","hash sha-256 arsenal","md5 hello","identify 5f4dcc3b5aa765d61d8327deb882cf99","network 10.0.0.1/24","labs"].map(c=>`<button onclick="execTerm('${c.replace(/'/g,"\\'")}')" class="tab">${c}</button>`).join("")}
   </div>`;
 }
-const TERM_HIST=[];let TERM_LAST=BANNER_TEXT();
-function BANNER_TEXT(){
-  return [
-    {t:"HACKING-ARSENAL // CYBER TERMINAL",c:"#ff3b4e",b:true},
-    {t:"ha@arsenal:~$ type 'help' for available commands",c:"#737373"},
-    {t:""},
-  ];
-}
-function termPush(line){
-  const box=$("#termOut");if(!box)return;
-  const arr=Array.isArray(line)?line:[line];
-  arr.forEach(l=>{
-    const d=document.createElement("div");
-    d.textContent=l.t||"\u00A0";
-    d.style.color=l.c||"#d4d4d8";
-    if(l.b)d.style.fontWeight="600";
-    box.appendChild(d);
-  });
-  box.scrollTop=box.scrollHeight;
-}
-function initTerminal(){
-  const box=$("#termOut");if(!box)return;
-  box.innerHTML="";
-  termPush(TERM_LAST);
-  setTimeout(()=>$("#termIn")&&$("#termIn").focus(),100);
-}
-async function execTerm(raw){
+window.execTerm=async function(raw){
   const cmd=(raw||"").trim();
-  termPush({t:`ha@arsenal:~$ ${cmd}`});
-  if(!cmd)return;
-  TERM_HIST.unshift(cmd);
+  const box=$("#termOut");
+  if(!box) return;
+  const push=(arr)=>{
+    (Array.isArray(arr)?arr:[arr]).forEach(l=>{
+      const d=document.createElement("div");
+      d.textContent=l.t||"\u00A0";
+      d.style.color=l.c||"var(--text)";
+      if(l.b) d.style.fontWeight="700";
+      if(l.i) d.style.paddingLeft="16px";
+      d.className="anim-fade-in";
+      box.appendChild(d);
+    });
+    box.scrollTop=box.scrollHeight;
+  };
+  push({t:`ha@arsenal:~$ ${cmd}`,c:"var(--accent)"});
+  if(!cmd) return;
   const [name,...args]=cmd.split(/\s+/);
   const rest=args.join(" ");
   const lc=name.toLowerCase();
   try{
     switch(lc){
       case "help":
-        termPush([
-          {t:"AVAILABLE COMMANDS",c:"#ff3b4e",b:true},
+        push([
+          {t:"AVAILABLE COMMANDS",c:"var(--accent)",b:true},
           {t:"  help              show this help"},
           {t:"  clear             clear the terminal"},
           {t:"  about             about HACKING-ARSENAL"},
           {t:"  tools             list module routes"},
-          {t:"  recon <domain>    recon module info"},
-          {t:"  osint <target>    osint module info"},
-          {t:"  cve <keyword>     CVE search shortcut"},
-          {t:"  mitre <keyword>   ATT&CK technique search"},
           {t:"  hash <algo> <txt> sha-256 | sha-512 | sha-1"},
+          {t:"  md5 <txt>         compute MD5"},
+          {t:"  identify <hash>   identify hash type + lookup"},
           {t:"  encode <scheme> <txt>  base64 | hex | rot13"},
           {t:"  decode <scheme> <txt>  base64 | hex"},
           {t:"  network <cidr>    subnet calculation"},
           {t:"  labs              list CTF categories"},
           {t:""},
-          {t:"NOTE: commands run in-app only. No OS command execution.",c:"#737373"},
+          {t:"NOTE: commands run in-app only. No OS command execution.",c:"var(--text-dim-2)"},
         ]);break;
-      case "clear": $("#termOut").innerHTML="";termPush(TERM_LAST);break;
+      case "clear": box.innerHTML="";push(TERM_BANNER);break;
       case "about":
-        termPush([
-          {t:"HACKING-ARSENAL v1.0",c:"#ff3b4e",b:true},
+        push([
+          {t:"HACKING-ARSENAL v2.0",c:"var(--accent)",b:true},
           {t:'TAGLINE: "RECON. ANALYZE. SECURE."'},
           {t:"A cybersecurity utility and research platform for"},
           {t:"authorized testing, CTFs, local labs and education."},
-          {t:"AI assistant: ARSENAL AI",c:"#737373"},
+          {t:"AI assistant: ARSENAL AI",c:"var(--text-dim-2)"},
         ]);break;
       case "tools":
-        termPush([
-          {t:"/dashboard      /recon        /osint",c:"#34d399"},
-          {t:"/web-security   /network      /crypto",c:"#34d399"},
-          {t:"/cve            /mitre        /terminal",c:"#34d399"},
-          {t:"/ctf            /knowledge    /cheatsheets",c:"#34d399"},
-          {t:"/reports        /ai           /profile",c:"#34d399"},
+        push([
+          {t:"/dashboard      /recon        /osint",c:"var(--accent)"},
+          {t:"/web-security   /network      /crypto",c:"var(--accent)"},
+          {t:"/cve            /mitre        /terminal",c:"var(--accent)"},
+          {t:"/ctf            /knowledge    /cheatsheets",c:"var(--accent)"},
+          {t:"/reports        /ai           /profile",c:"var(--accent)"},
         ]);break;
-      case "recon":
-        termPush([{t:`recon target: ${rest||"(none)"}`,c:rest?"#34d399":"#ff6b78"},{t:"Modules: DNS · WHOIS · IP · ASN · rDNS · HTTP · TLS · Tech · Subdomains"},{t:"Open the Recon Arsenal module to run an authorized analysis.",c:"#737373"}]);break;
-      case "osint":
-        termPush([{t:`osint target: ${rest||"(none)"}`,c:rest?"#34d399":"#ff6b78"},{t:"Modules: username · domain · profile · email · image meta · doc meta"},{t:"Only public information. Respect privacy and applicable law.",c:"#737373"}]);break;
-      case "cve":
-        termPush([{t:`cve query: ${rest||"(none)"}`,c:rest?"#34d399":"#ff6b78"},{t:"Open /cve for live NVD search results.",c:"#737373"}]);break;
-      case "mitre":
-        termPush([{t:`mitre query: ${rest||"(none)"}`,c:rest?"#34d399":"#ff6b78"},{t:"Open /mitre to explore the ATT&CK matrix (defensive focus).",c:"#737373"}]);break;
       case "hash":{
-        const [algo,...txt]=args;const text=txt.join(" ");
+        const [algo,...txt]=args;
+        const text=txt.join(" ");
         const map={"sha-1":"SHA-1",sha1:"SHA-1","sha-256":"SHA-256",sha256:"SHA-256","sha-512":"SHA-512",sha512:"SHA-512"};
         const a=map[(algo||"").toLowerCase()];
-        if(!a||!text){termPush({t:"usage: hash <sha-1|sha-256|sha-512> <text>",c:"#ff6b78"});break;}
-        termPush({t:await digest(a,text),c:"#34d399"});break;
+        if(!a||!text){push({t:"usage: hash <sha-1|sha-256|sha-512> <text>",c:"#ff3c5a"});break;}
+        push({t:await digest(a,text),c:"var(--accent)"});break;
+      }
+      case "md5":
+        if(!rest){push({t:"usage: md5 <text>",c:"#ff3c5a"});break;}
+        push({t:md5(rest),c:"var(--accent)"});break;
+      case "identify":{
+        if(!rest){push({t:"usage: identify <hash>",c:"#ff3c5a"});break;}
+        const matches=identifyHash(rest);
+        const lookup=lookupHash(rest);
+        if(!matches.length){push({t:"unrecognized hash format",c:"#ffb400"});break;}
+        push(matches.map(m=>({t:`possible: ${m.name}`,c:"var(--accent)"})));
+        if(lookup) push({t:`dictionary match: ${lookup}`,c:"var(--accent-soft)",b:true});
+        break;
       }
       case "encode":{
         const [scheme,...txt]=args;const text=txt.join(" ");
-        if(!scheme||!text){termPush({t:"usage: encode <base64|hex|rot13> <text>",c:"#ff6b78"});break;}
+        if(!scheme||!text){push({t:"usage: encode <base64|hex|rot13> <text>",c:"#ff3c5a"});break;}
         const s=scheme.toLowerCase();
-        termPush({t: s==="base64"?b64encode(text): s==="hex"?hexEncode(text): s==="rot13"?rot13(text):"unsupported scheme",c:"#34d399"});break;
+        push({t:s==="base64"?b64encode(text):s==="hex"?hexEncode(text):s==="rot13"?rot13(text):"unsupported scheme",c:"var(--accent)"});break;
       }
       case "decode":{
         const [scheme,...txt]=args;const text=txt.join(" ");
-        if(!scheme||!text){termPush({t:"usage: decode <base64|hex> <text>",c:"#ff6b78"});break;}
+        if(!scheme||!text){push({t:"usage: decode <base64|hex> <text>",c:"#ff3c5a"});break;}
         const s=scheme.toLowerCase();
-        termPush({t: s==="base64"?b64decode(text): s==="hex"?hexDecode(text):"unsupported scheme",c:"#34d399"});break;
+        try{
+          push({t:s==="base64"?b64decode(text):s==="hex"?hexDecode(text):"unsupported scheme",c:"var(--accent)"});
+        }catch(e){push({t:`decode error: ${e.message}`,c:"#ff3c5a"})}
+        break;
       }
       case "network":{
-        if(!rest){termPush({t:"usage: network <ip/cidr>  e.g. network 10.0.0.1/24",c:"#ff6b78"});break;}
+        if(!rest){push({t:"usage: network <ip/cidr>  e.g. network 10.0.0.1/24",c:"#ff3c5a"});break;}
         const r=calcSubnet(rest);
-        termPush([
-          {t:`network    ${r.network}`,c:"#34d399"},
+        push([
+          {t:`network    ${r.network}`,c:"var(--accent)"},
           {t:`cidr       ${r.cidr}`},
           {t:`mask       ${r.mask}`},
           {t:`broadcast  ${r.broadcast}`},
@@ -902,39 +1487,51 @@ async function execTerm(raw){
         ]);break;
       }
       case "labs":
-        termPush([
-          {t:"CTF CATEGORIES",c:"#ff3b4e",b:true},
+        push([
+          {t:"CTF CATEGORIES",c:"var(--accent)",b:true},
           {t:"  Web · Linux · Networking · Crypto"},
           {t:"  Forensics · OSINT · Reverse Engineering · Misc"},
-          {t:"Open /ctf to begin an educational challenge.",c:"#737373"},
+          {t:"Open /ctf to begin an educational challenge.",c:"var(--text-dim-2)"},
         ]);break;
-      default: termPush({t:`command not found: ${name} — type 'help'`,c:"#ff6b78"});
+      default: push({t:`command not found: ${name} — type 'help'`,c:"#ff3c5a"});
     }
-  }catch(e){ termPush({t:`error: ${e.message}`,c:"#ff6b78"}); }
-}
+  }catch(e){push({t:`error: ${e.message}`,c:"#ff3c5a"})}
+};
+window.initTerminal=function(){
+  const box=$("#termOut");
+  if(!box) return;
+  box.innerHTML="";
+  TERM_BANNER.forEach(l=>{
+    const d=document.createElement("div");
+    d.textContent=l.t||"\u00A0";
+    d.style.color=l.c||"var(--text)";
+    if(l.b) d.style.fontWeight="700";
+    box.appendChild(d);
+  });
+  setTimeout(()=>{const i=$("#termIn");if(i)i.focus()},100);
+};
 
 /* =========================================================
-   CTF / CHEATSHEETS / REPORTS / PROFILE / SETTINGS / STUB
+   OTHER PAGES
    ========================================================= */
 function renderCTF(){
   const ch=[
-    ["Web","Login Bypass","Easy","40"],
-    ["Web","Cookie Tampering","Easy","50"],
-    ["Linux","SUID Hunt","Medium","120"],
-    ["Networking","Packet Puzzle","Medium","100"],
-    ["Crypto","Weak RSA","Hard","200"],
-    ["Forensics","Hidden in Plain Sight","Easy","60"],
-    ["OSINT","The Photographer","Medium","90"],
-    ["Reverse","Crackme 101","Hard","180"],
+    ["Web","Login Bypass","Easy","40"],["Web","Cookie Tampering","Easy","50"],
+    ["Linux","SUID Hunt","Medium","120"],["Networking","Packet Puzzle","Medium","100"],
+    ["Crypto","Weak RSA","Hard","200"],["Forensics","Hidden in Plain Sight","Easy","60"],
+    ["OSINT","The Photographer","Medium","90"],["Reverse","Crackme 101","Hard","180"],
   ];
   return `
   ${pageHeader("CTF Arena","Educational capture-the-flag challenges","LAB")}
-  <div class="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+  <div class="mt-6 stagger grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
     ${ch.map(([c,n,d,p])=>`
-      <div class="card">
-        <div class="flex items-center gap-2"><span class="badge badge-red">${c}</span><span class="badge">${d}</span></div>
-        <h3 class="mt-3 text-sm font-semibold text-white">${n}</h3>
-        <p class="mt-1 text-[12px] text-neutral-400">Points: ${p}</p>
+      <div class="card card-hover">
+        <div class="flex items-center gap-2">
+          <span class="badge badge-accent">${c}</span>
+          <span class="badge">${d}</span>
+        </div>
+        <h3 class="mt-3 text-sm font-bold text-white">${n}</h3>
+        <p class="mt-1 mono text-[12px]" style="color:var(--text-dim)">Points: ${p}</p>
         <button class="mt-3 btn-outline w-full justify-center">OPEN CHALLENGE</button>
       </div>`).join("")}
   </div>`;
@@ -959,24 +1556,32 @@ function renderCheatsheets(){
   ];
   return `
   ${pageHeader("Cheat Sheets","Searchable, copyable quick-reference sheets")}
-  <div class="mt-6 grid gap-3 md:grid-cols-2 lg:grid-cols-3">
-    ${sheets.map(([t,c])=>`<div class="card"><h3 class="text-sm font-semibold text-white">${t}</h3><p class="mt-1.5 font-mono text-[11.5px] leading-relaxed text-neutral-400">${esc(c)}</p><button class="mt-3 btn-ghost !px-2 !py-1 text-[11px]" onclick="navigator.clipboard.writeText(this.parentElement.querySelector('p').textContent)">COPY</button></div>`).join("")}
+  <div class="mt-6 stagger grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+    ${sheets.map(([t,c])=>`
+      <div class="card card-hover">
+        <h3 class="text-sm font-bold text-white">${t}</h3>
+        <p class="mt-1.5 mono text-[11.5px] leading-relaxed" style="color:var(--text-dim)">${esc(c)}</p>
+        <button class="mt-3 btn-ghost !px-2 !py-1 text-[11px]" onclick="copyText(this.parentElement.querySelector('p').textContent,this)">COPY</button>
+      </div>`).join("")}
   </div>`;
 }
 function renderReports(){
   return `
   ${pageHeader("Security Report Generator","Professional penetration-testing and assessment reporting")}
   <div class="mt-6 grid gap-4 lg:grid-cols-2">
-    <div class="card space-y-3">
+    <div class="card space-y-3 anim-fade-up">
       ${[["Assessment Name","Lab Assessment #04"],["Client / Lab","Internal"],["Target","10.0.0.0/24 (authorized lab)"],["Finding","Missing Security Headers"],["Severity","Medium"]]
-        .map(([l,v])=>`<label class="block"><span class="mb-1.5 block font-mono text-[11px] uppercase tracking-wider text-neutral-500">${l}</span><input class="field" value="${v}" /></label>`).join("")}
-      <label class="block"><span class="mb-1.5 block font-mono text-[11px] uppercase tracking-wider text-neutral-500">Description</span><textarea class="field" rows="3">Security headers are not configured on the web application, increasing exposure to XSS and clickjacking.</textarea></label>
-      <label class="block"><span class="mb-1.5 block font-mono text-[11px] uppercase tracking-wider text-neutral-500">Recommendation</span><textarea class="field" rows="3">Configure Content-Security-Policy, Strict-Transport-Security, X-Content-Type-Options and X-Frame-Options at the reverse proxy.</textarea></label>
-      <div class="flex gap-2 pt-1"><button class="btn-primary">SAVE</button><button class="btn-outline">PREVIEW</button><button class="btn-outline">EXPORT PDF</button></div>
+        .map(([l,v])=>`<label class="block"><span class="mb-2 block mono text-[11px] uppercase tracking-wider" style="color:var(--text-dim)">${l}</span><input class="field" value="${esc(v)}" /></label>`).join("")}
+      <label class="block"><span class="mb-2 block mono text-[11px] uppercase tracking-wider" style="color:var(--text-dim)">Description</span><textarea class="field" rows="3">Security headers are not configured on the web application, increasing exposure to XSS and clickjacking.</textarea></label>
+      <label class="block"><span class="mb-2 block mono text-[11px] uppercase tracking-wider" style="color:var(--text-dim)">Recommendation</span><textarea class="field" rows="3">Configure Content-Security-Policy, Strict-Transport-Security, X-Content-Type-Options and X-Frame-Options at the reverse proxy.</textarea></label>
+      <div class="flex flex-wrap gap-2 pt-1">
+        <button class="btn-primary" onclick="alert('Report saved (demo)')">SAVE</button>
+        <button class="btn-outline" onclick="window.print()">PREVIEW / PRINT</button>
+      </div>
     </div>
-    <div class="card">
-      <h2 class="mb-3 text-sm font-semibold text-white">Report Sections</h2>
-      <div class="space-y-1.5">${["Executive Summary","Scope","Methodology","Findings","Evidence","Risk","Recommendations","Conclusion"].map(s=>`<div class="rounded border px-3 py-1.5 font-mono text-[11.5px] text-neutral-300" style="border-color:#1b1b22;background:#0a0a0d">${s}</div>`).join("")}</div>
+    <div class="card anim-fade-up" style="animation-delay:.1s">
+      <h2 class="mb-3 text-sm font-bold text-white">Report Sections</h2>
+      <div class="space-y-1.5">${["Executive Summary","Scope","Methodology","Findings","Evidence","Risk","Recommendations","Conclusion"].map(s=>`<div class="rounded border px-3 py-1.5 mono text-[11.5px]" style="border-color:var(--border);background:#000;color:var(--text)">${s}</div>`).join("")}</div>
     </div>
   </div>`;
 }
@@ -984,21 +1589,21 @@ function renderProfile(){
   return `
   ${pageHeader("Profile","Your operator profile, research and achievements")}
   <div class="mt-6 grid gap-4 lg:grid-cols-3">
-    <div class="card lg:col-span-1 text-center">
-      <div class="mx-auto grid h-20 w-20 place-items-center rounded-full border" style="border-color:rgba(225,29,46,.5);background:rgba(225,29,46,.1)">
-        <span class="font-mono text-2xl font-bold" style="color:#ff3b4e">HA</span>
+    <div class="card text-center anim-fade-up">
+      <div class="mx-auto grid h-20 w-20 place-items-center rounded-full border glow-pulse" style="border-color:var(--accent-dim);background:rgba(0,255,65,.08)">
+        <span class="mono text-2xl font-black" style="color:var(--accent)">HA</span>
       </div>
-      <h2 class="mt-3 font-mono text-base font-semibold text-white">operator</h2>
-      <p class="mt-1 text-[12px] text-neutral-500">Security researcher · CTF player</p>
+      <h2 class="mt-3 mono text-base font-bold text-white">operator</h2>
+      <p class="mt-1 text-[12px]" style="color:var(--text-dim)">Security researcher · CTF player</p>
     </div>
-    <div class="card lg:col-span-2">
-      <h2 class="mb-3 text-sm font-semibold text-white">Stats</h2>
+    <div class="card lg:col-span-2 anim-fade-up" style="animation-delay:.1s">
+      <h2 class="mb-3 text-sm font-bold text-white">Stats</h2>
       <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        ${[["CTF Points","1,450"],["Challenges","12"],["Badges","4"],["Reports","3"]].map(([l,v])=>`<div class="rounded-lg border p-3" style="border-color:#1b1b22;background:#0a0a0d"><div class="font-mono text-[10px] tracking-[0.18em] text-neutral-500">${l.toUpperCase()}</div><div class="mt-1 font-mono text-lg font-semibold text-white">${v}</div></div>`).join("")}
+        ${[["CTF Points","1,450"],["Challenges","12"],["Badges","4"],["Reports","3"]].map(([l,v])=>`<div class="rounded-lg border p-3" style="border-color:var(--border);background:#000"><div class="mono text-[10px] tracking-[.18em]" style="color:var(--text-dim-2)">${l.toUpperCase()}</div><div class="mt-1 mono text-lg font-bold" style="color:var(--accent)">${v}</div></div>`).join("")}
       </div>
-      <h2 class="mt-5 mb-3 text-sm font-semibold text-white">Achievements</h2>
+      <h2 class="mt-5 mb-3 text-sm font-bold text-white">Achievements</h2>
       <div class="flex flex-wrap gap-2">
-        ${["Recon Specialist","OSINT Researcher","Web Security Analyst","Network Analyst"].map(b=>`<span class="badge badge-red">${b}</span>`).join("")}
+        ${["Recon Specialist","OSINT Researcher","Web Security Analyst","Network Analyst"].map(b=>`<span class="badge badge-accent">${b}</span>`).join("")}
       </div>
     </div>
   </div>`;
@@ -1006,13 +1611,13 @@ function renderProfile(){
 function renderSettings(){
   return `
   ${pageHeader("Settings","Profile, security, notifications, appearance and privacy")}
-  <div class="mt-6 card">
-    <h2 class="mb-3 text-sm font-semibold text-white">Appearance</h2>
+  <div class="mt-6 card anim-fade-up">
+    <h2 class="mb-3 text-sm font-bold text-white">Appearance</h2>
     <div class="grid gap-3 sm:grid-cols-3">
-      ${[["Dark Mode",true],["Compact Mode",false],["Reduced Motion",false]].map(([l,on])=>`<label class="flex items-center justify-between rounded-lg border p-3 cursor-pointer" style="border-color:#1b1b22;background:#0a0a0d"><span class="text-[13px] text-neutral-300">${l}</span><input type="checkbox" ${on?"checked":""} style="accent-color:#e11d2e" /></label>`).join("")}
+      ${[["Dark Mode",true],["Compact Mode",false],["Reduced Motion",false]].map(([l,on])=>`<label class="flex items-center justify-between rounded-lg border p-3 cursor-pointer" style="border-color:var(--border);background:#000"><span class="text-[13px]" style="color:var(--text)">${l}</span><input type="checkbox" ${on?"checked":""} style="accent-color:var(--accent)" /></label>`).join("")}
     </div>
-    <h2 class="mt-6 mb-3 text-sm font-semibold text-white">Security</h2>
-    <div class="space-y-2 text-[13px] text-neutral-400">
+    <h2 class="mt-6 mb-3 text-sm font-bold text-white">Security</h2>
+    <div class="space-y-2 text-[13px]" style="color:var(--text-dim)">
       <p>• Session policy: 30 days idle timeout</p>
       <p>• Two-factor authentication: not enabled</p>
       <p>• Audit logging: enabled</p>
@@ -1020,22 +1625,32 @@ function renderSettings(){
     </div>
   </div>`;
 }
-function renderStub(title, subtitle, body){
+function renderStub(title,subtitle,body){
   return `
-  ${pageHeader(title, subtitle, "MODULE READY")}
-  <div class="mt-6 card"><p class="text-[13px] leading-relaxed text-neutral-400">${esc(body)}</p></div>
-  <div class="mt-4 grid gap-4 sm:grid-cols-3">
-    ${["Loading","Empty","Error"].map(s=>`<div class="card !py-6 text-center"><span class="font-mono text-[11px] tracking-wider text-neutral-500">${s.toUpperCase()} STATE</span></div>`).join("")}
+  ${pageHeader(title,subtitle,"MODULE READY")}
+  <div class="mt-6 card anim-fade-up"><p class="text-[13px] leading-relaxed" style="color:var(--text-dim)">${esc(body)}</p></div>
+  <div class="mt-4 stagger grid gap-4 sm:grid-cols-3">
+    ${["Loading","Empty","Error"].map(s=>`<div class="card !py-6 text-center"><span class="mono text-[11px] tracking-wider" style="color:var(--text-dim-2)">${s.toUpperCase()} STATE</span></div>`).join("")}
   </div>`;
 }
+
+/* =========================================================
+   WINDOW RESIZE → REBUILD NAV
+   ========================================================= */
+let resizeTO;
+window.addEventListener("resize",()=>{
+  clearTimeout(resizeTO);
+  resizeTO=setTimeout(()=>{
+    if(!$("#app").classList.contains("hidden")) buildNav();
+  },200);
+});
 
 /* =========================================================
    INIT
    ========================================================= */
 buildNav();
-if(location.hash && PAGES[location.hash.slice(1)]){
-  enterArsenal(location.hash.slice(1));
-}
+const hash=location.hash.slice(1);
+if(hash && PAGES[hash]) enterArsenal(hash);
 </script>
 </body>
 </html>
